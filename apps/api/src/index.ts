@@ -1,9 +1,13 @@
+import createHttpError from "http-errors";
+import connectDatabase from "./database/mongo-connect";
 import { createServer } from "./server";
-import { log } from "@repo/logger";
-
-const port = process.env.PORT || 3001;
+import dotenv from "dotenv";
+import { logEvent } from "./v1/helpers/log-helper";
+dotenv.config();
+const port = process.env.PORT || 2703;
 const server = createServer();
 
-server.listen(port, () => {
-  log(`api running on ${port}`);
+server.listen(port, async() => {
+  await connectDatabase()
+  console.log(`Server is running on http://localhost:${port}`);
 });
