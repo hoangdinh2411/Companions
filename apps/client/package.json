@@ -10,7 +10,7 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@repo/ui": "*",
+    "@repo/shared": "*",
     "next": "^14.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -18,12 +18,14 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.0.4",
     "@repo/eslint-config": "*",
+    "@repo/prettier-config": "*",
     "@repo/typescript-config": "*",
     "@types/eslint": "^8.56.1",
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
     "eslint": "^8.56.0",
+    "sass": "^1.71.1",
     "typescript": "^5.3.3"
   }
 }

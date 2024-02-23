@@ -36,6 +36,9 @@ module.exports = {
       files: ["*.ts", "*.tsx"],
       rules: {
         "no-undef": "off",
+        "no-unused-vars": "error",
+        "no-use-before-define": "error",
+        
       },
     },
   ],
