@@ -20,6 +20,7 @@
     "@repo/eslint-config": "*",
     "@repo/prettier-config": "*",
     "@repo/typescript-config": "*",
+    "@svgr/webpack": "^8.1.0",
     "@types/eslint": "^8.56.1",
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.46",

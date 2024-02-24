@@ -10,7 +10,11 @@
   background-color: $background-button-default;
   color: $white;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  @include transition(
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out,
+    border 0.2s ease-in-out
+  );
   text-transform: uppercase;
   &:hover {
     background-color: $background-button-default-hover;

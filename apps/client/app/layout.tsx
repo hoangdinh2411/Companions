@@ -8,8 +8,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }): JSX.Element {
   return (
-    <html lang='se'>
-      <body className={poppins.className}>{children}</body>
+    <html lang='en'>
+      <body className={`${poppins.variable} ${ptSerif.variable}`}>
+        {children}
+      </body>
     </html>
   );
 }

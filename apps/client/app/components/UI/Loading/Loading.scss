@@ -1,4 +1,4 @@
-@import '../../../styles/abstracts/variables/index';
+@import '../../../styles/abstracts/index';
 
 .lds-default {
   display: inline-block;
@@ -12,7 +12,7 @@
   height: 0.6rem;
   background: $green;
   border-radius: 50%;
-  animation: lds-default 1.2s linear infinite;
+  @include animation('lds-default 1.2s linear infinite');
 }
 .lds-default div:nth-child(1) {
   animation-delay: 0s;
@@ -74,7 +74,8 @@
   top: 52px;
   left: 62px;
 }
-@keyframes lds-default {
+
+@include keyframes('lds-default') {
   0%,
   20%,
   80%,
