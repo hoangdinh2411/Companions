@@ -4,7 +4,7 @@
  * 2. Set default font-family, color and line-height
  */
 html {
-  font-size: 62.5%;
+  font-size: 10px;
   /* 1 */
   color: $text-primary;
   /* 2 */
@@ -86,7 +86,6 @@ a {
 
 small {
   font-size: 1.4rem;
-  display: inline-block;
 }
 
 div,

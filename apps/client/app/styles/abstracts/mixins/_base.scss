@@ -1,7 +1,9 @@
-@mixin flex($justify-content: normal,
+@mixin flex(
+  $justify-content: normal,
   $align-items: normal,
   $direction: row,
-  $gap: 0) {
+  $gap: 0
+) {
   display: flex;
   justify-content: $justify-content;
   align-items: $align-items;
@@ -9,10 +11,12 @@
   gap: $gap;
 }
 
-@mixin text($color: $black-1,
+@mixin text(
+  $color: $black-1,
   $font-weight,
   $font-size: 16px,
-  $line-height: 1.6) {
+  $line-height: 1.6
+) {
   font-size: $font-size;
   font-weight: $font-weight;
   color: $color;
@@ -56,12 +60,13 @@
 
 @mixin active-btn() {
   transition: translate 0s;
-  transform: translateY(2px)
+  transform: translateY(2px);
 }
 
-
-@mixin transition-all($timing) {
-  transition: $timing;
-  -webkit-transition: $timing;
-  -o-transition: $timing;
+@mixin transition($x...) {
+  -webkit-transition: $x;
+  -moz-transition: $x;
+  -ms-transition: $x;
+  -o-transition: $x;
+  transition: $x;
 }
