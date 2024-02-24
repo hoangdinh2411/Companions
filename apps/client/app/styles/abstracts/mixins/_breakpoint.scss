@@ -32,25 +32,25 @@
       @warn "Breakpoint mixin supports: xs, sm, md, lg, xxl";
     }
   } @else if $type == number {
-    $widthQuery: "all" !default;
+    $widthQuery: 'all' !default;
 
     // width
     @if $minWidth != 0 and $maxWidth != 0 {
-      $widthQuery: "(min-width: #{$minWidth}) and (max-width: #{$maxWidth})";
+      $widthQuery: '(min-width: #{$minWidth}) and (max-width: #{$maxWidth})';
     } @else if $minWidth != 0 and $maxWidth == 0 {
-      $widthQuery: "(min-width: #{$minWidth})";
+      $widthQuery: '(min-width: #{$minWidth})';
     } @else if $minWidth == 0 and $maxWidth != 0 {
-      $widthQuery: "(max-width: #{$maxWidth})";
+      $widthQuery: '(max-width: #{$maxWidth})';
     }
 
     // height
     $heightQuery: 0;
     @if $minHeight != 0 and $maxHeight != 0 {
-      $heightQuery: "(min-height: #{$minHeight}) and (max-height: #{$maxHeight})";
+      $heightQuery: '(min-height: #{$minHeight}) and (max-height: #{$maxHeight})';
     } @else if $minHeight != 0 and $maxHeight == 0 {
-      $heightQuery: "(min-height: #{$minHeight})";
+      $heightQuery: '(min-height: #{$minHeight})';
     } @else if $minHeight == 0 and $maxHeight != 0 {
-      $heightQuery: "(max-height: #{$maxHeight})";
+      $heightQuery: '(max-height: #{$maxHeight})';
     }
 
     @if $minHeight != 0 {
