@@ -9,7 +9,10 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang='en'>
-      <body className={`${poppins.variable} ${ptSerif.variable}`}>
+      <body
+        className={`${poppins.variable} ${ptSerif.variable}`}
+        suppressHydrationWarning={true}
+      >
         {children}
       </body>
     </html>

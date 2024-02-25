@@ -8,6 +8,9 @@ node_modules
 # testing
 coverage
 
+
+#logs
+apps/*/logs
 # next.js
 .next/
 out/

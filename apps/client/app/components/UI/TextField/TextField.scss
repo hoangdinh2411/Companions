@@ -37,6 +37,7 @@
   &__error {
     color: $error;
     margin-left: $spacing * 2;
+    margin-top: $spacing * 2;
     font-weight: 500;
     @include flex(left, center);
     svg {

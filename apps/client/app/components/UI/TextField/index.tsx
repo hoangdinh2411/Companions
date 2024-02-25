@@ -2,8 +2,7 @@ import { InputHTMLAttributes } from 'react';
 import './TextField.scss';
 import { ErrorIcon } from '../../../lib/config/svg';
 
-interface TextFieldProps
-  extends InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
+interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: boolean;
   message?: string;

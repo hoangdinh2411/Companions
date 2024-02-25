@@ -1,4 +1,4 @@
-input,
+input:not(input[type='checkbox']):not(input[type='radio']),
 textarea,
 select {
   width: 100%;
