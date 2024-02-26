@@ -20,12 +20,17 @@ $font-secondary: 'PT Serif', serif;
 $text-primary: $black;
 $text-secondary: $black-opacity-80;
 $text-disabled: $gray-400;
+$text-hover: $green;
+$active: $green;
 
 $error: $red;
 // Background
 $background-default: $white;
 $background-paper: $gray-100;
-$background-navbar: $gray-700;
+
+$background-navbar: $gray-600;
+$background-footer: $gray-600;
+$background-menubar: $gray-700;
 $background-disabled: $gray-300;
 
 // Button
@@ -43,3 +48,4 @@ $border: $gray-400;
 
 //Shadow
 $shadow: 0 0 15px 5px $gray-100;
+$shadow-card: 0 0 10px 0 rgba(0, 0, 0, 0.1);

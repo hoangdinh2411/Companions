@@ -6,7 +6,7 @@
   border-radius: 2px;
   font-size: 1.2rem;
   font-weight: 600;
-  padding: calc($spacing * 6) calc($spacing * 8);
+  padding: $spacing * 6 $spacing * 8;
   background-color: $background-button-default;
   color: $white;
   cursor: pointer;
@@ -21,20 +21,20 @@
   }
   @include breakpoint(xl) {
     height: 5.4rem;
-    padding: calc($spacing * 8) calc($spacing * 10);
+    padding: $spacing * 8 $spacing * 10;
   }
 
   &--small {
     height: 3.8rem;
-    padding: calc($spacing * 4) calc($spacing * 6);
+    padding: $spacing * 4 $spacing * 6;
   }
 
   &--large {
     height: 5.4rem;
-    padding: calc($spacing * 8) calc($spacing * 10);
+    padding: $spacing * 8 $spacing * 10;
     @include breakpoint(xl) {
       height: 6.2rem;
-      padding: calc($spacing * 10) calc($spacing * 12);
+      padding: $spacing * 10 $spacing * 12;
     }
   }
 

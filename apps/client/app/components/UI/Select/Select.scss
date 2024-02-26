@@ -40,7 +40,7 @@
       z-index: 10;
       cursor: pointer;
       @include flex(space-between, center);
-      padding: calc($spacing * 4) calc($spacing * 6);
+      padding: $spacing * 4 $spacing * 6;
       background-color: $white;
       border: 0.5px solid $border;
       color: $text-primary;
@@ -67,9 +67,9 @@
       box-shadow: $shadow;
       background-color: $white;
       ul {
-        padding: calc($spacing * 4) 0;
+        padding: $spacing * 4 0;
         .item {
-          padding: calc($spacing * 2) calc($spacing * 4);
+          padding: $spacing * 2 $spacing * 4;
           text-align: left;
           margin-bottom: $spacing * 2;
           cursor: pointer;
