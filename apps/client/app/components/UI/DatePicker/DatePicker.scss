@@ -1,0 +1,27 @@
+@import '../../../styles/abstracts/index';
+
+.date-picker {
+  width: 100%;
+  input[type='button'] {
+    text-align: left;
+  }
+  .rdp {
+    display: block;
+    background-color: $white;
+    position: absolute;
+    margin: 0 !important;
+    z-index: 10;
+  }
+
+  &__footer {
+    padding: $spacing * 2;
+    border-radius: 2px;
+    text-align: right;
+    color: $text-primary;
+    font-weight: 600;
+    cursor: pointer;
+    &:hover {
+      color: $text-hover;
+    }
+  }
+}

@@ -15,7 +15,10 @@
     }
     .slide__item {
       width: 100%;
-      background-size: cover;
+      background-size: contain;
+      @include breakpoint(sm) {
+        background-size: cover;
+      }
       background-position: top center;
       background-repeat: no-repeat;
       background-color: $background-paper;
@@ -24,13 +27,20 @@
       position: relative;
       .slide__content {
         position: absolute;
-        top: 50%;
+        top: 40%;
         left: 50%;
+        width: 100%;
         transform: translate(-50%, 0);
         z-index: 10;
+        @include breakpoint(lg) {
+          top: 55%;
+        }
       }
       .slide__tabs {
-        margin: 40px auto;
+        margin: $spacing * 10 auto;
+        @include breakpoint(lg) {
+          margin: $spacing * 20 auto;
+        }
         background: transparent;
         border-radius: 5px;
         position: relative;
