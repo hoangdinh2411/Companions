@@ -1,5 +1,4 @@
 'use client';
-import { memo } from 'react';
 import './Select.scss';
 import { ArrowDownIcon, ArrowUpIcon, ErrorIcon } from '../../../lib/config/svg';
 // const data = [
@@ -69,8 +68,6 @@ function Select(props: SelectProps) {
       {label && <label htmlFor={id}>{label}</label>}
       <label className={`dropdown `} htmlFor='dropdown'>
         <input type='checkbox' id='dropdown' />
-        <span id='overlay'></span>
-
         <div id='dropdown-btn'>
           {value === '' ? 'Select' : value}
           <span className=' arrow-up dropdown-icons'>
@@ -107,4 +104,4 @@ function Select(props: SelectProps) {
   );
 }
 
-export default memo(Select);
+export default Select;

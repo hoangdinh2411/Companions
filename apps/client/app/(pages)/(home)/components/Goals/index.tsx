@@ -8,7 +8,12 @@ export default function Goals() {
     <article className='goals'>
       <div className='goals__container'>
         <figure className='goals__image'>
-          <Image src='/goals.png' alt='Goals' width={500} height={350} />
+          <Image
+            src='/goals.png'
+            alt='Goals'
+            fill
+            sizes='(max-width:992px) 500px 350px'
+          />
         </figure>
         <section className='goals__content'>
           <h3>Shared Goals</h3>

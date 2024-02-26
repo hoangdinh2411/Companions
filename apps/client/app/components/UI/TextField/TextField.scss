@@ -3,6 +3,7 @@
 .textfield {
   border: none;
   position: relative;
+  width: 100%;
   &.error {
     input {
       border-color: $error;

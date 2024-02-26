@@ -1,10 +1,3 @@
-body {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-  @include breakpoint(lg) {
-  }
-}
 main {
   min-height: 100vh;
 }

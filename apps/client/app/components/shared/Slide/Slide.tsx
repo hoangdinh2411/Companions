@@ -2,9 +2,9 @@
 import './Slide.scss';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import ShippingForm from './SearchForm/ShippingForm';
-import CarPoolingForm from './SearchForm/CarPoolingForm';
+import CarpoolingForm from './SearchForm/CarpoolingForm';
 import { use, useEffect } from 'react';
+import ShippingForm from './SearchForm/ShippingForm';
 
 const slides = [
   {
@@ -13,7 +13,7 @@ const slides = [
     content: 'This is tab 1!',
     image_url: '/slide_carpooling.jpg',
     params: 'carpooling',
-    form: <CarPoolingForm />,
+    form: <CarpoolingForm />,
   },
   {
     id: 'shipping',
