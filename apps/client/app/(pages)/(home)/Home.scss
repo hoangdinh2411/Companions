@@ -1,0 +1,150 @@
+@import '../../styles/abstracts/index';
+
+.goals {
+  background-color: $background-paper;
+  padding: $spacing * 80 0;
+  &__container {
+    margin: 0 auto;
+    max-width: $max-width;
+    padding: 0 $spacing * 8;
+    @include breakpoint(xl) {
+      padding: 0;
+    }
+    width: 100%;
+    @include flex(space-between, center, row, $spacing * 30);
+    flex-wrap: wrap;
+  }
+
+  &__image {
+    margin: 0 auto;
+    position: relative;
+    width: 50rem;
+    height: 35rem;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  &__content {
+    width: 100%;
+    margin-bottom: $spacing * 30;
+    @include breakpoint(xl) {
+      width: 50%;
+      width: 'unset';
+    }
+    p {
+      color: $text-secondary;
+    }
+  }
+}
+.statistical {
+  padding: $spacing * 80 0;
+  &__container {
+    margin: 0 auto;
+    max-width: $max-width;
+    padding: 0 $spacing * 8;
+    @include breakpoint(xl) {
+      padding: 0;
+    }
+    width: 100%;
+    @include flex(space-around, center);
+    flex-wrap: wrap;
+
+    .cards {
+      width: 35rem;
+      height: 35rem;
+      padding: $spacing * 12;
+      border-radius: 4px;
+      @include flex(center, center, column, $spacing * 30);
+      text-wrap: nowrap;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+      &__total {
+        font-size: 3rem;
+        font-weight: bold;
+        color: $green;
+      }
+    }
+  }
+}
+.comments {
+  background-color: $background-paper;
+  padding: $spacing * 80 0;
+  &__container {
+    margin: 0 auto;
+    max-width: $max-width;
+    padding: 0 $spacing * 8;
+    @include breakpoint(xl) {
+      padding: 0;
+    }
+    width: 100%;
+    @include flex(space-around, center);
+    flex-wrap: wrap;
+    overflow: hidden;
+    div#captioned-gallery {
+      width: 100%;
+      overflow: hidden;
+    }
+    figure.slider {
+      position: relative;
+      width: 300%;
+      height: 15rem;
+      font-size: 0;
+      animation: 20s slide infinite;
+    }
+    figure.slider__box {
+      width: calc(100% / 3);
+      height: 15rem;
+      display: inline-flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 0 $spacing * 2;
+      gap: $spacing * 8;
+      position: inherit;
+      .comment {
+        text-wrap: wrap;
+        border-radius: 4px;
+        padding: $spacing * 8;
+        background-color: $white;
+        p {
+          margin-bottom: $spacing * 4;
+          font-size: 1.8rem;
+          &::before {
+            content: '\201C';
+          }
+
+          &::after {
+            content: '\201D';
+          }
+        }
+        small {
+          color: $green;
+        }
+      }
+    }
+  }
+}
+
+@keyframes slide {
+  0% {
+    left: 0%;
+  }
+  10% {
+    left: 0%;
+  }
+  20% {
+    left: 0%;
+  }
+  30% {
+    left: -100%;
+  }
+  50% {
+    left: -100%;
+  }
+  70% {
+    left: -150%;
+  }
+  90% {
+    left: -150%;
+  }
+  100% {
+    left: -150%;
+  }
+}
