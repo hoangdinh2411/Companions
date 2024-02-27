@@ -19,5 +19,8 @@
   "peerDependencies": {
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*"
+  },
+  "dependencies": {
+    "yup": "^1.3.3"
   }
 }
