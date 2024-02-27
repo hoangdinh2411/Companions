@@ -1,7 +1,7 @@
 // import { enqueueSnackbar } from "notistack";
-import { getToken } from "./tokens";
+import { getToken } from './tokens';
 
-export const API_URL = "http://localhost:2703/api/v1";
+export const API_URL = process.env.BASE_API || 'http://localhost:2703/api/v1';
 export interface IResponse<T> {
   data: T;
   message?: string;
@@ -22,10 +22,10 @@ export default async function customFetch<T>(
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   if (config.headers) {
-    delete config.headers["Content-Type"];
+    delete config.headers['Content-Type'];
   } else {
     config.headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     };
   }
@@ -44,14 +44,11 @@ export default async function customFetch<T>(
         return response.json();
       })
       .then((data) => {
-        if (!data.success && data.message) {
-          throw new Error(data.message);
-        }
         return data as IResponse<T>;
       })
       .catch((error) => {
-        if (error.name === "AbortError") {
-          throw new Error("Request timeout");
+        if (error.name === 'AbortError') {
+          throw new Error('Request timeout');
         }
         return error;
       })

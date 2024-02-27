@@ -2,22 +2,39 @@
 import TextField from '../../components/UI/TextField';
 import Button from '../../components/UI/Button';
 import { useFormik } from 'formik';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useTransition } from 'react';
 import Link from 'next/link';
 import APP_ROUTER from '../../lib/config/router';
-import { signInValidation } from '@repo/shared';
+import { SignInFormData, signInValidation } from '@repo/shared';
+import { signIn } from '../../actions/userApi';
+import { useRouter } from 'next/navigation';
+import { saveToken } from '../../actions/tokens';
+import { toast } from 'react-toastify';
 
 export default function Form(): JSX.Element {
   const firstTextFieldRef = useRef<HTMLInputElement>(null);
-
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
+    validateOnBlur: false,
     validationSchema: signInValidation,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: (values: SignInFormData, { resetForm }) => {
+      startTransition(async () => {
+        const res = await signIn(values);
+        if (!res.success) {
+          toast.error(res.message);
+          resetForm();
+          return;
+        }
+
+        toast.success('You have successfully signed in');
+        await saveToken(res.data.token);
+        router.push(APP_ROUTER.HOME);
+      });
     },
   });
 
@@ -65,7 +82,7 @@ export default function Form(): JSX.Element {
           Don't you have account? <Link href={APP_ROUTER.SIGN_UP}>Sign up</Link>
         </p>
       </article>
-      <Button fullWidth variant='green' type='submit'>
+      <Button fullWidth variant='green' type='submit' loading={isPending}>
         Sign in
       </Button>
     </form>
