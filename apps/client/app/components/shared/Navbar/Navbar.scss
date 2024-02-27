@@ -113,9 +113,59 @@
       padding: $spacing * 2 $spacing * 4;
       @include text($white, 500);
       text-transform: uppercase;
+      position: relative;
       @include transition(color 0.2s ease);
       &:hover {
         color: $text-hover;
+      }
+      &__dropdown {
+        &.open {
+          display: block;
+          animation: grow-utd 0.1s linear;
+        }
+        @include transition(all 0.2s ease);
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 15rem;
+        border-radius: 4px;
+        overflow: hidden;
+        @include breakpoint(lg) {
+          width: 20rem;
+        }
+        z-index: -1;
+        display: none;
+        background-color: $background-menubar;
+        ul {
+          p,
+          a {
+            @include breakpoint(lg) {
+              padding: $spacing * 8;
+            }
+            padding: $spacing * 4;
+            width: 100%;
+            display: block;
+            @include text($white, 500);
+            @include transition(all 0.2s ease);
+            cursor: pointer;
+            &:hover {
+              background-color: $green;
+              color: $white;
+            }
+          }
+        }
+      }
+
+      span {
+        @include flex(center, center);
+        svg {
+          width: 2.4rem;
+          height: 2.4rem;
+          @include breakpoint(lg) {
+            width: 3.6rem;
+            height: 3.6rem;
+          }
+        }
       }
     }
   }
@@ -134,5 +184,19 @@
   }
   100% {
     width: 25rem;
+  }
+}
+@include keyframes(grow-utd) {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-50%);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

@@ -33,7 +33,13 @@
       article {
         margin-bottom: $spacing * 8;
 
+        p {
+          font-size: 1.4rem;
+          @include flex(space-between, center);
+        }
         a {
+          display: block;
+          padding: $spacing * 2;
           color: $green;
           font-weight: 600;
           text-decoration: underline;

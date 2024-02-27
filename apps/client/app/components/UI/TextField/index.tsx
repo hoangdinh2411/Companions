@@ -8,49 +8,52 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   message?: string;
   variant?: 'outlined' | 'contained';
   required?: boolean;
-  ref?: React.Ref<HTMLInputElement>;
 }
-export default function TextField(props: TextFieldProps) {
-  const {
-    className,
-    label,
-    id,
-    error,
-    message = '',
-    variant = 'contained',
-    required = false,
-    ...rest
-  } = props;
+const TextField = React.forwardRef(
+  (props: TextFieldProps, ref: React.Ref<HTMLInputElement>) => {
+    const {
+      className,
+      label,
+      id,
+      error,
+      message = '',
+      variant = 'contained',
+      required = false,
+      ...rest
+    } = props;
 
-  let textfieldClassName = 'textfield';
-  if (error) {
-    textfieldClassName += ` error`;
-  }
-  if (className) {
-    textfieldClassName += ` ${className}`;
-  }
+    let textfieldClassName = 'textfield';
+    if (error) {
+      textfieldClassName += ` error`;
+    }
+    if (className) {
+      textfieldClassName += ` ${className}`;
+    }
 
-  if (variant === 'outlined') {
-    textfieldClassName += ` textfield--outlined`;
-  }
+    if (variant === 'outlined') {
+      textfieldClassName += ` textfield--outlined`;
+    }
 
-  return (
-    <fieldset className={textfieldClassName}>
-      {label && (
-        <label htmlFor={id} className='textfield__label'>
-          <p>
-            {required && '*'}
-            {label}:
-          </p>
-        </label>
-      )}
-      <input id={id} type='text' {...rest} />
-      {error && (
-        <small className='textfield__error'>
-          <ErrorIcon />
-          {message}
-        </small>
-      )}
-    </fieldset>
-  );
-}
+    return (
+      <fieldset className={textfieldClassName}>
+        {label && (
+          <label htmlFor={id} className='textfield__label'>
+            <p>
+              {required && '*'}
+              {label}:
+            </p>
+          </label>
+        )}
+        <input id={id} type='text' ref={ref} {...rest} />
+        {error && (
+          <small className='textfield__error'>
+            <ErrorIcon />
+            {message}
+          </small>
+        )}
+      </fieldset>
+    );
+  }
+);
+
+export default TextField;

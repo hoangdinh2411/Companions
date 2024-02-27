@@ -1,6 +1,7 @@
 import Footer from './components/shared/Footer/Footer';
 import Navbar from './components/shared/Navbar/Navbar';
 import { poppins } from './lib/config/font';
+import ToastProvider from './lib/provider/ToastProvider';
 import './styles/global.scss';
 import type { Metadata } from 'next';
 
@@ -15,7 +16,10 @@ export default function RootLayout({
         <header>
           <Navbar />
         </header>
-        <main>{children}</main>
+        <main>
+          {children}
+          <ToastProvider />
+        </main>
         <Footer />
       </body>
     </html>
