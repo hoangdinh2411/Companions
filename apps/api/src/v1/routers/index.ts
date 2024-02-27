@@ -1,8 +1,7 @@
 import { Express } from 'express';
+import AuthRouter from './auth.router';
 
-const Routes = (app:  Express) => {
-  app.get("/health", (req, res) => {
-    return res.status(200).json({ ok: true });
-  });
+const Routes = (app: Express) => {
+  app.use('/auth', AuthRouter);
 };
 export default Routes;

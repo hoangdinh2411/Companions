@@ -6,21 +6,8 @@ import * as Yup from 'yup';
 import { useEffect, useRef } from 'react';
 import APP_ROUTER from '../../lib/config/router';
 import Link from 'next/link';
+import { signUpValidation } from '@repo/shared';
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid email').required('Required email'),
-  password: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
-    .max(20, 'Password must be at most 20 characters')
-    .required('Required password'),
-  confirm_password: Yup.string().test(
-    'isSame',
-    'Confirm password must be the same as password',
-    function (value) {
-      return this.parent.password === value;
-    }
-  ),
-});
 export default function Form(): JSX.Element {
   const firstTextFieldRef = useRef<HTMLInputElement>(null);
   const formik = useFormik({
@@ -29,7 +16,7 @@ export default function Form(): JSX.Element {
       password: '',
       confirm_password: '',
     },
-    validationSchema,
+    validationSchema: signUpValidation,
     onSubmit: (values) => {
       console.log(values);
     },

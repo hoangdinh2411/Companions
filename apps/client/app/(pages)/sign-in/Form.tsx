@@ -2,27 +2,20 @@
 import TextField from '../../components/UI/TextField';
 import Button from '../../components/UI/Button';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import APP_ROUTER from '../../lib/config/router';
+import { signInValidation } from '@repo/shared';
 
-const validationSchema = Yup.object().shape({
-  account: Yup.string().required('Required email or phone number'),
-  password: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
-    .max(20, 'Password must be at most 20 characters')
-    .required('Required password'),
-});
 export default function Form(): JSX.Element {
   const firstTextFieldRef = useRef<HTMLInputElement>(null);
 
   const formik = useFormik({
     initialValues: {
-      account: '',
+      email: '',
       password: '',
     },
-    validationSchema,
+    validationSchema: signInValidation,
     onSubmit: (values) => {
       console.log(values);
     },
@@ -42,17 +35,17 @@ export default function Form(): JSX.Element {
     <form onSubmit={handleSubmit} autoComplete='off'>
       <h2>Sign in </h2>
       <TextField
-        label='Email / Phone'
+        label='Email'
         required
         autoFocus
-        value={values.account}
-        name='text'
+        value={values.email}
+        name='email'
         ref={firstTextFieldRef}
         onChange={handleChange}
-        placeholder='Please enter your email or phone number'
-        error={Boolean(errors.account && touched.account)}
+        placeholder='Please enter your email'
+        error={Boolean(errors.email && touched.email)}
         onBlur={handleBlur}
-        message={touched.account && errors.account ? errors.account : ''}
+        message={touched.email && errors.email ? errors.email : ''}
       />
       <TextField
         label='Password'

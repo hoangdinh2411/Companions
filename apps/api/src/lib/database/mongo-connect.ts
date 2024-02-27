@@ -1,9 +1,10 @@
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
-import { logEvent } from '../../v1/helpers/log-helper';
+import env from '../config/env';
 async function connectDatabase() {
   try {
-    await mongoose.connect(process.env.DB || '', {});
+    if (!env.DB_URL) new Error('DB_URL is not defined');
+    await mongoose.connect(env.DB_URL || '', {});
     console.log('MONGODB CONNECT SUCCESSFULLY!!!');
   } catch (error) {
     console.log('MONGODB CONNECT ERROR:' + error);
