@@ -1,11 +1,11 @@
 import { Metadata } from 'next';
-import Slide from '../../components/shared/Slide/Slide';
+import Slide from './components/Slide/Slide';
 import './Home.scss';
 import Goals from './components/Goals';
 import Statistical from './components/Statistical';
 import Comments from './components/Comments';
 
-export default function Page(): JSX.Element {
+export default function HomePage(): JSX.Element {
   return (
     <>
       <Slide />

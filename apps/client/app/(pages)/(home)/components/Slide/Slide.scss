@@ -1,11 +1,6 @@
-@import '../../../styles/abstracts/index';
+@import '../../../../styles/abstracts/index';
 
 #slideshow {
-  margin-top: $navbar-height;
-
-  @include breakpoint(lg) {
-    margin-top: $navbar-height * 2;
-  }
   .slide__images {
     position: relative;
     width: 100%;

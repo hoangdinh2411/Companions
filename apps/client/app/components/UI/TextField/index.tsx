@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from 'react';
+import React, { InputHTMLAttributes } from 'react';
 import './TextField.scss';
 import { ErrorIcon } from '../../../lib/config/svg';
 
@@ -7,6 +7,8 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: boolean;
   message?: string;
   variant?: 'outlined' | 'contained';
+  required?: boolean;
+  ref?: React.Ref<HTMLInputElement>;
 }
 export default function TextField(props: TextFieldProps) {
   const {
@@ -14,8 +16,9 @@ export default function TextField(props: TextFieldProps) {
     label,
     id,
     error,
-    message,
+    message = '',
     variant = 'contained',
+    required = false,
     ...rest
   } = props;
 
@@ -33,7 +36,14 @@ export default function TextField(props: TextFieldProps) {
 
   return (
     <fieldset className={textfieldClassName}>
-      {label && <label htmlFor={id}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className='textfield__label'>
+          <p>
+            {required && '*'}
+            {label}:
+          </p>
+        </label>
+      )}
       <input id={id} type='text' {...rest} />
       {error && (
         <small className='textfield__error'>

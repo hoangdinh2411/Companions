@@ -1,14 +1,14 @@
 'use client';
 import React, { useState } from 'react';
-import TextField from '../../../UI/TextField';
+import TextField from '../../../../../components/UI/TextField';
 import './SearchForm.scss';
-import DatePicker from '../../../UI/DatePicker/DatePicker';
-import Button from '../../../UI/Button';
+import DatePicker from '../../../../../components/UI/DatePicker/DatePicker';
+import Button from '../../../../../components/UI/Button';
 
 export default function CarpoolingForm() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   return (
-    <form autoComplete='off' method='POST'>
+    <form autoComplete='off' method='POST' className='carpooling-form'>
       <TextField placeholder='From...' className='boxes' />
       <TextField placeholder='To...' className='boxes' />
       <DatePicker
