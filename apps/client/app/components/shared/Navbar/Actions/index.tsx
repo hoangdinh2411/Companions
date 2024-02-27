@@ -5,11 +5,8 @@ import APP_ROUTER from '../../../../lib/config/router';
 export default function Actions() {
   return (
     <section className='navbar__actions'>
-      <Link href={APP_ROUTER.LOGIN} className='actions'>
-        Login
-      </Link>
-      <Link href={APP_ROUTER.LOGIN} className='actions'>
-        Register
+      <Link href={APP_ROUTER.SIGN_IN} className='actions'>
+        Sign in
       </Link>
     </section>
   );

@@ -16,6 +16,12 @@
       @include position(absolute, 60%, 0, 0, 0);
     }
   }
+  &__label {
+    p {
+      font-weight: 500;
+      margin-bottom: $spacing * 2;
+    }
+  }
   &--outlined {
     > input {
       border: none;
@@ -40,12 +46,13 @@
     margin-left: $spacing * 2;
     margin-top: $spacing * 2;
     font-weight: 500;
-    @include flex(left, center);
+    @include flex(left, flex-start);
     svg {
-      width: 1.2rem;
-      height: 1.2rem;
+      width: 1.4rem;
+      height: 1.4rem;
       fill: $error;
       margin-right: $spacing * 2;
+      margin-top: $spacing * 2;
     }
   }
 }

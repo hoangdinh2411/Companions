@@ -2,9 +2,9 @@
 import './Slide.scss';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import CarpoolingForm from './SearchForm/CarpoolingForm';
 import { use, useEffect } from 'react';
 import ShippingForm from './SearchForm/ShippingForm';
+import CarpoolingForm from './SearchForm/CarPoolingForm';
 
 const slides = [
   {

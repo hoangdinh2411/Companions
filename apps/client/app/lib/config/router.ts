@@ -2,8 +2,8 @@ const APP_ROUTER = {
   HOME: '/',
   CONTACT: '/contact',
   ABOUT: '/about',
-  LOGIN: '/login',
-  REGISTER: '/register',
+  SIGN_IN: '/sign-in',
+  SIGN_UP: '/sign-up',
 };
 
 export const NAVBAR = [

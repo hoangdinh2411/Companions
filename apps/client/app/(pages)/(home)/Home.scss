@@ -1,7 +1,6 @@
 @import '../../styles/abstracts/index';
 
 .goals {
-  background-color: $background-paper;
   padding: $spacing * 100 0;
   &__container {
     margin: 0 auto;
@@ -46,6 +45,8 @@
 }
 .statistical {
   padding: $spacing * 80 0;
+  background-color: $background-default;
+
   &__container {
     margin: 0 auto;
     max-width: $max-width;
@@ -79,7 +80,6 @@
   }
 }
 .comments {
-  background-color: $background-paper;
   padding: $spacing * 80 0;
   &__container {
     margin: 0 auto;
