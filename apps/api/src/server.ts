@@ -2,13 +2,15 @@ import { json, urlencoded } from 'body-parser';
 import express, { NextFunction } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
-import createHttpError from 'http-errors';
 import { logEvent } from './v1/helpers/log-helper';
 import v1Router from './v1';
+import timeout from 'connect-timeout';
+
 export const createServer = () => {
   const app = express();
   app
     .disable('x-powered-by')
+    .use(timeout('30s'))
     .use(urlencoded({ extended: true }))
     .use(json())
     .use(

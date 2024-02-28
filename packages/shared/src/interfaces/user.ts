@@ -1,6 +1,6 @@
 import { UserRoleEnum, UserStatusEnum } from '../enums/user';
 
-export interface UserType {
+export interface UserDocument {
   email: string;
   password: string;
   status?: UserStatusEnum;

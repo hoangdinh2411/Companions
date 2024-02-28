@@ -5,12 +5,17 @@ const APP_ROUTER = {
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up',
   PROFILE: '/profile',
+  JOURNEYS: '/journeys',
+  DELIVERY_ORDERS: '/delivery-orders',
+  ADD_NEW_JOURNEY: '/new-journey',
 };
 
 export const NAVBAR = [
   { name: 'Home', path: APP_ROUTER.HOME },
-  { name: 'About', path: APP_ROUTER.ABOUT },
-  { name: 'Contact', path: APP_ROUTER.CONTACT },
+  { name: 'Journeys ', path: APP_ROUTER.JOURNEYS },
+  { name: 'Delivery Orders ', path: APP_ROUTER.DELIVERY_ORDERS },
+  // { name: 'About', path: APP_ROUTER.ABOUT },
+  // { name: 'Contact', path: APP_ROUTER.CONTACT },
 ];
 
 export const FOOTER_CONTENT = {
