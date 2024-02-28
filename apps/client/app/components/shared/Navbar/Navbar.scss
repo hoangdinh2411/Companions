@@ -69,20 +69,19 @@
       top: 0;
       background-color: transparent;
       padding: 0;
-      width: 30rem;
+      width: fit-content;
       @include flex(space-between, center);
     }
 
     .items {
-      width: 100%;
       &__link {
         padding: $spacing * 4 $spacing * 8;
+        margin-bottom: $spacing * 4;
         width: 100%;
         display: block;
         @include text($white, 500);
         @include breakpoint(lg) {
-          display: 'unset';
-          padding: $spacing * 2 $spacing * 4;
+          margin: 0;
           text-transform: uppercase;
           @include transition(color 0.2s ease);
         }
@@ -109,6 +108,7 @@
 
   &__actions {
     @include flex(space-between, center);
+    cursor: pointer;
     .actions {
       padding: $spacing * 2 $spacing * 4;
       @include text($white, 500);

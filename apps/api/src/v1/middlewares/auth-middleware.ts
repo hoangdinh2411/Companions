@@ -3,13 +3,14 @@ import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import createHttpError from 'http-errors';
 import UserModel from '../models/User.model';
 import { verifyToken } from '../../lib/utils/token';
+import mongoose from 'mongoose';
 
 // extend the express request object to include the user object
 declare global {
   namespace Express {
     export interface Request {
       user: {
-        _id: string;
+        _id: mongoose.Types.ObjectId;
         email: string;
       };
     }

@@ -7,4 +7,7 @@ export const ERROR_MESSAGES = {
     MISSING_TOKEN: 'Missing token',
     INVALID_TOKEN: 'Invalid token',
   },
+  JOURNEY: {
+    DUPLICATE_JOURNEY: 'Cannot create duplicate journey',
+  },
 };

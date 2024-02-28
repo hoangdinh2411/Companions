@@ -13,6 +13,9 @@ export default function Actions() {
   const pathname = usePathname();
 
   useEffect(() => {
+    if (dropdown) {
+      setDropdown(false);
+    }
     async function checkAuth() {
       const token = await getToken();
       if (token) setIsLogged(true);

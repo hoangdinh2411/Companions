@@ -18,9 +18,7 @@
       width: 100%;
       margin-bottom: $spacing * 30;
       @include flex(center, center);
-      @include breakpoint(md) {
-        @include flex(left, center);
-      }
+
       h3 {
         color: $white;
         margin-left: $spacing * 6;

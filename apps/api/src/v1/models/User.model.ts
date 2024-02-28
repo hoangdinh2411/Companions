@@ -1,15 +1,15 @@
 import mongoose from 'mongoose';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import bcrypt from 'bcrypt';
-import { UserRoleEnum, UserStatusEnum, UserType } from '@repo/shared';
+import { UserRoleEnum, UserStatusEnum, UserDocument } from '@repo/shared';
 
-interface UserDocument extends mongoose.Document, UserType {
+interface IUserSchema extends UserDocument {
   setPassword: (password: string) => void;
   validatePassword: (password: string) => boolean;
   passwordEncryption: (password: string) => string;
 }
 
-const UserSchema = new mongoose.Schema<UserDocument>(
+const UserSchema = new mongoose.Schema<IUserSchema>(
   {
     email: {
       type: String,
@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema<UserDocument>(
     },
     status: {
       type: String,
-      default: 'active',
+      default: UserStatusEnum.ACTIVE,
       enum: UserStatusEnum,
     },
     role: {

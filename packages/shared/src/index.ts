@@ -1,6 +1,6 @@
 import { UserEnum, UserStatusEnum, UserRoleEnum } from './enums/user';
 import {
-  UserType,
+  UserDocument,
   SignInAPIResponse,
   SignInFormData,
   SignUpFormData,
@@ -10,7 +10,21 @@ import {
   signUpValidation,
 } from './validation/userValidation';
 
-export { UserEnum, UserStatusEnum, UserRoleEnum };
+import { journeyValidation } from './validation/journeyValidation';
 
-export { signInValidation, signUpValidation };
-export type { UserType, SignInAPIResponse, SignInFormData, SignUpFormData };
+import { JourneyDocument } from './interfaces/journey';
+import {
+  JourneyStatusEnum,
+  CompanionInJourneyStatusEnum,
+} from './enums/journey';
+
+export { signInValidation, signUpValidation, journeyValidation };
+export {
+  UserEnum,
+  UserStatusEnum,
+  UserRoleEnum,
+  JourneyStatusEnum,
+  CompanionInJourneyStatusEnum,
+};
+export type { UserDocument, SignInAPIResponse, SignInFormData, SignUpFormData };
+export type { JourneyDocument };

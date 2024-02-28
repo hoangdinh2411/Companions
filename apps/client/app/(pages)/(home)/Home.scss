@@ -71,6 +71,10 @@
       @include flex(center, center, column, $spacing * 30);
       text-wrap: nowrap;
       box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+      svg {
+        width: 6.4rem;
+        height: 6.4rem;
+      }
       &__total {
         font-size: 3rem;
         font-weight: bold;
