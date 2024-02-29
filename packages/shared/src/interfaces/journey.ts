@@ -1,22 +1,29 @@
 import { JourneyStatusEnum } from '../enums/journey';
+import { UserDocument } from './user';
 
-export interface JourneyDocument {
-  message?: string;
-  startDate: string;
-  endDate: string;
+export interface JourneyFormData {
+  startDate: Date;
+  endDate: Date;
   from: string;
   to: string;
   time: string;
   price: number;
-  places: number;
+  seats: number;
+  message: string;
+  id_number?: string;
+  phone?: string;
+}
+
+export interface JourneyDocument
+  extends Omit<JourneyFormData, 'id_number' | 'phone'> {
   created_by?: {
     _id: string;
     email: string;
     id_number?: string;
     phone?: string;
   };
-  created_at?: string;
-  updated_at?: string;
+  created_at?: Date;
+  updated_at?: Date;
   _id: string;
   status: JourneyStatusEnum;
   companions: [

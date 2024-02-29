@@ -22,3 +22,25 @@ export async function getToken() {
 export async function removeToken() {
   cookies().delete('token');
 }
+
+export async function saveIdentifyNumber(idNumber: string) {
+  cookies().set({
+    name: 'id_number',
+    value: idNumber,
+    httpOnly: true,
+    maxAge: 60 * 15,
+    // secure: true,
+    path: '/',
+    expires: new Date(Date.now() + 1000 * 60 * 15),
+  });
+}
+
+export async function getIdentifyNumber() {
+  const idNumber = cookies().get('id_number');
+  if (!idNumber) return '';
+  return idNumber.value;
+}
+
+export async function removeIdentifyNumber() {
+  cookies().delete('id_number');
+}

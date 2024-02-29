@@ -1,7 +1,10 @@
 @import '../../styles/abstracts/index';
 
 .goals {
-  padding: $spacing * 100 0;
+  padding: $spacing * 120 0;
+  @include breakpoint(lg) {
+    padding: $spacing * 60 0;
+  }
   &__container {
     margin: 0 auto;
     max-width: $max-width;
@@ -44,7 +47,7 @@
   }
 }
 .statistical {
-  padding: $spacing * 80 0;
+  padding: $spacing * 60 0;
   background-color: $background-default;
 
   &__container {
@@ -78,13 +81,19 @@
       &__total {
         font-size: 3rem;
         font-weight: bold;
-        color: $green;
+        color: $red;
+        @include flex(center, center, column);
+        span {
+          font-size: 2.4rem;
+          color: $green;
+          font-weight: bold;
+        }
       }
     }
   }
 }
 .comments {
-  padding: $spacing * 80 0;
+  padding: $spacing * 60 0;
   &__container {
     margin: 0 auto;
     max-width: $max-width;

@@ -1,16 +1,19 @@
 import { UserRoleEnum, UserStatusEnum } from '../enums/user';
 
-export interface UserDocument {
-  email: string;
-  password: string;
-  status?: UserStatusEnum;
-  role?: UserRoleEnum;
-}
-
 export interface SignInFormData {
   email: string;
   password: string;
 }
+export interface UserDocument extends SignInFormData {
+  _id: string;
+  status: UserStatusEnum;
+  role: UserRoleEnum;
+  id_number: string;
+  phone: string;
+  created_at?: Date;
+  updated_at?: Date;
+}
+
 export interface SignUpFormData extends SignInFormData {
   confirm_password: string;
 }

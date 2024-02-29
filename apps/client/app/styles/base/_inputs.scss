@@ -29,3 +29,11 @@ textarea::placeholder {
   letter-spacing: 0.5px;
   @include transition(opacity 0.2s linear);
 }
+
+textarea {
+  resize: none;
+  height: 10rem;
+  @include breakpoint(lg) {
+    height: 15rem;
+  }
+}

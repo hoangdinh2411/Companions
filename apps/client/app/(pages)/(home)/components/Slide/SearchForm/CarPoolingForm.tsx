@@ -9,8 +9,8 @@ export default function CarpoolingForm() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   return (
     <form autoComplete='off' method='POST' className='carpooling-form'>
-      <TextField placeholder='From...' className='boxes' />
-      <TextField placeholder='To...' className='boxes' />
+      <TextField placeholder='From...' className='boxes' type='text' />
+      <TextField placeholder='To...' className='boxes' type='text' />
       <DatePicker
         className='boxes'
         selected={selectedDate}
