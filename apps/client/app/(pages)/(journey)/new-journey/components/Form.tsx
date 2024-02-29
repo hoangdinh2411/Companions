@@ -14,6 +14,7 @@ import {
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import APP_ROUTER from '../../../../lib/config/router';
+import dayjs from 'dayjs';
 
 export default function Form() {
   const [isPending, startTransition] = useTransition();
@@ -45,6 +46,8 @@ export default function Form() {
           ...values,
           price: Number(values.price),
           seats: Number(values.seats),
+          startDate: dayjs(values.startDate).format('YYYY-MM-DD'),
+          endDate: dayjs(values.endDate).format('YYYY-MM-DD'),
           id_number,
         };
         const res = await createNewJourney(formData);

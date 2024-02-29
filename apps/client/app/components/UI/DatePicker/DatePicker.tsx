@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import 'react-day-picker/dist/style.css';
 import './DatePicker.scss';
-import { format } from 'date-fns';
+import dayjs from 'dayjs';
 import { DayPicker } from 'react-day-picker';
 import TextField from '../TextField';
 
@@ -50,7 +50,7 @@ export default function DatePicker({
         type='button'
         error={error}
         message={message}
-        value={selected ? format(selected, 'PPP') : ''}
+        value={selected ? dayjs(selected).format('dddd YYYY/MM/DD') : ''}
         placeholder='Departure time...'
         onMouseDown={() => setShowDatePicker(!showDatePicket)}
       />
