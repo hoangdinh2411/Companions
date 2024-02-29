@@ -3,7 +3,7 @@ import { getToken } from './tokens';
 
 export const API_URL = process.env.BASE_API || 'http://localhost:2703/api/v1';
 export interface IResponse<T> {
-  data: T;
+  data?: T;
   message?: string;
   status?: number;
   success: boolean;

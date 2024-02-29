@@ -13,11 +13,17 @@ export default function Statistical({}: Props) {
       <div className='statistical__container'>
         <aside className='cards'>
           <GreenCarpoolingIcon />
-          <p className='cards__total'>1.000 companions</p>
+          <p className='cards__total'>
+            1.000
+            <span className='cards__total--sub'>shared journeys</span>
+          </p>
         </aside>
         <aside className='cards'>
           <WaitingShippingIcon />
-          <p className='cards__total'>20.000 orders</p>
+          <p className='cards__total'>
+            20.000
+            <span className='cards__total--sub'>waiting shipping</span>
+          </p>
         </aside>
       </div>
     </article>

@@ -1,11 +1,12 @@
 import React, { InputHTMLAttributes } from 'react';
 import './TextField.scss';
 import { ErrorIcon } from '../../../lib/config/svg';
+import { FormikErrors } from 'formik';
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: boolean;
-  message?: string;
+  message?: any;
   variant?: 'outlined' | 'contained';
   required?: boolean;
 }

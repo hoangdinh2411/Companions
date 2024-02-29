@@ -61,7 +61,7 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
     price: {
       type: Number,
     },
-    places: {
+    seats: {
       type: Number,
       required: true,
       min: 1,

@@ -1,4 +1,4 @@
-import { journeyValidation } from '@repo/shared';
+import { journeyRequestValidation } from '@repo/shared';
 import { NextFunction, Request, Response } from 'express';
 import JourneyModel from '../models/Journey.model';
 import createHttpError from 'http-errors';
@@ -6,7 +6,7 @@ import createHttpError from 'http-errors';
 const JourneyController = {
   add: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await journeyValidation.validate(req.body);
+      await journeyRequestValidation.validate(req.body);
       const journey = new JourneyModel({
         ...req.body,
         created_by: {

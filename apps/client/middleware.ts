@@ -12,6 +12,13 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(APP_ROUTER.HOME, request.url));
     }
   }
+  if (pathname.includes('new-journey')) {
+    if (!token) {
+      cookies().delete('id_number');
+      cookies().delete('id_token');
+      return NextResponse.redirect(new URL(APP_ROUTER.SIGN_IN, request.url));
+    }
+  }
 }
 
 export const config = {

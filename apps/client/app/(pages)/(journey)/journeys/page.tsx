@@ -1,12 +1,9 @@
 import { Metadata } from 'next';
 import './Journeys.scss';
-import { GreenCarpoolingIcon } from '../../lib/config/svg';
 import Link from 'next/link';
-import APP_ROUTER from '../../lib/config/router';
-import TextField from '../../components/UI/TextField';
-import Button from '../../components/UI/Button';
-import Select from '../../components/UI/Select';
 import Filter from './components/Filter';
+import APP_ROUTER from '../../../lib/config/router';
+import { GreenCarpoolingIcon } from '../../../lib/config/svg';
 
 const data = {
   title: 'Journeys Page',

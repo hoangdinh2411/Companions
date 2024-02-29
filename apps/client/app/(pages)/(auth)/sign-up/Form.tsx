@@ -1,15 +1,15 @@
 'use client';
-import TextField from '../../components/UI/TextField';
-import Button from '../../components/UI/Button';
+import TextField from '../../../components/UI/TextField';
+import Button from '../../../components/UI/Button';
 import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import { useEffect, useRef, useTransition } from 'react';
+import APP_ROUTER from '../../../lib/config/router';
 import Link from 'next/link';
-import APP_ROUTER from '../../lib/config/router';
-import { SignInFormData, signInValidation } from '@repo/shared';
-import { signIn } from '../../actions/userApi';
+import { SignUpFormData, signUpValidation } from '@repo/shared';
 import { useRouter } from 'next/navigation';
-import { saveToken } from '../../actions/tokens';
 import { toast } from 'react-toastify';
+import { signUp } from '../../../actions/userApi';
 
 export default function Form(): JSX.Element {
   const firstTextFieldRef = useRef<HTMLInputElement>(null);
@@ -19,21 +19,20 @@ export default function Form(): JSX.Element {
     initialValues: {
       email: '',
       password: '',
+      confirm_password: '',
     },
+    validationSchema: signUpValidation,
     validateOnBlur: false,
-    validationSchema: signInValidation,
-    onSubmit: (values: SignInFormData, { resetForm }) => {
+    onSubmit: (values: SignUpFormData, { resetForm }) => {
       startTransition(async () => {
-        const res = await signIn(values);
+        const res = await signUp(values);
         if (!res.success) {
           toast.error(res.message);
           resetForm();
           return;
         }
-
-        toast.success('You have successfully signed in');
-        await saveToken(res.data.token);
-        router.push(APP_ROUTER.HOME);
+        toast.success('You have successfully signed up');
+        router.push(APP_ROUTER.SIGN_IN);
       });
     },
   });
@@ -50,7 +49,7 @@ export default function Form(): JSX.Element {
   }, []);
   return (
     <form onSubmit={handleSubmit} autoComplete='off'>
-      <h2>Sign in </h2>
+      <h2>Sign up </h2>
       <TextField
         label='Email'
         required
@@ -59,7 +58,7 @@ export default function Form(): JSX.Element {
         name='email'
         ref={firstTextFieldRef}
         onChange={handleChange}
-        placeholder='Please enter your email'
+        placeholder='Please enter email'
         error={Boolean(errors.email && touched.email)}
         onBlur={handleBlur}
         message={touched.email && errors.email ? errors.email : ''}
@@ -70,16 +69,31 @@ export default function Form(): JSX.Element {
         required
         value={values.password}
         name='password'
-        placeholder='Please enter your password'
+        placeholder='Please enter password'
         onChange={handleChange}
         error={Boolean(errors.password && touched.password)}
         onBlur={handleBlur}
         message={touched.password && errors.password ? errors.password : ''}
       />
-
+      <TextField
+        label='Confirm Password'
+        type='password'
+        required
+        value={values.confirm_password}
+        name='confirm_password'
+        placeholder='Please enter password again'
+        onChange={handleChange}
+        error={Boolean(errors.confirm_password && touched.confirm_password)}
+        onBlur={handleBlur}
+        message={
+          touched.confirm_password && errors.confirm_password
+            ? errors.confirm_password
+            : ''
+        }
+      />
       <article>
         <p>
-          Don't you have account? <Link href={APP_ROUTER.SIGN_UP}>Sign up</Link>
+          Have you ready account? <Link href={APP_ROUTER.SIGN_IN}>Sign In</Link>
         </p>
       </article>
       <Button fullWidth variant='green' type='submit' loading={isPending}>

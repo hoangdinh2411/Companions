@@ -30,6 +30,12 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
       default: UserRoleEnum.USER,
       enum: UserRoleEnum,
     },
+    id_number: {
+      type: String,
+    },
+    phone: {
+      type: String,
+    },
   },
   {
     timestamps: {
