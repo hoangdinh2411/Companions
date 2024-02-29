@@ -15,6 +15,7 @@ import {
   journeyRequestValidation,
 } from './validation/journeyValidation';
 
+import { queryValidation } from './validation/queryValidation';
 import { JourneyDocument, JourneyFormData } from './interfaces/journey';
 import {
   JourneyStatusEnum,
@@ -26,6 +27,7 @@ export {
   signUpValidation,
   journeyFormDataValidation,
   journeyRequestValidation,
+  queryValidation,
 };
 export {
   UserEnum,

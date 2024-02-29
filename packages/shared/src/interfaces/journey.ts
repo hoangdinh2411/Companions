@@ -2,8 +2,8 @@ import { JourneyStatusEnum } from '../enums/journey';
 import { UserDocument } from './user';
 
 export interface JourneyFormData {
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   from: string;
   to: string;
   time: string;
