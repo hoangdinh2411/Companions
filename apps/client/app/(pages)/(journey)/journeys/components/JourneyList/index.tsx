@@ -7,6 +7,9 @@ type Props = {
 };
 
 export default function JourneyList({ data }: Props) {
+  if (data && data.items.length === 0) {
+    return <h4>Journeys not found</h4>;
+  }
   return (
     <>
       <section className='journeys__list'>

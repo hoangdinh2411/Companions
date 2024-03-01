@@ -1,9 +1,9 @@
 @import '../../../styles/abstracts/index';
 
 .btn {
-  width: 12rem;
+  min-width: 12rem;
   @include breakpoint(lg) {
-    width: 16rem;
+    min-width: 16rem;
   }
   height: 4.8rem;
   border-radius: 4px;
@@ -33,6 +33,7 @@
 
   &--small {
     height: 3.8rem;
+    min-width: 12rem;
     padding: $spacing * 4 $spacing * 6;
   }
 
