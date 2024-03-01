@@ -64,6 +64,34 @@
   }
 }
 
+//Bank Id
+.identify-bank-id__container {
+  width: 100%;
+  max-width: 50rem;
+  article {
+    background-color: $green;
+    padding: $spacing * 8;
+    border-radius: 4px;
+    margin-top: $spacing * 16;
+    margin-bottom: $spacing * 16;
+    color: $white;
+
+    p {
+      margin-top: $spacing * 4;
+    }
+  }
+
+  form {
+    .textfield {
+      margin-bottom: $spacing * 8;
+    }
+
+    .btn {
+      width: 100%;
+    }
+  }
+}
+
 @include keyframes(appear) {
   0% {
     opacity: 0;

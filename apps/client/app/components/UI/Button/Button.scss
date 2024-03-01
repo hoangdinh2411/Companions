@@ -26,7 +26,7 @@
   &:hover {
     background-color: $background-button-default-hover;
   }
-  @include breakpoint(xl) {
+  @include breakpoint(lg) {
     height: 5.4rem;
     padding: $spacing * 8 $spacing * 10;
   }

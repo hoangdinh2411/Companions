@@ -10,7 +10,7 @@
     }
     .slide__item {
       width: 100%;
-      background-size: contain;
+      background-size: cover;
       @include breakpoint(sm) {
         background-size: cover;
       }
@@ -25,6 +25,11 @@
         top: 40%;
         left: 50%;
         width: 100%;
+        max-width: 35rem;
+        @include breakpoint(lg) {
+          max-width: unset;
+        }
+
         transform: translate(-50%, 0);
         z-index: 10;
         @include breakpoint(lg) {
@@ -32,10 +37,7 @@
         }
       }
       .slide__tabs {
-        margin: $spacing * 10 auto;
-        @include breakpoint(lg) {
-          margin: $spacing * 20 auto;
-        }
+        margin: $spacing * 20 auto;
         background: transparent;
         border-radius: 5px;
         position: relative;

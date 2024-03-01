@@ -14,14 +14,14 @@ export default function Filter() {
   function generateSearchParams() {
     const search = new URLSearchParams();
     if (searchRef.current?.value === '') {
-      router.push(APP_ROUTER.JOURNEYS);
+      router.push(APP_ROUTER.DELIVERY_ORDERS);
       return;
     }
     const searchValue = searchRef.current?.value;
     if (searchValue) {
       search.append('searchText', searchValue);
     }
-    router.push(APP_ROUTER.JOURNEYS + '?' + search.toString());
+    router.push(APP_ROUTER.DELIVERY_ORDERS + '?' + search.toString());
   }
   const handleEnter = (e: React.KeyboardEvent) => {
     if (e.key !== 'Enter') return;
@@ -34,14 +34,14 @@ export default function Filter() {
   const handleRedirectToAddNew = async () => {
     const token = await getToken();
     if (token) {
-      router.push(APP_ROUTER.ADD_NEW_JOURNEY);
+      router.push(APP_ROUTER.ADD_NEW_DELIVERY_ORDER);
     } else {
       router.push(APP_ROUTER.SIGN_IN);
       toast.warning('Please sign in to continue');
     }
   };
   return (
-    <section className='journeys__filter'>
+    <section className='orders__filter'>
       <div className='filter__search'>
         <div className='search'>
           <TextField
@@ -53,8 +53,8 @@ export default function Filter() {
             <SearchIcon />
           </span>
         </div>
-        <div className='journeys__add-new'>
-          <Button onClick={handleRedirectToAddNew}>New Journey</Button>
+        <div className='orders__add-new'>
+          <Button onClick={handleRedirectToAddNew}>New Order</Button>
         </div>
       </div>
     </section>

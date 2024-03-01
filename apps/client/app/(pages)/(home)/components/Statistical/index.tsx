@@ -15,14 +15,14 @@ export default function Statistical({}: Props) {
           <GreenCarpoolingIcon />
           <p className='cards__total'>
             1.000
-            <span className='cards__total--sub'>shared journeys</span>
+            <span className='cards__total--sub'>Shared journeys</span>
           </p>
         </aside>
         <aside className='cards'>
           <WaitingShippingIcon />
           <p className='cards__total'>
             20.000
-            <span className='cards__total--sub'>waiting shipping</span>
+            <span className='cards__total--sub'>Waiting orders</span>
           </p>
         </aside>
       </div>

@@ -18,12 +18,12 @@ form {
     @include flex(center, center);
   }
   &.shipping-form {
-    @include breakpoint(md) {
+    @include breakpoint(lg) {
       width: 75rem;
       grid-template-columns: repeat(2, 1fr);
     }
     .button-container {
-      @include breakpoint(md) {
+      @include breakpoint(lg) {
         grid-column-start: 1;
         grid-column-end: 3;
         grid-row-start: 3;
@@ -32,12 +32,12 @@ form {
     }
   }
   &.carpooling-form {
-    @include breakpoint(md) {
+    @include breakpoint(lg) {
       width: 75rem;
       grid-template-columns: repeat(3, 1fr);
     }
     .button-container {
-      @include breakpoint(md) {
+      @include breakpoint(lg) {
         grid-column-start: 1;
         grid-column-end: 4;
         grid-row-start: 3;

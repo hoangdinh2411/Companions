@@ -2,23 +2,23 @@ import { Metadata, ResolvingMetadata } from 'next';
 import { getOneJourneyBySlug } from '../../../../actions/journeyApi';
 import { notFound } from 'next/navigation';
 
-import './JourneyDetails.scss';
+import './OrderDetails.scss';
 import Details from './components/Details';
 import Creator from './components/Creator';
 type Props = {
   params: { slug: string };
 };
 
-export default async function JourneyDetailsPage({ params: { slug } }: Props) {
+export default async function OrderDetailsPage({ params: { slug } }: Props) {
   const res = await getOneJourneyBySlug(slug);
 
   if (!res.success || (res.data && !res.data.hasOwnProperty('_id'))) {
     notFound();
   }
   return (
-    <div className='journey-details'>
+    <div className='order-details'>
       {res.data && res.data.hasOwnProperty('_id') && (
-        <div className='journey-details__container'>
+        <div className='order-details__container'>
           <Details data={res.data} />
           <Creator data={res.data} />
         </div>
@@ -37,7 +37,7 @@ export async function generateMetadata(
     notFound();
   }
   return {
-    title: `Journey: ${res.data?.title}`,
+    title: `Order: ${res.data?.title}`,
     description: `${res.data?.from} to ${res.data?.to} on ${res.data?.startDate} - ${res.data?.endDate} . Join us for a great journey!`,
   };
 }
