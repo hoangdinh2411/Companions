@@ -1,41 +1,58 @@
 import { Metadata } from 'next';
 import './Journeys.scss';
-import Link from 'next/link';
 import Filter from './components/Filter';
-import APP_ROUTER from '../../../lib/config/router';
-import { GreenCarpoolingIcon } from '../../../lib/config/svg';
+import JourneyList from './components/JourneyList';
+import {
+  filterJourneys,
+  getAllJourneys,
+  searchJourneys,
+} from '../../../actions/journeyApi';
+import { Suspense } from 'react';
+import LoadingSpinner from '../../../components/UI/Loading';
+import { notFound } from 'next/navigation';
+import { generateSearchParams } from '../../../lib/utils/generateSearchParams';
 
-const data = {
-  title: 'Journeys Page',
-  from: 'Helsingborg',
-  to: 'Stockholm',
-  date: '2021-09-01',
-};
-const arrays = Array(12).fill(data);
-export default function JourneysPage() {
+export default async function JourneysPage({
+  searchParams,
+}: {
+  searchParams: {
+    from: string;
+    to: string;
+    startDate: string;
+    page: number;
+    limit: number;
+    searchText: string;
+  };
+}) {
+  let params = '';
+  let res;
+  const { from, to, startDate, searchText } = searchParams;
+  if (from && to && startDate) {
+    params = generateSearchParams(['from', 'to', 'startDate'], searchParams);
+    res = await filterJourneys(params.toString());
+  } else if (searchText) {
+    params = generateSearchParams(['searchText'], searchParams);
+    res = await searchJourneys(params.toString());
+  } else {
+    params = generateSearchParams(['page', 'limit'], searchParams);
+
+    res = await getAllJourneys(params.toString());
+  }
+
+  if (!res.success && res.data?.items.length === 0) {
+    notFound();
+  }
   return (
     <div className='journeys'>
-      {/* <div className='journeys__banner'></div> */}
       <div className='journeys__container'>
         <Filter />
-        <section className='journeys__list'>
-          {arrays.map((item, index) => (
-            <article className='journeys__cards' key={index}>
-              <Link href={`${APP_ROUTER.JOURNEYS}/${index}`} className='card'>
-                <div className='card__icon'>
-                  <GreenCarpoolingIcon />
-                </div>
-                <div className='card__content'>
-                  <p className='title'>{item.title}</p>
-                  <p className='route'>
-                    {item.from} - {item.to}
-                  </p>
-                  <span className='date'>{item.date}</span>
-                </div>
-              </Link>
-            </article>
-          ))}
-        </section>
+        {!res.success && res.data?.items.length === 0 ? (
+          <h1>No journeys found</h1>
+        ) : (
+          <Suspense fallback={<LoadingSpinner />}>
+            <JourneyList data={res.data} />
+          </Suspense>
+        )}
       </div>
     </div>
   );

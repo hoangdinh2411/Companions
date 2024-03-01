@@ -33,89 +33,174 @@ const JourneyController = {
   },
   getAll: async (req: Request, res: Response, next: NextFunction) => {
     let page = 1;
-    let limit = 10;
-    let startDate;
+    let limit = 3;
     try {
-      await queryValidation.validate({
-        page: req.query.page,
-        limit: req.query.limit,
-        startDate: req.query.startDate,
-      });
-      if (req.query.page) page = Number(req.query.page);
-      if (req.query.limit) limit = Number(req.query.limit);
-      if (req.query.startDate)
-        startDate = new Date(req.query.startDate as string);
+      await queryValidation.validate(req.query);
 
-      const journeys = await JourneyModel.find({
-        status: JourneyStatusEnum.ACTIVE,
-        startDate: { $gte: dayjs(startDate).format('YYYY-MM-DD') },
-      })
-        .sort({ created_at: -1 })
-        .select('-__v -created_by.id_number -companions.id_number')
-        .skip((page - 1) * limit)
-        .limit(limit);
+      if (req.query.page) {
+        page = Number(req.query.page);
+      }
+      if (req.query.limit) {
+        limit = Number(req.query.limit);
+      }
+
+      const data = await JourneyModel.aggregate([
+        {
+          $match: {
+            status: JourneyStatusEnum.ACTIVE,
+          },
+        },
+        {
+          $sort: { startDate: 1 },
+        },
+        {
+          $facet: {
+            items: [
+              {
+                $skip: (page - 1) * limit,
+              },
+              {
+                $limit: limit,
+              },
+            ],
+            pagination: [
+              { $count: 'total' },
+              {
+                $addFields: {
+                  pages: {
+                    $ceil: {
+                      $divide: ['$total', limit],
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        },
+        {
+          $unwind: '$pagination',
+        },
+        {
+          $project: {
+            __v: 0,
+            'created_by.id_number': 0,
+            'companions.id_number': 0,
+          },
+        },
+      ]);
+
       return res.status(200).json({
         success: true,
-        data: journeys,
+        data: data[0],
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));
     }
   },
 
-  // on home page
   filter: async (req: Request, res: Response, next: NextFunction) => {
-    const startDate = req.query.startDate || '';
-    const from = req.query.from || '';
-    const to = req.query.to || '';
     try {
-      await queryValidation.validate({
-        from,
-        to,
-        startDate,
+      const stages = [];
+      await queryValidation.validate(req.query);
+
+      stages.push({
+        $match: {
+          status: JourneyStatusEnum.ACTIVE,
+        },
       });
-      const journeys = await JourneyModel.find({
-        $or: [
-          { from: { $regex: from, $options: 'i' } },
-          { to: { $regex: to as string, $options: 'i' } },
-        ],
-        startDate: { $gte: startDate },
-        status: JourneyStatusEnum.ACTIVE,
-      })
-        .sort({ created_at: -1 })
-        .select('-__v -created_by.id_number -companions.id_number');
+      if (req.query.startDate) {
+        const startDate = dayjs(req.query.startDate.toString()).format(
+          'YYYY-MM-DD'
+        );
+        stages.push({
+          $match: {
+            startDate: {
+              $gte: dayjs(startDate).format('YYYY-MM-DD'),
+            },
+          },
+        });
+      }
+      if (req.query.from) {
+        stages.push({
+          $match: {
+            from: { $regex: req.query.from.toString(), $options: 'i' },
+          },
+        });
+      }
+      if (req.query.to) {
+        stages.push({
+          $match: {
+            to: { $regex: req.query.to.toString(), $options: 'i' },
+          },
+        });
+      }
+
+      const data = await JourneyModel.aggregate([
+        ...stages,
+        {
+          $sort: { startDate: 1 },
+        },
+        {
+          $facet: {
+            items: [],
+          },
+        },
+        {
+          $project: {
+            __v: 0,
+            'created_by.id_number': 0,
+            'companions.id_number': 0,
+          },
+        },
+      ]);
+
       return res.status(200).json({
         success: true,
-        data: journeys,
+        data: data[0],
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));
     }
   },
-
   // on journey page
   search: async (req: Request, res: Response, next: NextFunction) => {
-    const searchText = req.query.searchText;
+    const searchText = req.query.searchText || '';
     try {
       await queryValidation.validate({
         searchText,
       });
-      const journeys = await JourneyModel.find({
-        $or: [
-          { from: { $regex: searchText, $options: 'i' } },
-          { to: { $regex: searchText, $options: 'i' } },
-          {
-            message: { $regex: searchText, $options: 'i' },
+      const data = await JourneyModel.aggregate([
+        {
+          $match: {
+            status: JourneyStatusEnum.ACTIVE,
+            $or: [
+              { from: { $regex: searchText.toString(), $options: 'i' } },
+              { to: { $regex: searchText.toString(), $options: 'i' } },
+              {
+                title: { $regex: searchText.toString(), $options: 'i' },
+              },
+            ],
           },
-        ],
-        startDate: { $gte: dayjs().format('YYYY-MM-DD') },
-        status: JourneyStatusEnum.ACTIVE,
-      })
-        .sort({ created_at: -1 })
-        .select('-__v -created_by.id_number -companions.id_number');
+        },
+        {
+          $sort: { startDate: 1 },
+        },
+        {
+          $facet: {
+            items: [],
+          },
+        },
+        {
+          $project: {
+            __v: 0,
+            'created_by.id_number': 0,
+            'companions.id_number': 0,
+          },
+        },
+      ]);
       return res.status(200).json({
         success: true,
-        data: journeys,
+        data: data[0],
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));

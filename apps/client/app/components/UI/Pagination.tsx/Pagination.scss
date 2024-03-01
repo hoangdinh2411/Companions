@@ -1,0 +1,41 @@
+@import '../../../styles/abstracts/index';
+
+.pagination {
+  width: 100%;
+  @include flex(space-between, center);
+  padding: $spacing * 30 0;
+
+  &__btn {
+    font-size: 1.8rem;
+    font-weight: 5 00;
+    max-width: 15rem;
+    @include flex(center, center);
+    cursor: pointer;
+    &.disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    @include transition(all, 0.3s, ease);
+    &:hover {
+      color: $green;
+      transform: scale(1.1);
+      svg {
+        fill: $green;
+      }
+    }
+    &.left {
+      svg {
+        margin-right: $spacing * 4;
+      }
+    }
+    &.right {
+      svg {
+        margin-left: $spacing * 4;
+      }
+    }
+    svg {
+      @include box(1.4rem, 1.4rem);
+      font-weight: 600;
+    }
+  }
+}

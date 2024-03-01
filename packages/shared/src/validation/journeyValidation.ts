@@ -7,6 +7,10 @@ function formatDateWithoutTime(date: Date) {
 }
 
 export const journeyFormDataValidation = yup.object().shape({
+  title: yup
+    .string()
+    .required('Need to specify the title')
+    .max(50, 'Title cannot be more than 50 characters'),
   from: yup.string().required('Need to specify the starting point'),
   to: yup.string().required('Need to specify the destination'),
   message: yup.string(),

@@ -5,7 +5,7 @@ import { authMiddleware } from '../middlewares/auth-middleware';
 
 const Routes = (app: Express) => {
   app.use('/auth', AuthRouter);
-  app.use('/journey', JourneyRouter);
+  app.use('/journeys', JourneyRouter);
   app.get('/test', (req, res) => {
     res.json({
       success: true,

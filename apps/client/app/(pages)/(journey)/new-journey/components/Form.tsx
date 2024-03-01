@@ -32,6 +32,7 @@ export default function Form() {
       message: '',
       time: '',
       phone: '',
+      title: '',
     },
     validateOnBlur: false,
     validationSchema: journeyFormDataValidation,
@@ -95,6 +96,22 @@ export default function Form() {
         onSubmit={handleSubmit}
         className='new-journey__form'
       >
+        <div className='new-journey__form__boxes'>
+          <TextField
+            required
+            label='Title (max 50 characters)'
+            type='text'
+            id='title'
+            name='title'
+            max={50}
+            value={values.title}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={Boolean(errors.title && touched.title)}
+            message={touched.title && errors.title}
+            placeholder='Please enter the title of your journey'
+          />
+        </div>
         <div className='new-journey__form__boxes'>
           <TextField
             required

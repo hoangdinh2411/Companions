@@ -10,8 +10,9 @@ export interface JourneyFormData {
   price: number;
   seats: number;
   message: string;
-  id_number?: string;
-  phone?: string;
+  id_number: string;
+  phone: string;
+  title: string;
 }
 
 export interface JourneyDocument
@@ -22,6 +23,7 @@ export interface JourneyDocument
     id_number?: string;
     phone?: string;
   };
+  slug: string;
   created_at?: Date;
   updated_at?: Date;
   _id: string;
@@ -34,4 +36,12 @@ export interface JourneyDocument
       phone?: string;
     },
   ];
+}
+
+export interface JourneyResponse {
+  items: JourneyDocument[];
+  pagination?: {
+    total: number;
+    pages: number;
+  };
 }
