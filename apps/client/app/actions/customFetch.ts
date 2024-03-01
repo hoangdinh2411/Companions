@@ -13,13 +13,18 @@ export default async function customFetch<T>(
   // `RequestInit` is a type for configuring
   // a `fetch` request. By default, an empty object.
   config: any = {},
-  timeout: number = 10000
+  needToken = false
   // This function is async, it will return a Promise:
 ): Promise<IResponse<T>> {
   // Inside, we call the `fetch` function with
   // a URL and config given:
-  const token = await getToken();
+  let token = '';
+  if (needToken) {
+    token = await getToken();
+  }
   const controller = new AbortController();
+  const timeout: number = 10000;
+
   const id = setTimeout(() => controller.abort(), timeout);
   if (config.headers) {
     delete config.headers['Content-Type'];

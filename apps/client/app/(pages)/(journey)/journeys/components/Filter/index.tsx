@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import { get } from 'http';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { getToken } from '../../../../../actions/tokens';
@@ -12,13 +11,24 @@ import Button from '../../../../../components/UI/Button';
 export default function Filter() {
   const router = useRouter();
   const searchRef = React.useRef<HTMLInputElement>(null);
-
+  function generateSearchParams() {
+    const search = new URLSearchParams();
+    if (searchRef.current?.value === '') {
+      router.push(APP_ROUTER.JOURNEYS);
+      return;
+    }
+    const searchValue = searchRef.current?.value;
+    if (searchValue) {
+      search.append('searchText', searchValue);
+    }
+    router.push(APP_ROUTER.JOURNEYS + '?' + search.toString());
+  }
   const handleEnter = (e: React.KeyboardEvent) => {
     if (e.key !== 'Enter') return;
-    console.log(searchRef.current?.value);
+    generateSearchParams();
   };
   const handleClick = (e: React.MouseEvent) => {
-    console.log(searchRef.current?.value);
+    generateSearchParams();
   };
 
   const handleRedirectToAddNew = async () => {

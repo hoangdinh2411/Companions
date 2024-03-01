@@ -18,6 +18,14 @@
       grid-template-columns: 1fr 1fr;
     }
     &__boxes {
+      &:nth-child(1) {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        @include breakpoint(md) {
+          grid-column-start: 1;
+          grid-column-end: 3;
+        }
+      }
       &.price-box {
         position: relative;
         .text-input {

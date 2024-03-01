@@ -5,6 +5,7 @@ import {
   JourneyDocument,
   JourneyStatusEnum,
 } from '@repo/shared';
+import { generateSlugFrom } from '../../lib/utils/generate-slug';
 
 interface IJourneySchema extends JourneyDocument {}
 
@@ -42,17 +43,24 @@ const CompanionsSchema = new mongoose.Schema(
 );
 const JourneySchema = new mongoose.Schema<IJourneySchema>(
   {
+    title: {
+      type: String,
+      required: true,
+    },
     from: {
       type: String,
       required: true,
+      index: true,
     },
     to: {
       type: String,
       required: true,
+      index: true,
     },
     startDate: {
       type: String,
       required: true,
+      index: true,
     },
     endDate: {
       type: String,
@@ -77,6 +85,9 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
       type: String,
       default: JourneyStatusEnum.ACTIVE,
       enum: JourneyStatusEnum,
+    },
+    slug: {
+      type: String,
     },
     created_by: {
       _id: {
@@ -115,6 +126,8 @@ JourneySchema.pre('save', async function (next) {
   if (existing) {
     next(new Error(ERROR_MESSAGES.JOURNEY.DUPLICATE_JOURNEY));
   }
+
+  this.slug = generateSlugFrom(this.title);
   next();
 });
 JourneySchema.post(

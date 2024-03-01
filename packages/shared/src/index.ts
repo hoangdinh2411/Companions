@@ -16,7 +16,11 @@ import {
 } from './validation/journeyValidation';
 
 import { queryValidation } from './validation/queryValidation';
-import { JourneyDocument, JourneyFormData } from './interfaces/journey';
+import {
+  JourneyDocument,
+  JourneyFormData,
+  JourneyResponse,
+} from './interfaces/journey';
 import {
   JourneyStatusEnum,
   CompanionInJourneyStatusEnum,
@@ -36,11 +40,9 @@ export {
   JourneyStatusEnum,
   CompanionInJourneyStatusEnum,
 };
-export type {
-  UserDocument,
-  SignInAPIResponse,
-  SignInFormData,
-  SignUpFormData,
-  JourneyFormData,
-};
-export type { JourneyDocument };
+
+//User
+export type { UserDocument, SignInAPIResponse, SignInFormData, SignUpFormData };
+
+//Journey
+export type { JourneyDocument, JourneyResponse, JourneyFormData };
