@@ -48,6 +48,19 @@ export const journeyRequestValidation = yup
   .object()
   .concat(journeyFormDataValidation)
   .shape({
-    id_number: yup.string().required('Need to specify the id number'),
-    phone: yup.string().required('Need to specify the phone number'),
+    id_number: yup
+      .string()
+      .required('Need to specify the id number')
+      .min(
+        10,
+        'ID number must be 10 digits : YYMMDD-XXXX or 12 digits : YYYYMMDD-XXXX'
+      )
+      .max(
+        12,
+        'ID number must be 10 digits : YYMMDD-XXXX or 12 digits : YYYYMMDD-XXXX'
+      ),
+    phone: yup
+      .string()
+      .required('Need to specify the phone number')
+      .length(10, 'Phone number must be 10 digits'),
   });

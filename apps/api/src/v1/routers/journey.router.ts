@@ -8,4 +8,5 @@ JourneyRouter.post('/', authMiddleware, JourneyController.add);
 JourneyRouter.get('/', JourneyController.getAll);
 JourneyRouter.get('/search', JourneyController.search);
 JourneyRouter.get('/filter', JourneyController.filter);
+JourneyRouter.get('/:slug', JourneyController.getOneBySlug);
 export default JourneyRouter;

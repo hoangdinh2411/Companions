@@ -15,12 +15,12 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import APP_ROUTER from '../../../../lib/config/router';
 import dayjs from 'dayjs';
+import BankIDForm from '../../../../components/shared/Modals/BankIDForm';
 
 export default function Form() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const idNumberRef = React.createRef<HTMLInputElement>();
   const formik = useFormik({
     initialValues: {
       from: '',
@@ -75,19 +75,18 @@ export default function Form() {
     handleBlur,
     touched,
   } = formik;
-  const handleChangeIdNumber = async () => {
-    if (!idNumberRef.current) return;
-    if (idNumberRef.current?.value === '') {
-      toast.error('Please enter your ID number');
-      return;
-    }
+  const handleSignInByBankId = async (id_number: string) => {
     startTransition(async () => {
-      if (idNumberRef.current?.value) {
-        await saveIdentifyNumber(idNumberRef.current?.value);
-        toast.success('Logged in with BankID successfully');
+      if (id_number) {
+        await saveIdentifyNumber(id_number);
+        setFieldValue('id_number', id_number);
         setOpen(false);
       }
     });
+  };
+
+  const handelCloseModal = () => {
+    setOpen(false);
   };
   return (
     <>
@@ -247,41 +246,12 @@ export default function Form() {
           </Button>
         </div>
       </form>
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <div className='identify-bank-id__container'>
-          <h4>Bank Id</h4>
-          <article>
-            <strong>
-              Note that identify with BankID is required to share your journey.
-              We need to verify your identity to ensure the safety of our users.
-            </strong>
-            <p>
-              <small>
-                {' '}
-                The BankID identification must be entered wih 12 digits :
-                YYYYMMDD-NNNN
-              </small>
-            </p>
-          </article>
-          <form>
-            <TextField
-              label='ID Number'
-              placeholder='YYYYMMDD-NNNN'
-              name='id_number'
-              ref={idNumberRef}
-              type='tel'
-              pattern='[0-9]{8}-[0-9]{4}'
-              required
-            />
-            <Button
-              type='button'
-              onClick={handleChangeIdNumber}
-              loading={open && isPending}
-            >
-              Identify with BankID
-            </Button>
-          </form>
-        </div>
+      <Modal open={open} onClose={handelCloseModal}>
+        <BankIDForm
+          loading={open && isPending}
+          handleSignInByBankId={handleSignInByBankId}
+          closeModal={handelCloseModal}
+        />
       </Modal>
     </>
   );

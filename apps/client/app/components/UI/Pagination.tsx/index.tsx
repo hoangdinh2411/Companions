@@ -10,6 +10,7 @@ export default function Pagination({ total }: { total: number }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+
   const handleChangePage = (value: number) => {
     const params = generateSearchParams(['page'], {
       page: currentPage + value,
@@ -22,7 +23,7 @@ export default function Pagination({ total }: { total: number }) {
     if (Number(pageParams) === currentPage) return;
     if (!pageParams) return;
     setCurrentPage(Number(pageParams));
-  }, []);
+  }, [searchParams]);
 
   const disableBtn = useCallback(
     (value: number) => {

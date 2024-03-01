@@ -33,15 +33,15 @@ const JourneyController = {
   },
   getAll: async (req: Request, res: Response, next: NextFunction) => {
     let page = 1;
-    let limit = 3;
+    let limit = 10;
     try {
       await queryValidation.validate(req.query);
 
       if (req.query.page) {
-        page = Number(req.query.page);
+        page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
       }
       if (req.query.limit) {
-        limit = Number(req.query.limit);
+        limit = Number(req.query.limit) > 0 ? Number(req.query.limit) : 10;
       }
 
       const data = await JourneyModel.aggregate([
@@ -98,6 +98,7 @@ const JourneyController = {
     }
   },
 
+  // on slide component on home page
   filter: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const stages = [];
@@ -201,6 +202,26 @@ const JourneyController = {
       return res.status(200).json({
         success: true,
         data: data[0],
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+
+  getOneBySlug: async (req: Request, res: Response, next: NextFunction) => {
+    if (req.params.slug === 'undefined')
+      return next(createHttpError.BadRequest('Invalid slug'));
+    try {
+      const journey = await JourneyModel.findOne({
+        slug: req.params.slug,
+        status: JourneyStatusEnum.ACTIVE,
+      }).select('-__v -created_by.id_number -companions.id_number');
+      if (!journey) {
+        return next(createHttpError.NotFound('Journey not found'));
+      }
+      return res.status(200).json({
+        success: true,
+        data: journey,
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));

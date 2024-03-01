@@ -130,3 +130,11 @@ li {
   /* Support for IE. */
   font-feature-settings: 'liga';
 }
+
+blockquote p::before {
+  content: '\201C';
+}
+
+blockquote p::after {
+  content: '\201D';
+}

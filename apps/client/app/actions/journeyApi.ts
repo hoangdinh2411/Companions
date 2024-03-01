@@ -1,5 +1,9 @@
 'use server';
-import { JourneyFormData, JourneyResponse } from '@repo/shared';
+import {
+  JourneyDocument,
+  JourneyFormData,
+  JourneyResponse,
+} from '@repo/shared';
 import customFetch from './customFetch';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import APP_ROUTER from '../lib/config/router';
@@ -19,6 +23,16 @@ export const createNewJourney = async (formData: JourneyFormData) => {
   return res;
 };
 
+export const getOneJourneyBySlug = async (slug = '') => {
+  const res = await customFetch<JourneyDocument>(`/journeys/${slug}`, {
+    method: 'GET',
+    next: {
+      revalidateTag: [`/journeys/${slug}`],
+    },
+  });
+
+  return res;
+};
 export const getAllJourneys = async (query = '') => {
   let url = `/journeys`;
   if (query) {
