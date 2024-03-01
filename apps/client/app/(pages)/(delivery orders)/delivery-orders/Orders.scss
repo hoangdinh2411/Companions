@@ -1,0 +1,130 @@
+@import '../../../styles/abstracts/index';
+
+.orders {
+  padding: $spacing * 30 0;
+  // &__banner {
+  //   height: 40rem;
+  //   @include breakpoint(lg) {
+  //     height: 60rem;
+  //   }
+  //   width: 100%;
+  //   background-image: url('/journeys-page.jpg');
+  //   background-size: cover;
+  //   background-position: top;
+  //   background-repeat: no-repeat;
+  //   position: relative;
+  // }
+  &__container {
+    margin: 0 auto;
+    padding: $spacing * 30 $spacing * 8;
+    max-width: $max-width;
+    width: 100%;
+    position: relative;
+  }
+
+  &__filter {
+    margin-bottom: $spacing * 16;
+    .filter__search {
+      @include flex(space-between, center);
+      .search {
+        position: relative;
+        width: 100%;
+        margin-right: $spacing * 8;
+        .textfield {
+          input {
+            padding-right: $spacing * 20;
+          }
+        }
+        .search__icon {
+          svg {
+            transition: all 0.3s ease;
+            @include box(2.4rem, 2.4rem);
+          }
+          @include position(absolute, 50%, $spacing * 4, null, null);
+          z-index: 5;
+          cursor: pointer;
+          @include flex(center, center);
+          &:hover {
+            svg {
+              transform: scale(1.2);
+            }
+          }
+          height: 3rem;
+          width: 3rem;
+          transform: translateY(-50%);
+        }
+      }
+    }
+  }
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    @include breakpoint(sm) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    @include breakpoint(lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    grid-template-rows: auto;
+    gap: $spacing * 16;
+  }
+  &__cards {
+    .card {
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: $shadow-card;
+      }
+      transition: all 0.3s ease;
+      background-color: $white;
+      display: block;
+      border-radius: 4px;
+      box-shadow: $shadow;
+      padding: $spacing * 8;
+      &__icon {
+        text-align: center;
+        margin-bottom: $spacing * 8;
+        margin-top: $spacing * 8;
+        svg {
+          width: 6.4rem;
+          height: 6.4rem;
+        }
+      }
+      &__content {
+        padding: $spacing * 8 0;
+        > .title {
+          font-size: 1.8rem;
+          font-weight: 600;
+          width: 25rem;
+          line-height: 1.6;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+        > .route {
+          font-size: 1.4rem;
+          color: $text-secondary;
+          width: 25rem;
+          line-height: 1.6;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+
+        > .date {
+          font-size: 1.4rem;
+          margin-top: $spacing * 4;
+          font-weight: 600;
+          display: block;
+          color: $green;
+          text-align: right;
+          width: 100%;
+          line-height: 1.6;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+}

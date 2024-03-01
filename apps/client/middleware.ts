@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(APP_ROUTER.HOME, request.url));
     }
   }
-  if (pathname.includes('new-journey')) {
+  if (pathname.includes('new-journey') || pathname.includes('new-order')) {
     if (!token) {
       cookies().delete('id_number');
       cookies().delete('id_token');

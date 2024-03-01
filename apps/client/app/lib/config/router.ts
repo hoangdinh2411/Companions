@@ -6,8 +6,9 @@ const APP_ROUTER = {
   SIGN_UP: '/sign-up',
   PROFILE: '/profile',
   JOURNEYS: '/journeys',
-  DELIVERY_ORDERS: '/delivery-orders',
   ADD_NEW_JOURNEY: '/new-journey',
+  DELIVERY_ORDERS: '/delivery-orders',
+  ADD_NEW_DELIVERY_ORDER: '/new-order',
 };
 
 export const NAVBAR = [
