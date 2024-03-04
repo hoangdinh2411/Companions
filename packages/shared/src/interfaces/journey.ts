@@ -1,16 +1,16 @@
 import { JourneyStatusEnum } from '../enums/journey';
+import { CompanionStatusEnum } from '../enums/user';
 import { UserDocument } from './user';
 
 export interface JourneyFormData {
-  startDate: string;
-  endDate: string;
+  start_date: string;
+  end_date: string;
   from: string;
   to: string;
   time: string;
   price: number;
   seats: number;
   message: string;
-  id_number: string;
   phone: string;
   title: string;
 }
@@ -22,6 +22,7 @@ export interface JourneyDocument
     email: string;
     id_number?: string;
     phone?: string;
+    full_name: string;
   };
   slug: string;
   created_at?: Date;
@@ -34,6 +35,8 @@ export interface JourneyDocument
       email: string;
       id_number?: string;
       phone?: string;
+      status?: CompanionStatusEnum;
+      full_name: string;
     },
   ];
 }

@@ -2,7 +2,6 @@
 import TextField from '../../../components/UI/TextField';
 import Button from '../../../components/UI/Button';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { useEffect, useRef, useTransition } from 'react';
 import APP_ROUTER from '../../../lib/config/router';
 import Link from 'next/link';
@@ -48,7 +47,7 @@ export default function Form(): JSX.Element {
     };
   }, []);
   return (
-    <form onSubmit={handleSubmit} autoComplete='off'>
+    <form onSubmit={handleSubmit} autoComplete='off' className='sign-up-form'>
       <h2>Sign up </h2>
       <TextField
         label='Email'

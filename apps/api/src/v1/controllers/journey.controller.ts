@@ -6,20 +6,32 @@ import {
 import { NextFunction, Request, Response } from 'express';
 import JourneyModel from '../models/Journey.model';
 import createHttpError from 'http-errors';
-import mongoose from 'mongoose';
 import dayjs from 'dayjs';
+import { limitDocumentPerPage } from '../../lib/utils/variables';
+import { defaultResponseIfNoData } from '../helpers/response';
+import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
+
+let page = 1;
 
 const JourneyController = {
   add: async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.is_identified) {
+      return next(
+        createHttpError.BadRequest(ERROR_MESSAGES.USER.NEED_TO_VERIFY_IDENTITY)
+      );
+    }
     try {
       await journeyRequestValidation.validate(req.body);
       const journey = new JourneyModel({
         ...req.body,
+        start_date: dayjs(req.body.start_date).format('YYYY-MM-DD'),
+        end_date: dayjs(req.body.end_date).format('YYYY-MM-DD'),
         created_by: {
           _id: req.user._id,
           email: req.user.email,
-          id_number: req.body.id_number,
-          phone: req.body.phone,
+          id_number: req.user.id_number,
+          phone: req.user.phone,
+          full_name: req.user.full_name,
         },
       });
       await journey.save();
@@ -32,35 +44,33 @@ const JourneyController = {
     }
   },
   getAll: async (req: Request, res: Response, next: NextFunction) => {
-    let page = 1;
-    let limit = 10;
     try {
       await queryValidation.validate(req.query);
 
       if (req.query.page) {
         page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
       }
-      if (req.query.limit) {
-        limit = Number(req.query.limit) > 0 ? Number(req.query.limit) : 10;
-      }
 
       const data = await JourneyModel.aggregate([
         {
           $match: {
             status: JourneyStatusEnum.ACTIVE,
+            start_date: {
+              $gte: dayjs().format('YYYY-MM-DD'),
+            },
           },
         },
         {
-          $sort: { startDate: 1 },
+          $sort: { start_date: 1, price: 1 },
         },
         {
           $facet: {
             items: [
               {
-                $skip: (page - 1) * limit,
+                $skip: (page - 1) * limitDocumentPerPage,
               },
               {
-                $limit: limit,
+                $limit: limitDocumentPerPage,
               },
             ],
             pagination: [
@@ -69,7 +79,7 @@ const JourneyController = {
                 $addFields: {
                   pages: {
                     $ceil: {
-                      $divide: ['$total', limit],
+                      $divide: ['$total', limitDocumentPerPage],
                     },
                   },
                 },
@@ -83,15 +93,15 @@ const JourneyController = {
         {
           $project: {
             __v: 0,
-            'created_by.id_number': 0,
-            'companions.id_number': 0,
+            created_at: 0,
+            updated_at: 0,
           },
         },
       ]);
 
       return res.status(200).json({
         success: true,
-        data: data[0],
+        data: defaultResponseIfNoData(data),
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));
@@ -103,20 +113,23 @@ const JourneyController = {
     try {
       const stages = [];
       await queryValidation.validate(req.query);
+      if (req.query.page) {
+        page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
+      }
 
       stages.push({
         $match: {
           status: JourneyStatusEnum.ACTIVE,
         },
       });
-      if (req.query.startDate) {
-        const startDate = dayjs(req.query.startDate.toString()).format(
+      if (req.query.start_date) {
+        const start_date = dayjs(req.query.start_date.toString()).format(
           'YYYY-MM-DD'
         );
         stages.push({
           $match: {
-            startDate: {
-              $gte: dayjs(startDate).format('YYYY-MM-DD'),
+            start_date: {
+              $gte: dayjs(start_date).format('YYYY-MM-DD'),
             },
           },
         });
@@ -139,12 +152,34 @@ const JourneyController = {
       const data = await JourneyModel.aggregate([
         ...stages,
         {
-          $sort: { startDate: 1 },
+          $sort: { start_date: 1 },
         },
         {
           $facet: {
-            items: [],
+            items: [
+              {
+                $skip: (page - 1) * limitDocumentPerPage,
+              },
+              {
+                $limit: limitDocumentPerPage,
+              },
+            ],
+            pagination: [
+              { $count: 'total' },
+              {
+                $addFields: {
+                  pages: {
+                    $ceil: {
+                      $divide: ['$total', limitDocumentPerPage],
+                    },
+                  },
+                },
+              },
+            ],
           },
+        },
+        {
+          $unwind: '$pagination',
         },
         {
           $project: {
@@ -157,7 +192,7 @@ const JourneyController = {
 
       return res.status(200).json({
         success: true,
-        data: data[0],
+        data: defaultResponseIfNoData(data),
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));
@@ -170,6 +205,11 @@ const JourneyController = {
       await queryValidation.validate({
         searchText,
       });
+
+      if (req.query.page) {
+        page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
+      }
+
       const data = await JourneyModel.aggregate([
         {
           $match: {
@@ -184,24 +224,48 @@ const JourneyController = {
           },
         },
         {
-          $sort: { startDate: 1 },
+          $sort: { start_date: 1 },
         },
         {
           $facet: {
-            items: [],
+            items: [
+              {
+                $skip: (page - 1) * limitDocumentPerPage,
+              },
+              {
+                $limit: limitDocumentPerPage,
+              },
+            ],
+            pagination: [
+              { $count: 'total' },
+              {
+                $addFields: {
+                  pages: {
+                    $ceil: {
+                      $divide: ['$total', limitDocumentPerPage],
+                    },
+                  },
+                },
+              },
+            ],
           },
+        },
+        {
+          $unwind: '$pagination',
         },
         {
           $project: {
             __v: 0,
             'created_by.id_number': 0,
             'companions.id_number': 0,
+            created_at: 0,
+            updated_at: 0,
           },
         },
       ]);
       return res.status(200).json({
         success: true,
-        data: data[0],
+        data: defaultResponseIfNoData(data),
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));
@@ -212,16 +276,30 @@ const JourneyController = {
     if (req.params.slug === 'undefined')
       return next(createHttpError.BadRequest('Invalid slug'));
     try {
-      const journey = await JourneyModel.findOne({
+      const data = await JourneyModel.findOne({
         slug: req.params.slug,
-        status: JourneyStatusEnum.ACTIVE,
       }).select('-__v -created_by.id_number -companions.id_number');
-      if (!journey) {
-        return next(createHttpError.NotFound('Journey not found'));
+      if (!data) {
+        return next(createHttpError.NotFound(ERROR_MESSAGES.JOURNEY.NOT_FOUND));
       }
       return res.status(200).json({
         success: true,
-        data: journey,
+        data,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+
+  insertManyDocuments: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      // await generateDocuments();
+      return res.status(200).json({
+        success: true,
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));

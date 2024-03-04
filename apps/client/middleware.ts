@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import APP_ROUTER from './app/lib/config/router';
-import { cookies } from 'next/headers';
+import { getToken } from './app/actions/tokens';
 
 // This function can be marked `async` if using `await` inside
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const token = cookies().get('token');
+  const token = await getToken();
   if (pathname.includes('sign-up') || pathname.includes('sign-in')) {
     if (token) {
       return NextResponse.redirect(new URL(APP_ROUTER.HOME, request.url));
@@ -14,8 +14,6 @@ export function middleware(request: NextRequest) {
   }
   if (pathname.includes('new-journey') || pathname.includes('new-order')) {
     if (!token) {
-      cookies().delete('id_number');
-      cookies().delete('id_token');
       return NextResponse.redirect(new URL(APP_ROUTER.SIGN_IN, request.url));
     }
   }

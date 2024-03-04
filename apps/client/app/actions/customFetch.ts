@@ -1,5 +1,5 @@
 // import { enqueueSnackbar } from "notistack";
-import { getToken } from './tokens';
+import { getToken, removeToken } from './tokens';
 
 export const API_URL = process.env.BASE_API || 'http://localhost:2703/api/v1';
 export interface IResponse<T> {
@@ -49,6 +49,9 @@ export default async function customFetch<T>(
         return response.json();
       })
       .then((data) => {
+        if (data.status === 401) {
+          removeToken();
+        }
         return data as IResponse<T>;
       })
       .catch((error) => {

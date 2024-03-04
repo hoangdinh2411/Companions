@@ -1,10 +1,5 @@
+import dayjs = require('dayjs');
 import * as yup from 'yup';
-
-function formatDateWithoutTime(date: Date) {
-  return (
-    date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate()
-  );
-}
 
 export const journeyFormDataValidation = yup.object().shape({
   title: yup
@@ -14,21 +9,27 @@ export const journeyFormDataValidation = yup.object().shape({
   from: yup.string().required('Need to specify the starting point'),
   to: yup.string().required('Need to specify the destination'),
   message: yup.string(),
-  startDate: yup
-    .date()
-    .test('startDate', 'Start date cannot be less than today', (value) => {
-      return formatDateWithoutTime(value) >= formatDateWithoutTime(new Date());
-    })
-    .required('Need to specify the start date'),
-  endDate: yup
-    .date()
+  start_date: yup
+    .string()
     .test(
-      'endDate',
-      'End date cannot be less than start date',
-      (value, context) => {
+      'start_date',
+      'Start date cannot be less than today',
+      (start_date) => {
         return (
-          formatDateWithoutTime(value) >=
-          formatDateWithoutTime(context.parent.startDate)
+          dayjs(start_date).format('YYYY-MM-DD') >= dayjs().format('YYYY-MM-DD')
+        );
+      }
+    )
+    .required('Need to specify the start date'),
+  end_date: yup
+    .string()
+    .test(
+      'end_date',
+      'End date cannot be less than start date',
+      (end_date, context) => {
+        return (
+          dayjs(end_date).format('YYYY-MM-DD') >=
+          dayjs(context.parent.start_date).format('YYYY-MM-DD')
         );
       }
     )
@@ -48,17 +49,6 @@ export const journeyRequestValidation = yup
   .object()
   .concat(journeyFormDataValidation)
   .shape({
-    id_number: yup
-      .string()
-      .required('Need to specify the id number')
-      .min(
-        10,
-        'ID number must be 10 digits : YYMMDD-XXXX or 12 digits : YYYYMMDD-XXXX'
-      )
-      .max(
-        12,
-        'ID number must be 10 digits : YYMMDD-XXXX or 12 digits : YYYYMMDD-XXXX'
-      ),
     phone: yup
       .string()
       .required('Need to specify the phone number')

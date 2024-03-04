@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { type_of_commodityEnum } from '../enums/delivery-order';
 
 function isNotEmpty(value: string | undefined) {
   if (value === undefined) return true;
@@ -9,11 +10,7 @@ export const queryValidation = Yup.object().shape({
     if (!value) return true;
     return Number.isInteger(value);
   }),
-  limit: Yup.number().test('isInt', 'Limit must be an integer', (value) => {
-    if (!value) return true;
-    return Number.isInteger(value);
-  }),
-  startDate: Yup.string().test(
+  start_date: Yup.string().test(
     'isDate',
     'Start date must be in the format YYYY-MM-DD',
     (value) => {
@@ -32,5 +29,13 @@ export const queryValidation = Yup.object().shape({
     'isNotEmpty',
     'Need to provide "Search Text?"',
     (value) => isNotEmpty(value)
+  ),
+  type_of_commodity: Yup.string().test(
+    'isValidType',
+    'Need to provide a valid type of commodity',
+    (value) => {
+      if (!value) return true;
+      return value in type_of_commodityEnum;
+    }
   ),
 });

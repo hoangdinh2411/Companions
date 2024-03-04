@@ -31,9 +31,11 @@ export default function Form(): JSX.Element {
           return;
         }
 
-        toast.success('You have successfully signed in');
-        await saveToken(res.data.token);
-        router.back();
+        if (res.data) {
+          toast.success('You have successfully signed in');
+          await saveToken(res.data.token);
+          router.back();
+        }
       });
     },
   });
@@ -49,7 +51,7 @@ export default function Form(): JSX.Element {
     };
   }, []);
   return (
-    <form onSubmit={handleSubmit} autoComplete='off'>
+    <form onSubmit={handleSubmit} autoComplete='off' className='sign-in-form'>
       <h2>Sign in </h2>
       <TextField
         label='Email'

@@ -5,6 +5,7 @@ const poppins = Poppins({
   display: 'swap',
   weight: ['100', '200', '300', '400', '500', '600'],
   variable: '--font-poppins',
+  preload: true,
 });
 
 const ptSerif = PT_Serif({
@@ -12,6 +13,7 @@ const ptSerif = PT_Serif({
   display: 'swap',
   weight: ['700'],
   variable: '--font-pt-serif',
+  preload: true,
 });
 
 export { poppins, ptSerif };

@@ -1,0 +1,31 @@
+@import '../../../styles/abstracts/index';
+
+.search-field {
+  position: relative;
+  width: 100%;
+  margin-right: $spacing * 8;
+
+  .textfield {
+    input {
+      padding-right: $spacing * 20;
+    }
+  }
+  .search__icon {
+    svg {
+      transition: all 0.3s ease;
+      @include box(2.4rem, 2.4rem);
+    }
+    @include position(absolute, 50%, $spacing * 4, null, null);
+    z-index: 5;
+    cursor: pointer;
+    @include flex(center, center);
+    &:hover {
+      svg {
+        transform: scale(1.2);
+      }
+    }
+    height: 3rem;
+    width: 3rem;
+    transform: translateY(-50%);
+  }
+}

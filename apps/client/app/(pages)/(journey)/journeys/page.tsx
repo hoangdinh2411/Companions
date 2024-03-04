@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import './Journeys.scss';
-import Filter from './components/Filter';
+import SearchBar from './components/SearchBar';
 import JourneyList from './components/JourneyList';
 import {
   filterJourneys,
@@ -11,37 +11,37 @@ import { Suspense } from 'react';
 import LoadingSpinner from '../../../components/UI/Loading';
 import { notFound } from 'next/navigation';
 import { generateSearchParams } from '../../../lib/utils/generateSearchParams';
+import Pagination from '../../../components/UI/Pagination.tsx';
 
 export default async function JourneysPage({
   searchParams,
 }: {
-  searchParams: {
-    from: string;
-    to: string;
-    startDate: string;
-    page: number;
-    limit: number;
-    searchText: string;
-  };
+  searchParams: Record<string, string>;
 }) {
   let params = '';
   let res;
-  const { from, to, startDate, searchText, page, limit } = searchParams;
-  if (from && to && startDate) {
-    params = generateSearchParams(['from', 'to', 'startDate'], searchParams);
+  const { from, to, start_date, search_text, page } = searchParams;
+  if (from && to && start_date) {
+    params = generateSearchParams(
+      ['from', 'to', 'start_date', 'page'],
+      searchParams
+    );
     res = await filterJourneys(params.toString());
-  } else if (searchText) {
-    params = generateSearchParams(['searchText'], searchParams);
+  } else if (search_text) {
+    params = generateSearchParams(['search_text', 'page'], searchParams);
     res = await searchJourneys(params.toString());
   } else {
-    params = generateSearchParams(['page', 'limit'], searchParams);
+    params = generateSearchParams(['page'], searchParams);
     res = await getAllJourneys(params.toString());
   }
 
   return (
     <div className='journeys'>
       <div className='journeys__container'>
-        <Filter />
+        {search_text || from || to || start_date ? (
+          <strong>Empty search field for fetching newest journeys</strong>
+        ) : null}
+        <SearchBar />
         <Suspense fallback={<LoadingSpinner />}>
           <JourneyList data={res.data} />
         </Suspense>

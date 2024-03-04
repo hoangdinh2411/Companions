@@ -1,16 +1,16 @@
-import { JourneyDocument } from '@repo/shared';
+import { DeliverOrderDocument } from '@repo/shared';
 import React from 'react';
 import APP_ROUTER from '../../../../../lib/config/router';
 import Link from 'next/link';
 import { WaitingShippingIcon } from '../../../../../lib/config/svg';
 
 type Props = {
-  order: JourneyDocument;
+  order: DeliverOrderDocument;
 };
 
 export default function OrderCard({ order }: Props) {
   return (
-    <article className='orders__cards' title={order.time}>
+    <article className='orders__cards' title={order.title}>
       <Link
         href={`${APP_ROUTER.DELIVERY_ORDERS}/${order.slug}`}
         className='card'
@@ -23,7 +23,7 @@ export default function OrderCard({ order }: Props) {
           <p className='route'>
             {order.from} - {order.to}
           </p>
-          <span className='date'>Date: {order.startDate}</span>
+          <span className='date'>Date: {order.start_date}</span>
         </div>
       </Link>
     </article>

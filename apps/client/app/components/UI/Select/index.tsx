@@ -1,27 +1,10 @@
 'use client';
 import './Select.scss';
 import { ArrowDownIcon, ArrowUpIcon, ErrorIcon } from '../../../lib/config/svg';
-// const data = [
-//   {
-//     _id: 123,
-//     key: 'one',
-//     value: 'One',
-//   },
-//   {
-//     _id: 124,
-//     key: 'two',
-//     value: 'Two',
-//   },
-//   {
-//     _id: 125,
-//     key: 'three',
-//     value: 'Three',
-//   },
-// ];
 type Option = {
-  _id: string | number;
-  key: string | number;
+  _id?: string | number;
   value: string | number;
+  label: string | number;
 };
 
 interface SelectProps {
@@ -35,6 +18,7 @@ interface SelectProps {
   name?: string;
   onSelect: (name: string, value: any) => void;
   style?: React.CSSProperties;
+  required?: boolean;
 }
 
 function Select(props: SelectProps) {
@@ -49,6 +33,7 @@ function Select(props: SelectProps) {
     onSelect,
     style,
     name = '',
+    required = false,
   } = props;
 
   let selectClassName = 'select-wrapper';
@@ -63,13 +48,23 @@ function Select(props: SelectProps) {
     onSelect(name, value);
   };
 
+  const selectedValue =
+    value !== '' ? options.find((item) => item.value === value) : null;
+
   return (
     <fieldset className={selectClassName} style={style}>
-      {label && <label htmlFor={id}>{label}</label>}
+      {label && (
+        <label htmlFor={id} className='textfield__label'>
+          <p>
+            {required && '*'}
+            {label}:
+          </p>
+        </label>
+      )}
       <label className={`dropdown `} htmlFor='dropdown'>
         <input type='checkbox' id='dropdown' />
         <div id='dropdown-btn'>
-          {value === '' ? 'Select' : value}
+          {value === '' ? 'Select' : selectedValue?.label}
           <span className=' arrow-up dropdown-icons'>
             <ArrowUpIcon />
           </span>
@@ -82,12 +77,12 @@ function Select(props: SelectProps) {
             {options.map((item) => (
               <li
                 className={`item ${value === item.value ? 'selected' : ''}`}
-                key={item._id || item.key}
+                key={item._id}
                 onClick={() => {
                   handleClick(item.value);
                 }}
               >
-                {item.value}
+                {item.label}
               </li>
             ))}
           </ul>

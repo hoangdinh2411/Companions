@@ -22,9 +22,9 @@
     position: relative;
   }
 
-  &__filter {
+  &__search-bar {
     margin-bottom: $spacing * 16;
-    .filter__search {
+    .search-bar__search {
       @include flex(space-between, center);
       .search {
         position: relative;
@@ -95,7 +95,7 @@
         > .title {
           font-size: 1.8rem;
           font-weight: 600;
-          width: 25rem;
+          width: 30rem;
           line-height: 1.6;
           text-overflow: ellipsis;
           overflow: hidden;
@@ -104,7 +104,7 @@
         > .route {
           font-size: 1.4rem;
           color: $text-secondary;
-          width: 25rem;
+          width: 30rem;
           line-height: 1.6;
           text-overflow: ellipsis;
           overflow: hidden;

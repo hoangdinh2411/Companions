@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import {
-  CompanionInJourneyStatusEnum,
   JourneyDocument,
   JourneyStatusEnum,
+  CompanionStatusEnum,
 } from '@repo/shared';
 import { generateSlugFrom } from '../../lib/utils/generate-slug';
 
@@ -22,6 +22,7 @@ const CompanionsSchema = new mongoose.Schema(
     id_number: {
       required: true,
       type: String,
+      unique: true,
     },
     phone: {
       required: true,
@@ -29,8 +30,8 @@ const CompanionsSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: CompanionInJourneyStatusEnum.PENDING,
-      enum: CompanionInJourneyStatusEnum,
+      default: CompanionStatusEnum.PENDING,
+      enum: CompanionStatusEnum,
     },
   },
   {
@@ -50,19 +51,16 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
     from: {
       type: String,
       required: true,
-      index: true,
     },
     to: {
       type: String,
       required: true,
-      index: true,
     },
-    startDate: {
+    start_date: {
       type: String,
       required: true,
-      index: true,
     },
-    endDate: {
+    end_date: {
       type: String,
       required: true,
     },
@@ -99,12 +97,15 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
         required: true,
       },
       id_number: {
-        required: true,
         type: String,
       },
       phone: {
         required: true,
         type: String,
+      },
+      full_name: {
+        type: String,
+        // required: true,
       },
     },
     companions: [CompanionsSchema],
@@ -114,26 +115,36 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
+    autoIndex: true,
   }
 );
+
+JourneySchema.index({ from: 1, to: 1, start_date: 1, title: 1 });
 JourneySchema.pre('save', async function (next) {
   const existing = await this.model('Journey').findOne({
-    from: this.from,
-    to: this.to,
-    startDate: this.startDate,
-    endDate: this.endDate,
+    start_date: this.start_date,
+    end_date: this.end_date,
+    created_by: {
+      _id: this.created_by?._id,
+    },
   });
   if (existing) {
     next(new Error(ERROR_MESSAGES.JOURNEY.DUPLICATE_JOURNEY));
   }
 
-  this.slug = generateSlugFrom(this.title);
+  this.slug = generateSlugFrom(
+    this.title,
+    this.from,
+    this.to,
+    this.start_date,
+    this.end_date
+  );
   next();
 });
 JourneySchema.post(
   'save',
   { errorHandler: true },
-  function (error: any, docs, next) {
+  function (error: any, _, next) {
     if (error.name === 'MongoServerError' && error.code === 11000) {
       next(new Error('Duplicate key error'));
     } else {
