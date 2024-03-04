@@ -132,6 +132,24 @@ const UserController = {
       return next(createHttpError.BadRequest((error as Error).message));
     }
   },
+
+  getUser: async function (req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = await UserModel.findOne({
+        _id: req.user._id,
+        status: UserStatusEnum.ACTIVE,
+      }).select('email full_name  phone ');
+
+      if (!user)
+        return next(createHttpError.NotFound(ERROR_MESSAGES.USER.NOT_FOUND));
+      return res.status(200).json({
+        success: true,
+        data: user,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
 };
 
 export default UserController;

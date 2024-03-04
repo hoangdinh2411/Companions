@@ -12,6 +12,9 @@ export default function RootLayout({
 }): JSX.Element {
   return (
     <html lang='en'>
+      <head>
+        <link rel='icon' href='/logo_16_16.png' sizes='any' />
+      </head>
       <body className={`${poppins.className}`} suppressHydrationWarning={true}>
         <header>
           <Navbar />
@@ -32,4 +35,5 @@ export const metadata: Metadata = {
     default: 'Companions',
   },
   description: 'Companions App',
+  icons: [],
 };

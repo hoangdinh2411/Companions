@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import { limitDocumentPerPage } from '../../lib/utils/variables';
 import { defaultResponseIfNoData } from '../helpers/response';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
+import UserModel from '../models/User.model';
 let page = 1;
 
 const DeliveryOrderController = {
@@ -29,7 +30,11 @@ const DeliveryOrderController = {
         },
       });
       await new_order.save();
-
+      await UserModel.findByIdAndUpdate(req.user._id, {
+        $push: {
+          orders_placed: new_order._id,
+        },
+      });
       return res.status(201).json({
         success: true,
       });

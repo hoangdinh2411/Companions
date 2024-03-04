@@ -15,7 +15,7 @@ export async function saveToken(token: string) {
 }
 export async function getToken() {
   const token = cookies().get('sign-in');
-  if (!token) return '';
+  if (!token || !token.value) return '';
   return token.value;
 }
 

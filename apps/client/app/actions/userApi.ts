@@ -2,6 +2,7 @@ import {
   SignInAPIResponse,
   SignInFormData,
   SignUpFormData,
+  UserDocument,
 } from '@repo/shared';
 import customFetch from './customFetch';
 
@@ -19,4 +20,17 @@ export const signUp = async (formData: SignUpFormData) => {
     body: JSON.stringify(formData),
     cache: 'no-cache',
   });
+};
+
+export const getUser = async () => {
+  return customFetch<UserDocument>(
+    '/user/profile',
+    {
+      method: 'GET',
+      next: {
+        revalidateTag: ['profile'],
+      },
+    },
+    true
+  );
 };

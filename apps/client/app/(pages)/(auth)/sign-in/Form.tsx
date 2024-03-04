@@ -51,7 +51,7 @@ export default function Form(): JSX.Element {
     };
   }, []);
   return (
-    <form onSubmit={handleSubmit} autoComplete='off' className='sign-in-form'>
+    <form onSubmit={handleSubmit} className='sign-in-form'>
       <h2>Sign in </h2>
       <TextField
         label='Email'

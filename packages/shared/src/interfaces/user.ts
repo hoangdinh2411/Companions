@@ -13,6 +13,10 @@ export interface UserDocument extends SignInFormData {
   created_at?: Date;
   updated_at?: Date;
   full_name: string;
+  orders_placed: string[];
+  order_full_filled: string[];
+  journeys_shared: string[];
+  journeys_joined: string[];
 }
 
 export interface SignUpFormData extends SignInFormData {

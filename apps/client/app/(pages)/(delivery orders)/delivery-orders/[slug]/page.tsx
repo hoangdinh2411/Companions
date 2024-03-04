@@ -5,13 +5,13 @@ import './OrderDetails.scss';
 import Details from './components/Details';
 import Creator from './components/Creator';
 import { getOneDeliveryOrBySlug } from '../../../../actions/deliveryOrderApi';
+import { getUser } from '../../../../actions/userApi';
 type Props = {
   params: { slug: string };
 };
 
 export default async function OrderDetailsPage({ params: { slug } }: Props) {
   const res = await getOneDeliveryOrBySlug(slug);
-
   if (!res.data || !res.data._id) {
     notFound();
   }
