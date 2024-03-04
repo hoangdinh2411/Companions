@@ -10,6 +10,8 @@ import dayjs from 'dayjs';
 import { limitDocumentPerPage } from '../../lib/utils/variables';
 import { defaultResponseIfNoData } from '../helpers/response';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
+import UserModel from '../models/User.model';
+import { generateDocuments } from '../helpers/insertManyDocument';
 
 let page = 1;
 
@@ -36,6 +38,11 @@ const JourneyController = {
       });
       await journey.save();
 
+      await UserModel.findByIdAndUpdate(req.user._id, {
+        $push: {
+          journeys_shared: journey._id,
+        },
+      });
       return res.status(201).json({
         success: true,
       });

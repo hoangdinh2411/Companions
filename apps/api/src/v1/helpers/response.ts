@@ -1,4 +1,4 @@
-export const defaultResponseIfNoData = (data: any) => {
+export const defaultResponseIfNoData = (data: unknown[]) => {
   return data.length === 0
     ? {
         items: [],

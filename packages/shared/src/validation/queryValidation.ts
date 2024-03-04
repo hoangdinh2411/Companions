@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { type_of_commodityEnum } from '../enums/delivery-order';
+import { TypeOfCommodityEnum } from '../enums/delivery-order';
 
 function isNotEmpty(value: string | undefined) {
   if (value === undefined) return true;
@@ -35,7 +35,7 @@ export const queryValidation = Yup.object().shape({
     'Need to provide a valid type of commodity',
     (value) => {
       if (!value) return true;
-      return value in type_of_commodityEnum;
+      return value in TypeOfCommodityEnum;
     }
   ),
 });

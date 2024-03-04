@@ -1,8 +1,6 @@
 export const generateSearchParams = (
   paramsRequired: string[],
-  searchParams: {
-    [key: string]: string | number;
-  }
+  searchParams: Record<string, string>
 ) => {
   const params = new URLSearchParams();
   paramsRequired.forEach((param) => {

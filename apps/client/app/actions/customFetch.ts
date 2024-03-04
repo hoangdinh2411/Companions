@@ -49,9 +49,6 @@ export default async function customFetch<T>(
         return response.json();
       })
       .then((data) => {
-        if (data.status === 401) {
-          removeToken();
-        }
         return data as IResponse<T>;
       })
       .catch((error) => {

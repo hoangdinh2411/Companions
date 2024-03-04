@@ -9,9 +9,7 @@ import {
 } from '../../../actions/journeyApi';
 import { Suspense } from 'react';
 import LoadingSpinner from '../../../components/UI/Loading';
-import { notFound } from 'next/navigation';
 import { generateSearchParams } from '../../../lib/utils/generateSearchParams';
-import Pagination from '../../../components/UI/Pagination.tsx';
 
 export default async function JourneysPage({
   searchParams,
@@ -20,7 +18,7 @@ export default async function JourneysPage({
 }) {
   let params = '';
   let res;
-  const { from, to, start_date, search_text, page } = searchParams;
+  const { from, to, start_date, search_text } = searchParams;
   if (from && to && start_date) {
     params = generateSearchParams(
       ['from', 'to', 'start_date', 'page'],

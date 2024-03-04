@@ -40,6 +40,30 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
     full_name: {
       type: String,
     },
+    orders_placed: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DeliveryOrder',
+      },
+    ],
+    order_full_filled: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DeliveryOrder',
+      },
+    ],
+    journeys_shared: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Journey',
+      },
+    ],
+    journeys_joined: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Journey',
+      },
+    ],
   },
   {
     timestamps: {
