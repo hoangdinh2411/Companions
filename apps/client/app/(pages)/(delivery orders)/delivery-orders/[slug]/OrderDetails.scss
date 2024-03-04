@@ -1,6 +1,6 @@
 @import '../../../../styles/abstracts/index';
 
-.journey-details {
+.delivery-order__details {
   padding: $spacing * 30 0;
 
   &__container {
@@ -56,28 +56,27 @@
         margin-bottom: $spacing * 8;
         @include flex(space-between, flex-start);
       }
-      article {
+      &__boxes {
+        display: grid;
+        grid-template-columns: 20rem 1fr;
         margin-bottom: $spacing * 4;
-        color: $text-secondary;
-        font-weight: 500;
-      }
-      span {
-        margin: 0 $spacing * 4;
         color: $green;
-        font-weight: 600;
-      }
-
-      &__date,
-      &__distance {
+        font-weight: 500;
         span {
-          font-weight: 600;
+          color: $text-secondary;
+          margin: 0 $spacing * 4;
+          font-weight: 500;
         }
-      }
 
-      &__message {
         p {
-          color: $green;
-          font-weight: 600;
+          color: $text-secondary;
+          font-weight: 500;
+        }
+        &.details__boxes--message {
+          > div {
+            grid-column-start: 1;
+            grid-column-end: 3;
+          }
         }
       }
     }

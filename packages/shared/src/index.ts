@@ -1,4 +1,9 @@
-import { UserEnum, UserStatusEnum, UserRoleEnum } from './enums/user';
+import {
+  UserEnum,
+  UserStatusEnum,
+  UserRoleEnum,
+  CompanionStatusEnum,
+} from './enums/user';
 import {
   UserDocument,
   SignInAPIResponse,
@@ -21,10 +26,23 @@ import {
   JourneyFormData,
   JourneyResponse,
 } from './interfaces/journey';
+import { JourneyStatusEnum } from './enums/journey';
+
 import {
-  JourneyStatusEnum,
-  CompanionInJourneyStatusEnum,
-} from './enums/journey';
+  TypeOfCommodityEnum,
+  DeliveryOrderStatusEnum,
+} from './enums/delivery-order';
+
+import {
+  DeliverOrderDocument,
+  DeliverOrderResponse,
+  DeliveryOrderFormData,
+} from './interfaces/delivery-order';
+
+import {
+  deliveryOrderFormDataValidation,
+  deliveryOrderRequestValidation,
+} from './validation/deliveryOrderValidation';
 
 export {
   signInValidation,
@@ -32,13 +50,17 @@ export {
   journeyFormDataValidation,
   journeyRequestValidation,
   queryValidation,
+  deliveryOrderFormDataValidation,
+  deliveryOrderRequestValidation,
 };
 export {
   UserEnum,
   UserStatusEnum,
   UserRoleEnum,
+  CompanionStatusEnum,
   JourneyStatusEnum,
-  CompanionInJourneyStatusEnum,
+  TypeOfCommodityEnum,
+  DeliveryOrderStatusEnum,
 };
 
 //User
@@ -46,3 +68,10 @@ export type { UserDocument, SignInAPIResponse, SignInFormData, SignUpFormData };
 
 //Journey
 export type { JourneyDocument, JourneyResponse, JourneyFormData };
+
+//Delivery Order
+export type {
+  DeliverOrderDocument,
+  DeliverOrderResponse,
+  DeliveryOrderFormData,
+};

@@ -1,8 +1,8 @@
-import { JourneyDocument } from '@repo/shared';
+import { DeliverOrderDocument } from '@repo/shared';
 import React from 'react';
 
 type Props = {
-  data: JourneyDocument;
+  data: DeliverOrderDocument;
 };
 
 export default function Creator({ data }: Props) {

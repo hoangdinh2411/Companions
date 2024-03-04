@@ -1,11 +1,13 @@
 import { Express } from 'express';
-import AuthRouter from './auth.router';
-import JourneyRouter from './journey.router';
+import authRouter from './auth.router';
+import journeyRouter from './journey.router';
 import { authMiddleware } from '../middlewares/auth-middleware';
+import deliveryOrderRouter from './deliveryOrder.router';
 
 const Routes = (app: Express) => {
-  app.use('/auth', AuthRouter);
-  app.use('/journeys', JourneyRouter);
+  app.use('/auth', authRouter);
+  app.use('/journeys', journeyRouter);
+  app.use('/delivery-orders', deliveryOrderRouter);
   app.get('/test', (req, res) => {
     res.json({
       success: true,

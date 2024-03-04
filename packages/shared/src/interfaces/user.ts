@@ -12,6 +12,7 @@ export interface UserDocument extends SignInFormData {
   phone: string;
   created_at?: Date;
   updated_at?: Date;
+  full_name: string;
 }
 
 export interface SignUpFormData extends SignInFormData {

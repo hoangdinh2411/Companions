@@ -10,7 +10,7 @@ type Props = {
 
 export default function JourneyCard({ journey }: Props) {
   return (
-    <article className='journeys__cards' title={journey.time}>
+    <article className='journeys__cards' title={journey.title}>
       <Link href={`${APP_ROUTER.JOURNEYS}/${journey.slug}`} className='card'>
         <div className='card__icon'>
           <GreenCarpoolingIcon />
@@ -20,7 +20,7 @@ export default function JourneyCard({ journey }: Props) {
           <p className='route'>
             {journey.from} - {journey.to}
           </p>
-          <span className='date'>Date: {journey.startDate}</span>
+          <span className='date'>Date: {journey.start_date}</span>
         </div>
       </Link>
     </article>

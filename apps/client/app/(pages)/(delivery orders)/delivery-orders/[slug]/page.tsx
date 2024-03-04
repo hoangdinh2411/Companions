@@ -1,24 +1,24 @@
 import { Metadata, ResolvingMetadata } from 'next';
-import { getOneJourneyBySlug } from '../../../../actions/journeyApi';
 import { notFound } from 'next/navigation';
 
 import './OrderDetails.scss';
 import Details from './components/Details';
 import Creator from './components/Creator';
+import { getOneDeliveryOrBySlug } from '../../../../actions/deliveryOrderApi';
 type Props = {
   params: { slug: string };
 };
 
 export default async function OrderDetailsPage({ params: { slug } }: Props) {
-  const res = await getOneJourneyBySlug(slug);
+  const res = await getOneDeliveryOrBySlug(slug);
 
-  if (!res.success || (res.data && !res.data.hasOwnProperty('_id'))) {
+  if (!res.data || !res.data._id) {
     notFound();
   }
   return (
-    <div className='order-details'>
+    <div className='delivery-order__details'>
       {res.data && res.data.hasOwnProperty('_id') && (
-        <div className='order-details__container'>
+        <div className='delivery-order__details__container'>
           <Details data={res.data} />
           <Creator data={res.data} />
         </div>
@@ -32,12 +32,12 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   if (!slug) notFound();
-  const res = await getOneJourneyBySlug(slug);
-  if (!res.success || (res.data && !res.data.hasOwnProperty('_id'))) {
+  const res = await getOneDeliveryOrBySlug(slug);
+  if (!res.data || !res.data._id) {
     notFound();
   }
   return {
     title: `Order: ${res.data?.title}`,
-    description: `${res.data?.from} to ${res.data?.to} on ${res.data?.startDate} - ${res.data?.endDate} . Join us for a great journey!`,
+    description: `${res.data?.from} to ${res.data?.to} on ${res.data?.start_date} - ${res.data?.end_date} . Join us for a great journey!`,
   };
 }

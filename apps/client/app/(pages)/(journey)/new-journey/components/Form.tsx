@@ -25,8 +25,8 @@ export default function Form() {
     initialValues: {
       from: '',
       to: '',
-      startDate: new Date(),
-      endDate: new Date(),
+      start_date: new Date(),
+      end_date: new Date(),
       seats: '',
       price: '',
       message: '',
@@ -47,8 +47,8 @@ export default function Form() {
           ...values,
           price: Number(values.price),
           seats: Number(values.seats),
-          startDate: dayjs(values.startDate).format('YYYY-MM-DD'),
-          endDate: dayjs(values.endDate).format('YYYY-MM-DD'),
+          start_date: dayjs(values.start_date).format('YYYY-MM-DD'),
+          end_date: dayjs(values.end_date).format('YYYY-MM-DD'),
           id_number,
         };
         const res = await createNewJourney(formData);
@@ -146,10 +146,10 @@ export default function Form() {
             label='Start date'
             id='start-date'
             required
-            error={Boolean(errors.startDate)}
-            message={errors.startDate}
-            selected={values.startDate}
-            handleSelect={(date) => setFieldValue('startDate', date)}
+            error={Boolean(errors.start_date)}
+            message={errors.start_date}
+            selected={values.start_date}
+            handleSelect={(date) => setFieldValue('start_date', date)}
           />
         </div>
         <div className='new-journey__form__boxes'>
@@ -158,12 +158,12 @@ export default function Form() {
             id='end-date'
             required
             className='boxes'
-            selected={values.endDate}
+            selected={values.end_date}
             handleSelect={(date) => {
-              setFieldValue('endDate', date);
+              setFieldValue('end_date', date);
             }}
-            error={Boolean(errors.endDate)}
-            message={errors.endDate}
+            error={Boolean(errors.end_date)}
+            message={errors.end_date}
           />
         </div>
         <div className='new-journey__form__boxes'>

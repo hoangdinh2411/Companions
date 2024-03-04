@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 
 export async function saveToken(token: string) {
   cookies().set({
-    name: 'token',
+    name: 'sign-in',
     value: token,
     httpOnly: true,
     maxAge: 60 * 60 * 1,
@@ -14,18 +14,18 @@ export async function saveToken(token: string) {
   });
 }
 export async function getToken() {
-  const token = cookies().get('token');
+  const token = cookies().get('sign-in');
   if (!token) return '';
   return token.value;
 }
 
 export async function removeToken() {
-  cookies().delete('token');
+  cookies().delete('sign-in');
 }
 
 export async function saveIdentifyNumber(idNumber: string) {
   cookies().set({
-    name: 'id_number',
+    name: 'sign_in_id',
     value: idNumber,
     httpOnly: true,
     maxAge: 60 * 15,
@@ -36,11 +36,11 @@ export async function saveIdentifyNumber(idNumber: string) {
 }
 
 export async function getIdentifyNumber() {
-  const idNumber = cookies().get('id_number');
+  const idNumber = cookies().get('sign_in_id');
   if (!idNumber) return '';
   return idNumber.value;
 }
 
 export async function removeIdentifyNumber() {
-  cookies().delete('id_number');
+  cookies().delete('sign_in_id');
 }

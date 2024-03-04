@@ -32,8 +32,12 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
     },
     id_number: {
       type: String,
+      unique: true,
     },
     phone: {
+      type: String,
+    },
+    full_name: {
       type: String,
     },
   },
@@ -42,9 +46,11 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
+    autoIndex: true,
   }
 );
 
+UserSchema.index({ email: 1, id_number: 1 });
 UserSchema.methods.setPassword = function (password: string) {
   this.password = bcrypt.hashSync(password, 10);
 };
@@ -57,17 +63,13 @@ UserSchema.methods.passwordEncryption = function (password: string) {
   return bcrypt.hashSync(password, 10);
 };
 
-UserSchema.post(
-  'save',
-  { errorHandler: true },
-  function (error: any, docs, next) {
-    if (error.name === 'MongoServerError' && error.code === 11000) {
-      next(new Error(ERROR_MESSAGES.USER.EMAIL_ALREADY_EXISTS));
-    } else {
-      next(error);
-    }
+UserSchema.post('save', { errorHandler: true }, function (error: any, _, next) {
+  if (error.name === 'MongoServerError' && error.code === 11000) {
+    next(new Error(ERROR_MESSAGES.USER.EMAIL_ALREADY_EXISTS));
+  } else {
+    next(error);
   }
-);
+});
 
 const UserModel = mongoose.model('User', UserSchema);
 

@@ -2,7 +2,6 @@ import React from 'react';
 import TextField from '../../UI/TextField';
 import Button from '../../UI/Button';
 import { toast } from 'react-toastify';
-import { saveIdentifyNumber } from '../../../actions/tokens';
 
 type Props = {
   loading?: boolean;
@@ -33,12 +32,12 @@ export default function BankIDForm({
       <h4>Bank Id</h4>
       <article>
         <strong>
-          Note that identify with BankID is required to share your journey. We
+          Note that identify with BankID is required to use the services. We
           need to verify your identity to ensure the safety of our users.
         </strong>
         <p>
           <small>
-            {' '}
+            <br />
             The BankID identification must be entered wih 12 digits :
             YYYYMMDD-NNNN
           </small>

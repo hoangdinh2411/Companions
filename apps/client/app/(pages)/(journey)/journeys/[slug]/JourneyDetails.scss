@@ -14,12 +14,10 @@
       'details'
       'creator-details';
     gap: $spacing * 16;
-    @include breakpoint(lg) {
-      gap: $spacing * 30;
-    }
-    @include breakpoint(lg) {
-      grid-template-columns: 1fr 30rem;
-      grid-template-areas: 'details  creator-details';
+
+    @include breakpoint(xl) {
+      grid-template-columns: 1fr 35rem;
+      grid-template-areas: 'details creator-details';
     }
     .cards {
       padding: $spacing * 8;
@@ -39,13 +37,12 @@
       grid-area: creator-details;
       article {
         margin-bottom: $spacing * 4;
-        color: $text-secondary;
+        color: $green;
         font-weight: 500;
       }
       span {
-        margin: 0 $spacing * 4;
-        color: $green;
-        font-weight: 600;
+        color: $text-secondary;
+        font-weight: 500;
       }
     }
 
@@ -56,28 +53,29 @@
         margin-bottom: $spacing * 8;
         @include flex(space-between, flex-start);
       }
-      article {
+
+      &__boxes {
+        display: grid;
+        grid-template-columns: 20rem 1fr;
         margin-bottom: $spacing * 4;
-        color: $text-secondary;
-        font-weight: 500;
-      }
-      span {
-        margin: 0 $spacing * 4;
         color: $green;
-        font-weight: 600;
-      }
+        font-weight: 500;
 
-      &__date,
-      &__distance {
         span {
-          font-weight: 600;
+          color: $text-secondary;
+          margin: 0 $spacing * 4;
+          font-weight: 500;
         }
-      }
 
-      &__message {
         p {
-          color: $green;
-          font-weight: 600;
+          color: $text-secondary;
+          font-weight: 500;
+        }
+        &.details__boxes--message {
+          > div {
+            grid-column-start: 1;
+            grid-column-end: 3;
+          }
         }
       }
     }

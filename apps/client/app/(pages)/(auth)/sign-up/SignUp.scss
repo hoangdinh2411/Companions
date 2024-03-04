@@ -20,7 +20,7 @@
     background-color: $white;
     box-shadow: $shadow;
     @include flex(center, flex-start, row, $spacing * 15);
-    form {
+    .sign-up-form {
       width: 100%;
       @include breakpoint(xl) {
         width: 50%;

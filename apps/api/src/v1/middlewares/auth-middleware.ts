@@ -4,15 +4,14 @@ import createHttpError from 'http-errors';
 import UserModel from '../models/User.model';
 import { verifyToken } from '../../lib/utils/token';
 import mongoose from 'mongoose';
+import { UserDocument } from '@repo/shared';
 
 // extend the express request object to include the user object
 declare global {
   namespace Express {
     export interface Request {
-      user: {
-        _id: mongoose.Types.ObjectId;
-        email: string;
-      };
+      user: UserDocument;
+      is_identified: boolean;
     }
   }
 }
@@ -45,16 +44,15 @@ export async function authMiddleware(
       status: {
         $in: ['active'],
       },
-    });
+    }).select('-password -id_number');
 
     if (!user)
       return next(
         createHttpError.Unauthorized(ERROR_MESSAGES.USER.INVALID_TOKEN)
       );
-    req.user = {
-      _id: user._id,
-      email: user.email,
-    };
+    req.user = user;
+    req.is_identified = (decoded as any).is_identified;
+
     next();
   } catch (error) {
     return next(

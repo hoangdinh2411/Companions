@@ -1,46 +1,47 @@
 import { Metadata } from 'next';
 import './Orders.scss';
-import Filter from './components/Filter';
+import SearchBar from './components/SearchBar';
 import OrderList from './components/OrderList';
-import {
-  filterJourneys,
-  getAllJourneys,
-  searchJourneys,
-} from '../../../actions/journeyApi';
 import { Suspense } from 'react';
 import LoadingSpinner from '../../../components/UI/Loading';
 import { generateSearchParams } from '../../../lib/utils/generateSearchParams';
+import {
+  filterDeliveryOrder,
+  getAllDeliveryOrder,
+  searchDeliveryOrder,
+} from '../../../actions/deliveryOrderApi';
 
 export default async function DeliveryOrdersPage({
   searchParams,
 }: {
-  searchParams: {
-    from: string;
-    to: string;
-    startDate: string;
-    page: number;
-    limit: number;
-    searchText: string;
-  };
+  searchParams: Record<string, string>;
 }) {
   let params = '';
   let res;
-  const { from, to, startDate, searchText, page, limit } = searchParams;
-  if (from && to && startDate) {
-    params = generateSearchParams(['from', 'to', 'startDate'], searchParams);
-    res = await filterJourneys(params.toString());
-  } else if (searchText) {
-    params = generateSearchParams(['searchText'], searchParams);
-    res = await searchJourneys(params.toString());
+  const { from, to, start_date, search_text, type_of_commodity } = searchParams;
+  if (from && to && start_date) {
+    params = generateSearchParams(
+      ['from', 'to', 'start_date', 'type_of_commodity'],
+      searchParams
+    );
+    res = await filterDeliveryOrder(params.toString());
+  } else if (search_text) {
+    params = generateSearchParams(['search_text'], searchParams);
+    res = await searchDeliveryOrder(params.toString());
   } else {
     params = generateSearchParams(['page', 'limit'], searchParams);
-    res = await getAllJourneys(params.toString());
+    res = await getAllDeliveryOrder(params.toString());
   }
 
   return (
     <div className='orders'>
       <div className='orders__container'>
-        <Filter />
+        {search_text || from || to || start_date || type_of_commodity ? (
+          <strong>
+            Empty search field for fetching newest delivery orders
+          </strong>
+        ) : null}
+        <SearchBar />
         <Suspense fallback={<LoadingSpinner />}>
           <OrderList data={res.data} />
         </Suspense>

@@ -4,18 +4,20 @@ import TextField from '../../../../components/UI/TextField';
 import Button from '../../../../components/UI/Button';
 import DatePicker from '../../../../components/UI/DatePicker/DatePicker';
 import { useFormik } from 'formik';
-import { journeyFormDataValidation } from '@repo/shared';
-import { createNewJourney } from '../../../../actions/journeyApi';
-import Modal from '../../../../components/UI/Modal';
 import {
-  getIdentifyNumber,
-  saveIdentifyNumber,
-} from '../../../../actions/tokens';
+  TypeOfCommodityEnum,
+  deliveryOrderFormDataValidation,
+} from '@repo/shared';
+import Modal from '../../../../components/UI/Modal';
+import { saveIdentifyNumber } from '../../../../actions/tokens';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import APP_ROUTER from '../../../../lib/config/router';
 import dayjs from 'dayjs';
 import BankIDForm from '../../../../components/shared/Modals/BankIDForm';
+import Select from '../../../../components/UI/Select';
+import { typeOfCommodityOptions } from '../../../../lib/config/variables';
+import { createNewOrder } from '../../../../actions/deliveryOrderApi';
 
 export default function Form() {
   const [isPending, startTransition] = useTransition();
@@ -25,44 +27,44 @@ export default function Form() {
     initialValues: {
       from: '',
       to: '',
-      startDate: new Date(),
-      endDate: new Date(),
-      seats: '',
+      start_date: new Date(),
+      end_date: new Date(),
+      weight: '',
+      size: '',
       price: '',
       message: '',
-      time: '',
-      phone: '',
+      type_of_commodity: '' as TypeOfCommodityEnum,
       title: '',
+      phone: '',
     },
     validateOnBlur: false,
-    validationSchema: journeyFormDataValidation,
+    validationSchema: deliveryOrderFormDataValidation,
     onSubmit: (values) => {
       startTransition(async () => {
-        const id_number = await getIdentifyNumber();
-        if (!id_number) {
-          setOpen(true);
+        // const id_number = await getIdentifyNumber();
+        // if (!id_number) {
+        //   setOpen(true);
+        //   return;
+        // }
+        const formData = {
+          ...values,
+          price: Number(values.price),
+          weight: Number(values.weight),
+          start_date: dayjs(values.start_date).format('YYYY-MM-DD'),
+          end_date: dayjs(values.end_date).format('YYYY-MM-DD'),
+        };
+        const res = await createNewOrder(formData);
+        if (res.status === 401) {
+          toast.error('You need to login to share your journey');
+
           return;
         }
-        // const formData = {
-        //   ...values,
-        //   price: Number(values.price),
-        //   seats: Number(values.seats),
-        //   startDate: dayjs(values.startDate).format('YYYY-MM-DD'),
-        //   endDate: dayjs(values.endDate).format('YYYY-MM-DD'),
-        //   id_number,
-        // };
-        // const res = await createNewJourney(formData);
-        // if (res.status === 401) {
-        //   toast.error('You need to login to share your journey');
-
-        //   return;
-        // }
-        // if (!res.success) {
-        //   toast.error(res.message);
-        //   return;
-        // }
-        // toast.success('Journey shared successfully');
-        // router.push(APP_ROUTER.DELIVERY_ORDERS);
+        if (!res.success) {
+          toast.error(res.message);
+          return;
+        }
+        toast.success('Your order created successfully');
+        router.push(APP_ROUTER.DELIVERY_ORDERS);
       });
     },
   });
@@ -79,7 +81,6 @@ export default function Form() {
     startTransition(async () => {
       if (id_number) {
         await saveIdentifyNumber(id_number);
-        setFieldValue('id_number', id_number);
         setOpen(false);
       }
     });
@@ -146,10 +147,10 @@ export default function Form() {
             label='Start date'
             id='start-date'
             required
-            error={Boolean(errors.startDate)}
-            message={errors.startDate}
-            selected={values.startDate}
-            handleSelect={(date) => setFieldValue('startDate', date)}
+            error={Boolean(errors.start_date)}
+            message={errors.start_date}
+            selected={values.start_date}
+            handleSelect={(date) => setFieldValue('start_date', date)}
           />
         </div>
         <div className='new-order__form__boxes'>
@@ -158,27 +159,27 @@ export default function Form() {
             id='end-date'
             required
             className='boxes'
-            selected={values.endDate}
+            selected={values.end_date}
             handleSelect={(date) => {
-              setFieldValue('endDate', date);
+              setFieldValue('end_date', date);
             }}
-            error={Boolean(errors.endDate)}
-            message={errors.endDate}
+            error={Boolean(errors.end_date)}
+            message={errors.end_date}
           />
         </div>
         <div className='new-order__form__boxes'>
           <TextField
             required
-            label='Seats'
+            label='Weight (kg)'
             type='text'
-            id='seats'
+            id='weight'
             onChange={handleChange}
             onBlur={handleBlur}
-            value={values.seats}
-            error={Boolean(errors.seats && touched.seats)}
-            message={touched.seats && errors.seats}
-            name='seats'
-            placeholder='Please enter the number of seats'
+            value={values.weight}
+            error={Boolean(errors.weight && touched.weight)}
+            message={touched.weight && errors.weight}
+            name='weight'
+            placeholder='Please enter the number of weight'
           />
         </div>
         <div className='new-order__form__boxes price-box'>
@@ -193,14 +194,42 @@ export default function Form() {
             error={Boolean(errors.price && touched.price)}
             message={touched.price && errors.price}
             name='price'
-            placeholder='Please enter the price'
+            placeholder='Please enter the size'
           />
           <span>SEK</span>
         </div>
-        <div className='new-order__form__boxes'>
+
+        <div className='new-order__form__boxes select-box'>
+          <Select
+            required
+            label='Select type of commodity'
+            options={typeOfCommodityOptions}
+            value={values.type_of_commodity}
+            onSelect={(name, value) => setFieldValue(name, value)}
+            name='type_of_commodity'
+          />
+        </div>
+        {values.type_of_commodity === TypeOfCommodityEnum.PACKAGE ? (
+          <div className='new-order__form__boxes '>
+            <TextField
+              required
+              label='Size (length x width x height) in cm'
+              type='tel'
+              id='size'
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.size}
+              error={Boolean(errors.size && touched.size)}
+              message={touched.size && errors.size}
+              name='size'
+              placeholder='Please enter the size'
+            />
+          </div>
+        ) : null}
+        <div className='new-order__form__boxes price-box'>
           <TextField
             required
-            label='Phone Number'
+            label='Phone'
             type='tel'
             id='phone'
             onChange={handleChange}
@@ -209,21 +238,7 @@ export default function Form() {
             error={Boolean(errors.phone && touched.phone)}
             message={touched.phone && errors.phone}
             name='phone'
-            placeholder='Please enter phone number'
-          />
-        </div>
-        <div className='new-order__form__boxes'>
-          <TextField
-            required
-            label='Time'
-            type='time'
-            id='time'
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.time}
-            error={Boolean(errors.time && touched.time)}
-            message={touched.time && errors.time}
-            name='time'
+            placeholder='Please enter the size'
           />
         </div>
         <div className='new-order__form__boxes box-message'>
@@ -242,7 +257,7 @@ export default function Form() {
         </div>
         <div className='new-order__form__btn-box'>
           <Button variant='green' type='submit' loading={!open && isPending}>
-            Share{' '}
+            Create Order{' '}
           </Button>
         </div>
       </form>
