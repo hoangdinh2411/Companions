@@ -4,6 +4,7 @@ export enum UserEnum {
 }
 
 export enum UserStatusEnum {
+  PENDING = 'pending',
   ACTIVE = 'active',
   BANNED = 'banned',
 }
