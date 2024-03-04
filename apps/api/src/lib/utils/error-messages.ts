@@ -10,6 +10,7 @@ export const ERROR_MESSAGES = {
     SIGN_IN_BY_BANK_ID_FAILED: 'Sign in by bank id failed',
     INVALID_ID_NUMBER: 'This id number is not yours',
     NEED_TO_VERIFY_IDENTITY: 'You need to verify your identity',
+    INVALID_VERIFICATION_CODE: 'Invalid verification code',
   },
   JOURNEY: {
     NOT_FOUND: 'Journey not found',

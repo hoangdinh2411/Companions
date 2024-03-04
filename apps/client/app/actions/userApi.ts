@@ -34,3 +34,10 @@ export const getUser = async () => {
     true
   );
 };
+
+export const verifyAccount = async (verify_code: string, email: string) => {
+  return customFetch('/auth/verify/' + verify_code + '/' + email, {
+    method: 'GET',
+    cache: 'no-cache',
+  });
+};

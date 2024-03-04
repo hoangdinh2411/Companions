@@ -20,3 +20,9 @@ export const verifyToken = (token: string) => {
   if (!env.JWT_SECRET) throw new Error('JWT_SECRET is not defined');
   return jwt.verify(token, env.JWT_SECRET);
 };
+
+export const generateVerifyCode = (email: string) => {
+  return jwt.sign({ email }, env.JWT_SECRET, {
+    expiresIn: '1d',
+  });
+};

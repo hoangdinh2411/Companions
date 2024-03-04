@@ -9,7 +9,13 @@ import createHttpError from 'http-errors';
 import UserModel from '../models/User.model';
 import { Error } from 'mongoose';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
-import { generateToken } from '../../lib/utils/token';
+import {
+  generateToken,
+  generateVerifyCode,
+  verifyToken,
+} from '../../lib/utils/token';
+import { sendVerifyEmail } from '../../lib/config/nodemailer.config';
+import env from '../../lib/config/env';
 
 const UserController = {
   signUp: async function (req: Request, res: Response, next: NextFunction) {
@@ -22,12 +28,77 @@ const UserController = {
       });
 
       user.setPassword(req.body.password);
+
+      const verify_code = generateVerifyCode(req.body.email);
+      const verify_link = `${env.DOMAIN}/verify-email?confirm=${verify_code}&email=${req.body.email}`;
+      await sendVerifyEmail(user.email, verify_link);
       await user.save();
       return res.status(201).json({
         success: true,
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+  verify: async function (req: Request, res: Response, next: NextFunction) {
+    try {
+      const verify_code = req.params.verify_code;
+      const decode = verifyToken(verify_code);
+      if (
+        !(decode as any).email ||
+        (decode as any).email !== req.params.email
+      ) {
+        return next(
+          createHttpError.NotFound(
+            ERROR_MESSAGES.USER.INVALID_VERIFICATION_CODE
+          )
+        );
+      }
+
+      const user = await UserModel.findOne({
+        email: req.params.email,
+      });
+
+      if (!user) {
+        return next(
+          createHttpError.NotFound(
+            ERROR_MESSAGES.USER.INVALID_VERIFICATION_CODE
+          )
+        );
+      }
+      if (user.status === UserStatusEnum.ACTIVE)
+        return res.status(200).json({
+          success: true,
+          message: 'Your account is already verified',
+        });
+
+      await UserModel.findOneAndUpdate(
+        {
+          email: req.params.email,
+        },
+        {
+          status: UserStatusEnum.ACTIVE,
+        },
+        {
+          new: true,
+          upsert: false,
+        }
+      );
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      if ((error as Error).name === 'TokenExpiredError') {
+        await UserModel.findByIdAndDelete({
+          email: req.params.email,
+        });
+      }
+
+      return next(
+        createHttpError.BadRequest(
+          ERROR_MESSAGES.USER.INVALID_VERIFICATION_CODE
+        )
+      );
     }
   },
 

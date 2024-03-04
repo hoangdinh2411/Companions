@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
     },
     status: {
       type: String,
-      default: UserStatusEnum.ACTIVE,
+      default: UserStatusEnum.PENDING,
       enum: UserStatusEnum,
     },
     role: {
@@ -32,7 +32,6 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
     },
     id_number: {
       type: String,
-      unique: true,
     },
     phone: {
       type: String,
@@ -88,6 +87,7 @@ UserSchema.methods.passwordEncryption = function (password: string) {
 };
 
 UserSchema.post('save', { errorHandler: true }, function (error: any, _, next) {
+  console.log('error', error);
   if (error.name === 'MongoServerError' && error.code === 11000) {
     next(new Error(ERROR_MESSAGES.USER.EMAIL_ALREADY_EXISTS));
   } else {
