@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
-import {
-  JourneyDocument,
-  JourneyStatusEnum,
-  CompanionStatusEnum,
-} from '@repo/shared';
+import { JourneyDocument, JourneyStatusEnum } from '@repo/shared';
 import { generateSlugFrom } from '../../lib/utils/generate-slug';
 
 interface IJourneySchema extends JourneyDocument {}
@@ -15,7 +11,7 @@ const CompanionsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    name: {
+    full_name: {
       type: String,
       required: true,
     },
@@ -28,14 +24,12 @@ const CompanionsSchema = new mongoose.Schema(
       required: true,
       type: String,
     },
-    status: {
+    email: {
+      required: true,
       type: String,
-      default: CompanionStatusEnum.PENDING,
-      enum: CompanionStatusEnum,
     },
   },
   {
-    _id: false,
     timestamps: {
       createdAt: 'created_at',
       updatedAt: 'updated_at',
@@ -79,6 +73,11 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
     message: {
       type: String,
     },
+
+    be_in_touch: {
+      type: Boolean,
+      required: true,
+    },
     status: {
       type: String,
       default: JourneyStatusEnum.ACTIVE,
@@ -105,7 +104,7 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
       },
       full_name: {
         type: String,
-        // required: true,
+        required: true,
       },
     },
     companions: [CompanionsSchema],

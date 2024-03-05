@@ -21,7 +21,7 @@ export const createNewOrder = async (formData: DeliveryOrderFormData) => {
     true
   );
   if (res.success) {
-    revalidatePath(APP_ROUTER.DELIVERY_ORDERS);
+    revalidatePath(APP_ROUTER.DELIVERY_ORDERS, 'page');
   }
   return res;
 };
@@ -32,7 +32,7 @@ export const getOneDeliveryOrBySlug = async (slug = '') => {
     {
       method: 'GET',
       next: {
-        revalidateTag: [`/delivery-orders/${slug}`],
+        tags: [`/delivery-orders/${slug}`],
       },
     }
   );

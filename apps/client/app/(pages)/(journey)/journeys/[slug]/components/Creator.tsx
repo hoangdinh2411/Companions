@@ -2,19 +2,28 @@ import { JourneyDocument } from '@repo/shared';
 import React from 'react';
 
 type Props = {
-  data: JourneyDocument;
+  journey: JourneyDocument;
 };
 
-export default function Creator({ data }: Props) {
+export default function Creator({ journey }: Props) {
   return (
     <section className='creator cards'>
       <h5 className='creator__header'>Created By</h5>
-      <article className='creator__email'>
-        Email: <span>{data?.created_by?.email}</span>
-      </article>
-      <article className='creator__phone'>
-        Phone: <span>{data?.created_by?.phone}</span>
-      </article>
+      {journey?.be_in_touch ? (
+        <p className='creator__be-in-touch'>
+          The driver wants to be in touch with you. So please be sure to check
+          your contact details.
+        </p>
+      ) : (
+        <>
+          <article className='creator__email'>
+            Email: <span>{journey?.created_by?.email}</span>
+          </article>
+          <article className='creator__phone'>
+            Phone: <span>{journey?.created_by?.phone}</span>
+          </article>
+        </>
+      )}
     </section>
   );
 }

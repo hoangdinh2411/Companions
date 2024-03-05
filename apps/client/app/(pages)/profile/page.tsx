@@ -10,7 +10,6 @@ export default async function ProfilePage() {
     notFound();
   }
   const user = res.data;
-
   return (
     <section className='profile'>
       <article className='profile__container'>

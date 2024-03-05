@@ -48,6 +48,16 @@ export const deliveryOrderFormDataValidation = yup.object().shape({
     .string()
     .required('Need to specify the type of commodity'),
   size: yup.string(),
+  be_in_touch: yup
+    .boolean()
+    .test(
+      'isBoolean',
+      'Need to specify if you want to be in touch',
+      (value) => {
+        return typeof value === 'boolean';
+      }
+    )
+    .required('Need to specify if you want to be in touch'),
 });
 
 export const deliveryOrderRequestValidation = yup

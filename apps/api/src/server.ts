@@ -5,10 +5,12 @@ import cors from 'cors';
 import { logEvent } from './v1/helpers/log-helper';
 import v1Router from './v1';
 import timeout from 'connect-timeout';
+import getUserIdMiddleware from './v1/middlewares/get-user-ip';
 
 export const createServer = () => {
   const app = express();
   app
+    .set('trust proxy', true)
     .disable('x-powered-by')
     .use(timeout('30s'))
     .use(urlencoded({ extended: true }))
@@ -32,7 +34,7 @@ export const createServer = () => {
     })
     .use(morgan('dev'))
 
-    .use('/api/v1', v1Router)
+    .use('/api/v1', getUserIdMiddleware, v1Router)
     .use('*', (req, res, next: NextFunction) => {
       return res.status(404).json({
         success: false,

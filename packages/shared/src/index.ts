@@ -1,9 +1,4 @@
-import {
-  UserEnum,
-  UserStatusEnum,
-  UserRoleEnum,
-  CompanionStatusEnum,
-} from './enums/user';
+import { UserEnum, UserStatusEnum, UserRoleEnum } from './enums/user';
 import {
   UserDocument,
   SignInAPIResponse,
@@ -57,7 +52,6 @@ export {
   UserEnum,
   UserStatusEnum,
   UserRoleEnum,
-  CompanionStatusEnum,
   JourneyStatusEnum,
   TypeOfCommodityEnum,
   DeliveryOrderStatusEnum,

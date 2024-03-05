@@ -7,13 +7,12 @@ import './SearchField.scss';
 
 export default function SearchField() {
   const router = useRouter();
-
   const searchRef = React.useRef<HTMLInputElement>(null);
   const pathname = usePathname();
   function generateSearchParams() {
     const params = new URLSearchParams();
     if (searchRef.current?.value === '') {
-      router.push(pathname);
+      router.push(pathname + '?page=1');
       return;
     }
     const searchValue = searchRef.current?.value;

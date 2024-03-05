@@ -1,5 +1,4 @@
 import { JourneyStatusEnum } from '../enums/journey';
-import { CompanionStatusEnum } from '../enums/user';
 import { UserDocument } from './user';
 
 export interface JourneyFormData {
@@ -13,6 +12,7 @@ export interface JourneyFormData {
   message: string;
   phone: string;
   title: string;
+  be_in_touch?: boolean;
 }
 
 export interface JourneyDocument
@@ -35,7 +35,6 @@ export interface JourneyDocument
       email: string;
       id_number?: string;
       phone?: string;
-      status?: CompanionStatusEnum;
       full_name: string;
     },
   ];

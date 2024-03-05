@@ -110,14 +110,6 @@
     @include flex(space-between, center);
     cursor: pointer;
     .actions {
-      padding: $spacing * 2 $spacing * 4;
-      @include text($white, 500);
-      text-transform: uppercase;
-      position: relative;
-      @include transition(color 0.2s ease);
-      &:hover {
-        color: $text-hover;
-      }
       &__dropdown {
         &.open {
           display: block;

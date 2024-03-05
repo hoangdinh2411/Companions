@@ -18,6 +18,22 @@
       grid-template-columns: 1fr 1fr;
     }
     &__boxes {
+      &.be-in-touch {
+        display: grid;
+        grid-template-columns: 2rem 1fr;
+
+        label {
+          width: 100%;
+          font-weight: 600;
+          color: $red;
+          margin-left: $spacing * 4;
+        }
+        input[type='checkbox'] {
+          margin-top: $spacing * 4;
+          width: 1.6rem;
+          height: 1.6rem;
+        }
+      }
       &:nth-child(1) {
         grid-column-start: 1;
         grid-column-end: 2;

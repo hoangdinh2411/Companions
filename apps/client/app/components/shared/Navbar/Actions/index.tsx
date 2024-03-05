@@ -1,43 +1,69 @@
 'use client';
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import APP_ROUTER from '../../../../lib/config/router';
 import { UserIcon } from '../../../../lib/config/svg';
-import { getToken, removeToken } from '../../../../actions/tokens';
+import { removeIdentifyNumber, removeToken } from '../../../../actions/tokens';
 import { toast } from 'react-toastify';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { getUser } from '../../../../actions/userApi';
+import appStore from '../../../../lib/store/appStore';
+import { UserDocument } from '@repo/shared';
+import Button from '../../../UI/Button';
 
 export default function Actions() {
-  const [isLogged, setIsLogged] = React.useState(false);
   const [dropdown, setDropdown] = React.useState(false);
+  const { user, setUser } = appStore.getState();
   const pathname = usePathname();
-
+  const router = useRouter();
   useEffect(() => {
     if (dropdown) {
       setDropdown(false);
     }
-    async function checkAuth() {
-      const token = await getToken();
-      if (token) setIsLogged(true);
-    }
-    checkAuth();
+
+    getUser().then((res) => {
+      if (!user._id && res.success && res.data?._id) {
+        setUser(res.data);
+        router.refresh();
+      }
+      if (user._id && res.status === 401) {
+        removeToken();
+        removeIdentifyNumber();
+        setUser({} as UserDocument);
+        return;
+      }
+    });
   }, [pathname]);
 
   const handleDropdown = () => {
     setDropdown(!dropdown);
   };
+  const isLogin = useMemo(() => {
+    return user._id ? false : true;
+  }, [user]);
 
   const handleLogout = async () => {
     await removeToken();
-    setIsLogged(false);
+    if (user?._id) {
+      setUser({} as UserDocument);
+    }
     toast.success('You have successfully signed out');
+  };
+
+  const redirectToSignIn = () => {
+    router.push(APP_ROUTER.SIGN_IN);
   };
   return (
     <section className='navbar__actions'>
-      {!isLogged ? (
-        <Link href={APP_ROUTER.SIGN_IN} className='actions'>
+      {isLogin ? (
+        <Button
+          variant='default'
+          onClick={redirectToSignIn}
+          className='actions'
+          size='small'
+        >
           Sign in
-        </Link>
+        </Button>
       ) : (
         <div className='actions ' title='Profile'>
           <span onClick={handleDropdown}>

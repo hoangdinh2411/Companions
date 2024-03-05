@@ -209,7 +209,7 @@ const UserController = {
       const user = await UserModel.findOne({
         _id: req.user._id,
         status: UserStatusEnum.ACTIVE,
-      }).select('email full_name  phone ');
+      }).select('-password -__v -created_at -updated_at -status');
 
       if (!user)
         return next(createHttpError.NotFound(ERROR_MESSAGES.USER.NOT_FOUND));

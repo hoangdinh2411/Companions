@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import './JourneyDetails.scss';
 import Details from './components/Details';
 import Creator from './components/Creator';
+import { getUser } from '../../../../actions/userApi';
 
 type Props = {
   params: { slug: string };
@@ -15,12 +16,13 @@ export default async function JourneyDetailsPage({ params: { slug } }: Props) {
   if (!res.data || !res.data._id) {
     notFound();
   }
+
   return (
     <div className='journey-details'>
       {res.data && res.data.hasOwnProperty('_id') && (
         <div className='journey-details__container'>
-          <Details data={res.data} />
-          <Creator data={res.data} />
+          <Details journey={res.data} />
+          <Creator journey={res.data} />
         </div>
       )}
     </div>

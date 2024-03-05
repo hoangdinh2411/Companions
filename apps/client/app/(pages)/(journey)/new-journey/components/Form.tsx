@@ -33,9 +33,10 @@ export default function Form() {
       time: '',
       phone: '',
       title: '',
+      be_in_touch: 0,
     },
     validateOnBlur: false,
-    validationSchema: journeyFormDataValidation,
+    // validationSchema: journeyFormDataValidation,
     onSubmit: (values) => {
       startTransition(async () => {
         const id_number = await getIdentifyNumber();
@@ -49,7 +50,7 @@ export default function Form() {
           seats: Number(values.seats),
           start_date: dayjs(values.start_date).format('YYYY-MM-DD'),
           end_date: dayjs(values.end_date).format('YYYY-MM-DD'),
-          id_number,
+          be_in_touch: values.be_in_touch === 0 ? false : true,
         };
         const res = await createNewJourney(formData);
         if (res.status === 401) {
@@ -75,15 +76,6 @@ export default function Form() {
     handleBlur,
     touched,
   } = formik;
-  const handleSignInByBankId = async (id_number: string) => {
-    startTransition(async () => {
-      if (id_number) {
-        await saveIdentifyNumber(id_number);
-        setFieldValue('id_number', id_number);
-        setOpen(false);
-      }
-    });
-  };
 
   const handelCloseModal = () => {
     setOpen(false);
@@ -240,18 +232,31 @@ export default function Form() {
             placeholder='Please enter the message '
           ></textarea>
         </div>
+        <div className='new-journey__form__boxes be-in-touch'>
+          <input
+            type='checkbox'
+            name='be_in_touch'
+            id='be_in_touch'
+            value={values.be_in_touch}
+            onChange={() => {
+              setFieldValue('be_in_touch', values.be_in_touch === 0 ? 1 : 0);
+            }}
+          />
+          <label htmlFor='be_in_touch'>
+            Will you be in touch with other users who join this journey with
+            you?
+            <br />
+            If you check this box, nobody can see your contact details
+          </label>
+        </div>
         <div className='new-journey__form__btn-box'>
           <Button variant='green' type='submit' loading={!open && isPending}>
             Share{' '}
           </Button>
         </div>
       </form>
-      <Modal open={open} onClose={handelCloseModal}>
-        <BankIDForm
-          loading={open && isPending}
-          handleSignInByBankId={handleSignInByBankId}
-          closeModal={handelCloseModal}
-        />
+      <Modal open={open} onClose={handelCloseModal} disableClose>
+        <BankIDForm loading={open && isPending} closeModal={handelCloseModal} />
       </Modal>
     </>
   );

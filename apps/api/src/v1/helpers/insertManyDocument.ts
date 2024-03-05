@@ -120,55 +120,70 @@ const identifiers = [
 ];
 
 const max_documents_for_one_DB_operation = 1000;
-const number_of_documents = 1000000;
+const number_of_documents = 20000;
+
 export async function generateDocuments() {
   let documents = [];
-  for (let index = 0; index < number_of_documents; index++) {
-    const positiveOrNegative = Math.round(Math.random()) * 2 - 1;
-    const randomDaysForstart_date =
-      Math.round(Math.random() * 60) * positiveOrNegative;
-    const randomDaysForend_date =
-      randomDaysForstart_date + Math.round(Math.random() * 60);
-    const start_date = dayjs()
-      .day(randomDaysForstart_date)
-      .format('YYYY-MM-DD');
-    const end_date = dayjs().day(randomDaysForend_date).format('YYYY-MM-DD');
-    const person = identifiers[Math.floor(Math.random() * identifiers.length)];
-    const title = titles[Math.floor(Math.random() * titles.length)];
-    const from =
-      starting_points[Math.floor(Math.random() * starting_points.length)];
-    const to = destinations[Math.floor(Math.random() * destinations.length)];
-    const randomHour = Math.floor(Math.random() * 24); // 0 to 23
-    const randomMinute = Math.floor(Math.random() * 60); // 0 to 59
+  for (let i = 0; i < identifiers.length; i++) {
+    const person = identifiers[i];
+    for (let j = 0; j < max_documents_for_one_DB_operation; j++) {
+      const positiveOrNegative = Math.round(Math.random()) * 2 - 1;
+      const randomDaysForStartDate =
+        Math.round(Math.random() * 60) * positiveOrNegative;
+      const randomDaysForEndDate =
+        randomDaysForStartDate + Math.round(Math.random() * 60);
+      const start_date = dayjs()
+        .day(randomDaysForStartDate)
+        .format('YYYY-MM-DD');
+      const end_date = dayjs().day(randomDaysForEndDate).format('YYYY-MM-DD');
+      const title = titles[Math.floor(Math.random() * titles.length)];
+      const from =
+        starting_points[Math.floor(Math.random() * starting_points.length)];
+      const to = destinations[Math.floor(Math.random() * destinations.length)];
+      const randomHour = Math.floor(Math.random() * 24); // 0 to 23
+      const randomMinute = Math.floor(Math.random() * 60); // 0 to 59
 
-    const randomTime = dayjs()
-      .set('hour', randomHour)
-      .set('minute', randomMinute);
+      const randomTime = dayjs()
+        .set('hour', randomHour)
+        .set('minute', randomMinute);
 
-    const time = randomTime.format('HH:mm');
-    const document = {
-      title,
-      from,
-      to,
-      start_date,
-      end_date,
-      message: messages[Math.floor(Math.random() * messages.length)],
-      created_by: {
-        _id: person._id,
-        id_number: person.id_number,
-        phone: person.phone,
-        full_name: person.full_name,
-        email: person.email,
-      },
-      seats: Math.floor(Math.random() * 3) + 1,
-      price: Math.floor(Math.random() * 1000) + 1,
-      slug: generateSlugFrom(title, from, to, start_date, end_date),
-      time,
-    };
-    documents.push(document);
-    if (documents.length === max_documents_for_one_DB_operation) {
-      await JourneyModel.insertMany(documents);
-      documents = [];
+      const time = randomTime.format('HH:mm');
+      const document = {
+        title,
+        from,
+        to,
+        start_date,
+        end_date,
+        message: messages[Math.floor(Math.random() * messages.length)],
+        created_by: {
+          _id: person._id,
+          id_number: person.id_number,
+          phone: person.phone,
+          full_name: person.full_name,
+          email: person.email,
+        },
+        seats: Math.floor(Math.random() * 3) + 1,
+        price: Math.floor(Math.random() * 1000) + 1,
+        slug: generateSlugFrom(title, from, to, start_date, end_date),
+        time,
+      };
+      documents.push(document);
+      if (documents.length === max_documents_for_one_DB_operation) {
+        const journeys = await JourneyModel.insertMany(documents);
+        await UserModel.findByIdAndUpdate(
+          {
+            _id: person._id,
+          },
+          {
+            $push: {
+              journeys_shared: {
+                $each: journeys.map((journey) => journey._id),
+              },
+            },
+          }
+        );
+        documents = [];
+      }
     }
   }
 }

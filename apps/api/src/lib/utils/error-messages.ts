@@ -15,6 +15,8 @@ export const ERROR_MESSAGES = {
   JOURNEY: {
     NOT_FOUND: 'Journey not found',
     DUPLICATE_JOURNEY: 'Cannot create duplicate journey',
+    MISSING_JOURNEY_ID: 'Missing journey id',
+    HAS_JOINED: 'You have joined this journey',
   },
   DELIVERY_ORDER: {
     NOT_FOUND: 'Delivery order not found',
