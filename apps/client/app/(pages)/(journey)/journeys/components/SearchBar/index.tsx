@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { getToken } from '../../../../../actions/tokens';
@@ -18,6 +18,7 @@ export default function SearchBar() {
       toast.warning('Please sign in to continue');
     }
   };
+
   return (
     <section className='journeys__search-bar'>
       <div className='search-bar__search'>

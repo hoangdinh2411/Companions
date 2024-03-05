@@ -8,6 +8,6 @@ journeyRouter.get('/', JourneyController.getAll);
 journeyRouter.post('/insert', JourneyController.insertManyDocuments);
 journeyRouter.get('/search', JourneyController.search);
 journeyRouter.get('/filter', JourneyController.filter);
-journeyRouter.get('/:slug', JourneyController.getOneBySlug);
 journeyRouter.post('/', authMiddleware, JourneyController.add);
+journeyRouter.get('/:slug', JourneyController.getOneBySlug);
 export default journeyRouter;
