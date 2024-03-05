@@ -14,7 +14,7 @@ export const signIn = (formData: SignInFormData) => {
   });
 };
 
-export const signUp = async (formData: SignUpFormData) => {
+export const signUp = (formData: SignUpFormData) => {
   return customFetch('/auth/sign-up', {
     method: 'POST',
     body: JSON.stringify(formData),
@@ -22,7 +22,7 @@ export const signUp = async (formData: SignUpFormData) => {
   });
 };
 
-export const getUser = async () => {
+export const getUser = () => {
   return customFetch<UserDocument>(
     '/user/profile',
     {
@@ -35,7 +35,7 @@ export const getUser = async () => {
   );
 };
 
-export const verifyAccount = async (verify_code: string, email: string) => {
+export const verifyAccount = (verify_code: string, email: string) => {
   return customFetch('/auth/verify/' + verify_code + '/' + email, {
     method: 'GET',
     cache: 'no-cache',

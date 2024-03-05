@@ -16,7 +16,6 @@ type Props = {
 export default function Details({ data }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [idNumber, setIdNumber] = useState('');
   const handleJoinInJourney = async () => {
     const isSignedIn = await getToken();
     if (!isSignedIn) {
@@ -28,10 +27,6 @@ export default function Details({ data }: Props) {
       setOpen(true);
       return;
     }
-  };
-
-  const handleSignInByBankId = (idNumber: string) => {
-    setIdNumber(idNumber);
   };
 
   const handleCloseModal = () => {
@@ -82,11 +77,8 @@ export default function Details({ data }: Props) {
           </div>
         </article>
       </section>
-      <Modal open={open} onClose={handleCloseModal}>
-        <BankIDForm
-          handleSignInByBankId={handleSignInByBankId}
-          closeModal={handleCloseModal}
-        />
+      <Modal open={open} onClose={handleCloseModal} disableClose>
+        <BankIDForm closeModal={handleCloseModal} />
       </Modal>
     </>
   );

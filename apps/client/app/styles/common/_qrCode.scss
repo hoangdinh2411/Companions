@@ -1,0 +1,19 @@
+.qr-code {
+  @include flex(center, center, column);
+  padding: $spacing * 8;
+  &__content {
+    width: 25rem;
+    height: 25rem;
+    margin-bottom: $spacing * 30;
+  }
+  img {
+    margin-bottom: $spacing * 8;
+  }
+
+  &__steps {
+    padding-left: $spacing * 4;
+    > li {
+      list-style: unset;
+    }
+  }
+}
