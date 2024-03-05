@@ -5,6 +5,7 @@ import {
   UserDocument,
 } from '@repo/shared';
 import customFetch from './customFetch';
+import APP_ROUTER from '../lib/config/router';
 
 export const signIn = (formData: SignInFormData) => {
   return customFetch<SignInAPIResponse>('/auth/sign-in', {
@@ -28,7 +29,7 @@ export const getUser = () => {
     {
       method: 'GET',
       next: {
-        revalidateTag: ['profile'],
+        tags: ['profile'],
       },
     },
     true

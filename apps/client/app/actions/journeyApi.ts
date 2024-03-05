@@ -14,11 +14,12 @@ export const createNewJourney = async (formData: JourneyFormData) => {
     {
       method: 'POST',
       body: JSON.stringify(formData),
+      cache: 'no-cache',
     },
     true
   );
   if (res.success) {
-    revalidatePath(APP_ROUTER.JOURNEYS);
+    revalidatePath(APP_ROUTER.JOURNEYS, 'page');
   }
   return res;
 };
@@ -26,9 +27,6 @@ export const createNewJourney = async (formData: JourneyFormData) => {
 export const getOneJourneyBySlug = async (slug = '') => {
   const res = await customFetch<JourneyDocument>(`/journeys/${slug}`, {
     method: 'GET',
-    next: {
-      revalidateTag: [`/journeys/${slug}`],
-    },
   });
 
   return res;
@@ -53,7 +51,7 @@ export const filterJourneys = async (query: string) => {
   const res = await customFetch<JourneyResponse>(`/journeys/filter?${query}`, {
     method: 'GET',
     next: {
-      revalidateTags: [`/journeys/filter?${query}`],
+      tags: [`/journeys/filter?${query}`],
     },
   });
 
@@ -64,9 +62,24 @@ export const searchJourneys = async (query: string) => {
   const res = await customFetch<JourneyResponse>(`/journeys/search?${query}`, {
     method: 'GET',
     next: {
-      revalidateTags: [`/journeys/search?${query}`],
+      tags: [`/journeys/search?${query}`],
     },
   });
 
+  return res;
+};
+
+export const joinJourney = async (journey_id: string, slug: string) => {
+  const res = await customFetch(
+    `/journeys/${journey_id}/join`,
+    {
+      method: 'PUT',
+    },
+    true
+  );
+
+  if (res.success) {
+    revalidateTag('/journeys/' + slug);
+  }
   return res;
 };

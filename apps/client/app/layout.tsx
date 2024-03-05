@@ -1,3 +1,4 @@
+import { getUser } from './actions/userApi';
 import Footer from './components/shared/Footer/Footer';
 import Navbar from './components/shared/Navbar/Navbar';
 import { poppins } from './lib/config/font';
@@ -5,11 +6,11 @@ import ToastProvider from './lib/provider/ToastProvider';
 import './styles/global.scss';
 import type { Metadata } from 'next';
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}) {
   return (
     <html lang='en'>
       <head>

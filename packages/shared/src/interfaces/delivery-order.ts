@@ -2,7 +2,6 @@ import {
   DeliveryOrderStatusEnum,
   TypeOfCommodityEnum,
 } from '../enums/delivery-order';
-import { CompanionStatusEnum } from '../enums/user';
 
 export interface DeliveryOrderFormData {
   start_date: string;
@@ -15,6 +14,7 @@ export interface DeliveryOrderFormData {
   size: string;
   phone: string;
   title: string;
+  be_in_touch?: boolean;
   type_of_commodity: TypeOfCommodityEnum;
 }
 
@@ -38,7 +38,6 @@ export interface DeliverOrderDocument
       email: string;
       id_number?: string;
       phone?: string;
-      status?: CompanionStatusEnum;
       full_name: string;
     },
   ];

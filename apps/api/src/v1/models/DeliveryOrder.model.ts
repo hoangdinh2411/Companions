@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import {
-  CompanionStatusEnum,
   DeliverOrderDocument,
   DeliveryOrderStatusEnum,
   TypeOfCommodityEnum,
@@ -16,7 +15,7 @@ const CompanionsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    name: {
+    full_name: {
       type: String,
       required: true,
     },
@@ -28,18 +27,12 @@ const CompanionsSchema = new mongoose.Schema(
       required: true,
       type: String,
     },
-    full_name: {
-      // required: true,
+    email: {
+      required: true,
       type: String,
-    },
-    status: {
-      type: String,
-      default: CompanionStatusEnum.PENDING,
-      enum: CompanionStatusEnum,
     },
   },
   {
-    _id: false,
     timestamps: {
       createdAt: 'created_at',
       updatedAt: 'updated_at',
@@ -78,6 +71,10 @@ const DeliveryOrderSchema = new mongoose.Schema<IDeliveryOrderSchema>(
     },
     size: {
       type: String,
+    },
+    be_in_touch: {
+      type: Boolean,
+      required: true,
     },
     message: {
       type: String,

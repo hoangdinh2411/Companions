@@ -36,6 +36,7 @@ export default function Form() {
       type_of_commodity: '' as TypeOfCommodityEnum,
       title: '',
       phone: '',
+      be_in_touch: 0,
     },
     validateOnBlur: false,
     validationSchema: deliveryOrderFormDataValidation,
@@ -52,6 +53,7 @@ export default function Form() {
           weight: Number(values.weight),
           start_date: dayjs(values.start_date).format('YYYY-MM-DD'),
           end_date: dayjs(values.end_date).format('YYYY-MM-DD'),
+          be_in_touch: values.be_in_touch === 0 ? false : true,
         };
         const res = await createNewOrder(formData);
         if (res.status === 401) {
@@ -255,6 +257,22 @@ export default function Form() {
             placeholder='Please enter the message '
           ></textarea>
         </div>
+        <div className='new-journey__form__boxes be-in-touch'>
+          <input
+            type='checkbox'
+            name='be_in_touch'
+            id='be_in_touch'
+            value={values.be_in_touch}
+            onChange={() => {
+              setFieldValue('be_in_touch', values.be_in_touch === 0 ? 1 : 0);
+            }}
+          />
+          <label htmlFor='be_in_touch'>
+            Will you be in touch with the one who delivers this order for you?
+            <br />
+            If you check this box, nobody can see your contact details
+          </label>
+        </div>
         <div className='new-order__form__btn-box'>
           <Button variant='green' type='submit' loading={!open && isPending}>
             Create Order{' '}
@@ -262,11 +280,7 @@ export default function Form() {
         </div>
       </form>
       <Modal open={open} onClose={handelCloseModal}>
-        <BankIDForm
-          loading={open && isPending}
-          handleSignInByBankId={handleSignInByBankId}
-          closeModal={handelCloseModal}
-        />
+        <BankIDForm loading={open && isPending} closeModal={handelCloseModal} />
       </Modal>
     </>
   );

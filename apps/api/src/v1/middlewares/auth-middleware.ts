@@ -10,7 +10,10 @@ import { UserDocument } from '@repo/shared';
 declare global {
   namespace Express {
     export interface Request {
-      user: UserDocument;
+      user: Pick<
+        UserDocument,
+        '_id' | 'phone' | 'id_number' | 'full_name' | 'email'
+      >;
       is_identified: boolean;
     }
   }
@@ -38,6 +41,7 @@ export async function authMiddleware(
         createHttpError.Unauthorized(ERROR_MESSAGES.USER.MISSING_TOKEN)
       );
     let decoded = verifyToken(token);
+    console.log(decoded);
 
     const user = await UserModel.findOne({
       _id: (decoded as any)._id,
@@ -50,11 +54,18 @@ export async function authMiddleware(
       return next(
         createHttpError.Unauthorized(ERROR_MESSAGES.USER.INVALID_TOKEN)
       );
-    req.user = user;
+    req.user = {
+      _id: user._id,
+      email: user.email,
+      full_name: user.full_name,
+      phone: user.phone,
+      id_number: user.id_number,
+    };
     req.is_identified = (decoded as any).is_identified;
 
     next();
   } catch (error) {
+    console.log('error');
     return next(
       createHttpError.Unauthorized(
         (error as Error).message || ERROR_MESSAGES.USER.INVALID_TOKEN

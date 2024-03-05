@@ -43,6 +43,16 @@ export const journeyFormDataValidation = yup.object().shape({
     .min(1, 'Seats cannot be less than 1')
     .required('Need to specify the number of seats'),
   time: yup.string().required('Need to specify the time'),
+  be_in_touch: yup
+    .boolean()
+    .test(
+      'isBoolean',
+      'Need to specify if you want to be in touch',
+      (value) => {
+        return typeof value === 'boolean';
+      }
+    )
+    .required('Need to specify if you want to be in touch'),
 });
 
 export const journeyRequestValidation = yup

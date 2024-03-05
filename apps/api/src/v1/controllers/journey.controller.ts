@@ -12,6 +12,7 @@ import { defaultResponseIfNoData } from '../helpers/response';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import UserModel from '../models/User.model';
 import { generateDocuments } from '../helpers/insertManyDocument';
+import mongoose from 'mongoose';
 
 let page = 1;
 
@@ -47,6 +48,61 @@ const JourneyController = {
         success: true,
       });
     } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+  join: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.params.journey_id) {
+        return next(
+          createHttpError.BadRequest(ERROR_MESSAGES.JOURNEY.MISSING_JOURNEY_ID)
+        );
+      }
+
+      const journey = await JourneyModel.findOneAndUpdate(
+        {
+          _id: req.params.journey_id,
+          'created_by._id': {
+            $ne: new mongoose.Types.ObjectId(req.user._id),
+          },
+          companions: {
+            $not: {
+              $elemMatch: {
+                _id: req.user._id,
+              },
+            },
+          },
+        },
+        {
+          $push: {
+            companions: {
+              ...req.user,
+              companion_id: req.user._id,
+            },
+          },
+        },
+        {
+          new: true,
+          insert: false,
+        }
+      );
+      if (!journey) {
+        return next(
+          createHttpError.BadRequest(ERROR_MESSAGES.JOURNEY.HAS_JOINED)
+        );
+      }
+
+      await UserModel.findByIdAndUpdate(req.user._id, {
+        $push: {
+          journeys_joined: req.params.journey_id,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      console.log(error);
       return next(createHttpError.BadRequest((error as Error).message));
     }
   },

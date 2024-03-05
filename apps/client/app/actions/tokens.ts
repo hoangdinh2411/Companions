@@ -1,6 +1,8 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import APP_ROUTER from '../lib/config/router';
 
 export async function saveToken(token: string) {
   cookies().set({
