@@ -4,6 +4,7 @@ import {
   SignInAPIResponse,
   SignInFormData,
   SignUpFormData,
+  GetUserAPIResponse,
 } from './interfaces/user';
 import {
   signInValidation,
@@ -58,7 +59,13 @@ export {
 };
 
 //User
-export type { UserDocument, SignInAPIResponse, SignInFormData, SignUpFormData };
+export type {
+  UserDocument,
+  SignInAPIResponse,
+  SignInFormData,
+  SignUpFormData,
+  GetUserAPIResponse,
+};
 
 //Journey
 export type { JourneyDocument, JourneyResponse, JourneyFormData };

@@ -11,7 +11,10 @@ import { limitDocumentPerPage } from '../../lib/utils/variables';
 import { defaultResponseIfNoData } from '../helpers/response';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import UserModel from '../models/User.model';
-import { generateDocuments } from '../helpers/insertManyDocument';
+import {
+  generateDocuments,
+  generateDocumentsForOrders,
+} from '../helpers/insertManyDocument';
 import mongoose from 'mongoose';
 
 let page = 1;
@@ -65,10 +68,13 @@ const JourneyController = {
           'created_by._id': {
             $ne: new mongoose.Types.ObjectId(req.user._id),
           },
+          start_date: {
+            $gte: dayjs().format('YYYY-MM-DD'),
+          },
           companions: {
             $not: {
               $elemMatch: {
-                _id: req.user._id,
+                _id: new mongoose.Types.ObjectId(req.user._id),
               },
             },
           },
@@ -102,16 +108,15 @@ const JourneyController = {
         success: true,
       });
     } catch (error) {
-      console.log(error);
       return next(createHttpError.BadRequest((error as Error).message));
     }
   },
   getAll: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await queryValidation.validate(req.query);
+      await queryValidation.getAll.validate(req.query);
 
-      if (req.query.page) {
-        page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
+      if (req.query.page && Number(req.query.page) > 0) {
+        page = Number(req.query.page);
       }
 
       const data = await JourneyModel.aggregate([
@@ -175,9 +180,10 @@ const JourneyController = {
   filter: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const stages = [];
-      await queryValidation.validate(req.query);
-      if (req.query.page) {
-        page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
+      await queryValidation.filter.carpooling.validate(req.query);
+
+      if (req.query.page && Number(req.query.page) > 0) {
+        page = Number(req.query.page);
       }
 
       stages.push({
@@ -263,14 +269,12 @@ const JourneyController = {
   },
   // on journey page
   search: async (req: Request, res: Response, next: NextFunction) => {
-    const searchText = req.query.searchText || '';
     try {
-      await queryValidation.validate({
-        searchText,
-      });
+      await queryValidation.search.validate(req.query);
+      const search_text = req.query.search_text || '';
 
-      if (req.query.page) {
-        page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
+      if (req.query.page && Number(req.query.page) > 0) {
+        page = Number(req.query.page);
       }
 
       const data = await JourneyModel.aggregate([
@@ -278,10 +282,10 @@ const JourneyController = {
           $match: {
             status: JourneyStatusEnum.ACTIVE,
             $or: [
-              { from: { $regex: searchText.toString(), $options: 'i' } },
-              { to: { $regex: searchText.toString(), $options: 'i' } },
+              { from: { $regex: search_text.toString(), $options: 'i' } },
+              { to: { $regex: search_text.toString(), $options: 'i' } },
               {
-                title: { $regex: searchText.toString(), $options: 'i' },
+                title: { $regex: search_text.toString(), $options: 'i' },
               },
             ],
           },
@@ -361,6 +365,7 @@ const JourneyController = {
   ) => {
     try {
       // await generateDocuments();
+      // await generateDocumentsForOrders();
       return res.status(200).json({
         success: true,
       });

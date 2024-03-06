@@ -19,7 +19,7 @@ export default async function DeliveryOrdersPage({
   let params = '';
   let res;
   const { from, to, start_date, search_text, type_of_commodity } = searchParams;
-  if (from && to && start_date) {
+  if (from && to && start_date && type_of_commodity) {
     params = generateSearchParams(
       ['from', 'to', 'start_date', 'type_of_commodity'],
       searchParams
@@ -36,10 +36,11 @@ export default async function DeliveryOrdersPage({
   return (
     <div className='orders'>
       <div className='orders__container'>
-        {search_text || from || to || start_date || type_of_commodity ? (
-          <strong>
-            Empty search field for fetching newest delivery orders
-          </strong>
+        {search_text ? (
+          <h6>
+            Searching for "{search_text}" in delivery orders. Empty search field
+            for fetching newest delivery orders
+          </h6>
         ) : null}
         <SearchBar />
         <Suspense fallback={<LoadingSpinner />}>

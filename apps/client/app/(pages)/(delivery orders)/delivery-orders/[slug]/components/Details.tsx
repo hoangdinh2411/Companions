@@ -1,89 +1,60 @@
-'use client';
-import { DeliverOrderDocument, UserDocument } from '@repo/shared';
-import React, { useState } from 'react';
-import Button from '../../../../../components/UI/Button';
-import { getIdentifyNumber } from '../../../../../actions/tokens';
-import Modal from '../../../../../components/UI/Modal';
-import BankIDForm from '../../../../../components/shared/Modals/BankIDForm';
+import { DeliverOrderDocument } from '@repo/shared';
+import Action from './Action';
 
 type Props = {
-  data: DeliverOrderDocument;
+  order: DeliverOrderDocument;
 };
 
-export default function Details({ data }: Props) {
-  const [open, setOpen] = useState(false);
-  const [idNumber, setIdNumber] = useState('');
-  const handleTakeOrder = async () => {
-    const id_number = await getIdentifyNumber();
-    if (!id_number) {
-      setOpen(true);
-      return;
-    }
-  };
-
-  const handleSignInByBankId = (idNumber: string) => {
-    setIdNumber(idNumber);
-  };
-
-  const handleCloseModal = () => {
-    setOpen(false);
-  };
+export default function Details({ order }: Props) {
   return (
     <>
       <section className='details cards'>
         <h4 className='details__title'>
           {' '}
-          {data?.title}{' '}
-          <Button variant='green' size='small' onClick={handleTakeOrder}>
-            Take order
-          </Button>
+          {order?.title}
+          <Action order={order} />
         </h4>
         <article className='details__boxes'>
-          Travel Route:{' '}
-          <span>
-            {data?.from} &#8614; {data?.to}
-          </span>
+          From: <span>{order?.from}</span>
         </article>
         <article className='details__boxes'>
-          Start: <span>{data?.start_date}</span>
+          To: <span>{order?.to}</span>
         </article>
         <article className='details__boxes'>
-          End: <span>{data?.end_date}</span>
+          Start: <span>{order?.start_date}</span>
         </article>
         <article className='details__boxes'>
-          Weight: <span>{data?.weight}</span>
+          End: <span>{order?.end_date}</span>
         </article>
         <article className='details__boxes'>
-          Type Of Commodity: <span>{data?.type_of_commodity} </span>
+          Weight: <span>{order?.weight}</span>
         </article>
-        {data?.size ? (
+        <article className='details__boxes'>
+          Type Of Commodity:{' '}
+          <span>{order?.type_of_commodity.toUpperCase()} </span>
+        </article>
+        {order?.size ? (
           <article className='details__boxes'>
-            Size: <span>{data?.size ?? ''} </span>
+            Size: <span>{order?.size ?? ''} (length - width - height) </span>
           </article>
         ) : null}
         <article className='details__boxes'>
           Price:{' '}
-          <span>{data?.price === 0 ? 'Free' : data?.price + ' SEK'} </span>
+          <span>{order?.price === 0 ? 'Free' : order?.price + ' SEK'} </span>
         </article>
         <article className='details__boxes details__boxes--message'>
-          Note:{' '}
+          Message:{' '}
           <div>
-            {!data?.message ? (
+            {!order?.message ? (
               "(don't have any message for this journey yet!)"
             ) : (
               <blockquote>
-                <p>{data?.message} </p>
+                <p>{order?.message} </p>
               </blockquote>
             )}
           </div>
         </article>
       </section>
-      <Modal open={open} onClose={handleCloseModal}>
-        <BankIDForm
-          handleSignInByBankId={handleSignInByBankId}
-          closeModal={handleCloseModal}
-        />
-      </Modal>
     </>
   );
 }

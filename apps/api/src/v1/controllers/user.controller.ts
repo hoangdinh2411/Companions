@@ -206,16 +206,57 @@ const UserController = {
 
   getUser: async function (req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await UserModel.findOne({
-        _id: req.user._id,
-        status: UserStatusEnum.ACTIVE,
-      }).select('-password -__v -created_at -updated_at -status');
+      const user = await UserModel.aggregate([
+        {
+          $match: {
+            _id: req.user._id,
+            status: UserStatusEnum.ACTIVE,
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            full_name: 1,
+            email: 1,
+            phone: 1,
+            id_number: 1,
+            total_orders_placed: {
+              $cond: {
+                if: { $isArray: '$order_placed' },
+                then: { $size: '$order_placed' },
+                else: 0,
+              },
+            },
+            total_orders_taken: {
+              $cond: {
+                if: { $isArray: '$order_taken' },
+                then: { $size: '$order_taken' },
+                else: 0,
+              },
+            },
+            total_journeys_shared: {
+              $cond: {
+                if: { $isArray: '$journeys_shared' },
+                then: { $size: '$journeys_shared' },
+                else: 0,
+              },
+            },
+            total_journeys_joined: {
+              $cond: {
+                if: { $isArray: '$journeys_joined' },
+                then: { $size: '$journeys_joined' },
+                else: 0,
+              },
+            },
+          },
+        },
+      ]);
 
       if (!user)
         return next(createHttpError.NotFound(ERROR_MESSAGES.USER.NOT_FOUND));
       return res.status(200).json({
         success: true,
-        data: user,
+        data: user[0],
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));

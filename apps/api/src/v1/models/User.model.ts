@@ -45,7 +45,7 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
         ref: 'DeliveryOrder',
       },
     ],
-    order_full_filled: [
+    orders_taken: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'DeliveryOrder',

@@ -27,6 +27,9 @@ export const createNewJourney = async (formData: JourneyFormData) => {
 export const getOneJourneyBySlug = async (slug = '') => {
   const res = await customFetch<JourneyDocument>(`/journeys/${slug}`, {
     method: 'GET',
+    next: {
+      path: APP_ROUTER.JOURNEYS + '/' + slug,
+    },
   });
 
   return res;
@@ -50,9 +53,7 @@ export const filterJourneys = async (query: string) => {
   if (!query) new Error('Query is required');
   const res = await customFetch<JourneyResponse>(`/journeys/filter?${query}`, {
     method: 'GET',
-    next: {
-      tags: [`/journeys/filter?${query}`],
-    },
+    cache: 'no-cache',
   });
 
   return res;
@@ -61,9 +62,7 @@ export const filterJourneys = async (query: string) => {
 export const searchJourneys = async (query: string) => {
   const res = await customFetch<JourneyResponse>(`/journeys/search?${query}`, {
     method: 'GET',
-    next: {
-      tags: [`/journeys/search?${query}`],
-    },
+    cache: 'no-cache',
   });
 
   return res;
@@ -74,12 +73,14 @@ export const joinJourney = async (journey_id: string, slug: string) => {
     `/journeys/${journey_id}/join`,
     {
       method: 'PUT',
+      cache: 'no-cache',
     },
     true
   );
 
   if (res.success) {
-    revalidateTag('/journeys/' + slug);
+    revalidatePath(APP_ROUTER.JOURNEYS + '/' + slug);
+    revalidateTag('profile');
   }
   return res;
 };

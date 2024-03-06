@@ -26,13 +26,13 @@ export const createNewOrder = async (formData: DeliveryOrderFormData) => {
   return res;
 };
 
-export const getOneDeliveryOrBySlug = async (slug = '') => {
+export const getOneDeliveryOrderBySlug = async (slug = '') => {
   const res = await customFetch<DeliverOrderDocument>(
     `/delivery-orders/${slug}`,
     {
       method: 'GET',
       next: {
-        tags: [`/delivery-orders/${slug}`],
+        path: APP_ROUTER.DELIVERY_ORDERS + '/' + slug,
       },
     }
   );
@@ -47,7 +47,7 @@ export const getAllDeliveryOrder = async (query = '') => {
   const res = await customFetch<DeliverOrderResponse>(url, {
     method: 'GET',
     next: {
-      revalidatePath: APP_ROUTER.DELIVERY_ORDERS,
+      path: APP_ROUTER.DELIVERY_ORDERS,
     },
   });
 
@@ -76,5 +76,20 @@ export const searchDeliveryOrder = async (query: string) => {
     }
   );
 
+  return res;
+};
+export const takeOrder = async (order_id: string, slug: string) => {
+  const res = await customFetch(
+    `/delivery-orders/take/${order_id}`,
+    {
+      method: 'PUT',
+      cache: 'no-cache',
+    },
+    true
+  );
+  if (res.success) {
+    revalidatePath(APP_ROUTER.DELIVERY_ORDERS + '/' + slug);
+    revalidateTag('profile');
+  }
   return res;
 };

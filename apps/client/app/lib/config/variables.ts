@@ -1,22 +1,19 @@
-export const typeOfCommodityOptions = [
+import { TypeOfCommodityEnum } from '@repo/shared';
+
+const typeOfCommodities = Object.entries(TypeOfCommodityEnum).map(
+  ([key, value]) => ({
+    _id: key,
+    value,
+    label: value.charAt(0).toUpperCase() + value.slice(1),
+  })
+);
+export const typeOfCommodityOptions = typeOfCommodities;
+
+export const typeOfCommodityOptionsForFilter = [
   {
-    _id: '1',
-    value: 'food',
-    label: 'Food',
+    _id: 'all',
+    value: 'all',
+    label: 'All',
   },
-  {
-    _id: '2',
-    value: 'package',
-    label: 'Package',
-  },
-  {
-    _id: '3',
-    value: 'document',
-    label: 'Document',
-  },
-  {
-    _id: '4',
-    value: 'letter',
-    label: 'Tetter',
-  },
+  ...typeOfCommodities,
 ];

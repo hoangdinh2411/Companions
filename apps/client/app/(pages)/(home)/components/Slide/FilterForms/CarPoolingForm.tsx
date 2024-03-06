@@ -8,10 +8,11 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
 import APP_ROUTER from '../../../../../lib/config/router';
+import { generateSearchParams } from '../../../../../lib/utils/generateSearchParams';
 
 export default function CarpoolingForm() {
   const [isPending, startTransition] = useTransition();
-  const [start_date, setstart_date] = useState<Date | undefined>(new Date());
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const fromRef = React.useRef<HTMLInputElement>(null);
   const toRef = React.useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -26,14 +27,15 @@ export default function CarpoolingForm() {
         toast.error('Please enter a valid "TO" location');
         return;
       }
-      if (!start_date) {
+      if (!startDate) {
         toast.error('Please enter a valid date');
         return;
       }
-      const params = new URLSearchParams();
-      params.append('from', fromRef.current.value);
-      params.append('to', toRef.current.value);
-      params.append('start_date', dayjs(start_date).format('YYYY-MM-DD'));
+      const params = generateSearchParams(['from', 'to', 'start_date'], {
+        from: fromRef.current.value,
+        to: toRef.current.value,
+        start_date: dayjs(startDate).format('YYYY-MM-DD'),
+      });
       router.push(`${APP_ROUTER.JOURNEYS}?${params.toString()}`);
     });
   };
@@ -53,8 +55,8 @@ export default function CarpoolingForm() {
       />
       <DatePicker
         className='boxes'
-        selected={start_date}
-        handleSelect={(date) => setstart_date(date)}
+        selected={startDate}
+        handleSelect={(date) => setStartDate(date)}
       />
 
       <div className='button-container'>

@@ -1,0 +1,20 @@
+@font-face {
+  font-family: 'Poppins', sans-serif;
+  src:
+    url('/fonts/Poppins/Poppins-Black.ttf') format('truetype'),
+    url('/fonts/Poppins/Poppins-Bold.ttf') format('truetype'),
+    url('/fonts/Poppins/Poppins-ExtraBold.ttf') format('truetype'),
+    url('/fonts/Poppins/Poppins-ExtraLight.ttf') format('truetype'),
+    url('/fonts/Poppins/Poppins-Medium.ttf') format('truetype'),
+    url('/fonts/Poppins/Poppins-Regular.ttf') format('truetype'),
+    url('/fonts/Poppins/Poppins-Regular.ttf') format('truetype'),
+    url('/fonts/Poppins/Poppins-Thin.ttf') format('truetype');
+  font-display: fallback;
+}
+@font-face {
+  font-family: 'PT Serif', serif;
+  src:
+    url('/fonts/PT_Serif/PTSerif-Bold.ttf') format('truetype'),
+    url('/fonts/PT_Serif/PTSerif-Regular.ttf') format('truetype');
+  font-display: fallback;
+}

@@ -79,7 +79,7 @@
         margin-bottom: $spacing * 4;
         width: 100%;
         display: block;
-        @include text($white, 500);
+        @include text($white, 400);
         @include breakpoint(lg) {
           margin: 0;
           text-transform: uppercase;

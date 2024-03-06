@@ -14,7 +14,7 @@ export interface UserDocument extends SignInFormData {
   updated_at?: Date;
   full_name: string;
   orders_placed: string[];
-  order_full_filled: string[];
+  orders_taken: string[];
   journeys_shared: string[];
   journeys_joined: string[];
 }
@@ -25,4 +25,15 @@ export interface SignUpFormData extends SignInFormData {
 
 export interface SignInAPIResponse {
   token: string;
+}
+
+export interface GetUserAPIResponse
+  extends Omit<
+    UserDocument,
+    'orders_placed' | 'orders_taken' | 'journeys_shared' | 'journeys_joined'
+  > {
+  total_orders_placed: number;
+  total_orders_taken: number;
+  total_journeys_shared: number;
+  total_journeys_joined: number;
 }

@@ -24,9 +24,11 @@ export default function SearchField() {
   }
   const handleEnter = (e: React.KeyboardEvent) => {
     if (e.key !== 'Enter') return;
+    if (searchRef.current?.value === '') return;
     generateSearchParams();
   };
   const handleClick = () => {
+    if (searchRef.current?.value === '') return;
     generateSearchParams();
   };
 

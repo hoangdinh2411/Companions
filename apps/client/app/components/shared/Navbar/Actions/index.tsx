@@ -3,7 +3,11 @@ import Link from 'next/link';
 import React, { useEffect, useMemo } from 'react';
 import APP_ROUTER from '../../../../lib/config/router';
 import { UserIcon } from '../../../../lib/config/svg';
-import { removeIdentifyNumber, removeToken } from '../../../../actions/tokens';
+import {
+  getToken,
+  removeIdentifyNumber,
+  removeToken,
+} from '../../../../actions/tokens';
 import { toast } from 'react-toastify';
 import { usePathname, useRouter } from 'next/navigation';
 import { getUser } from '../../../../actions/userApi';
@@ -21,7 +25,15 @@ export default function Actions() {
       setDropdown(false);
     }
 
-    getUser().then((res) => {
+    async function checkAuth() {
+      const token = await getToken();
+      if (!token) {
+        if (user?._id) {
+          setUser({} as UserDocument);
+        }
+        return;
+      }
+      const res = await getUser();
       if (!user._id && res.success && res.data?._id) {
         setUser(res.data);
         router.refresh();
@@ -32,7 +44,9 @@ export default function Actions() {
         setUser({} as UserDocument);
         return;
       }
-    });
+    }
+
+    checkAuth();
   }, [pathname]);
 
   const handleDropdown = () => {

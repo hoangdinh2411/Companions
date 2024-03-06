@@ -58,16 +58,18 @@
   }
   &__list {
     display: grid;
+    grid-template-rows: auto;
     grid-template-columns: repeat(1, 1fr);
+    gap: $spacing * 12;
     @include breakpoint(sm) {
       grid-template-columns: repeat(2, 1fr);
     }
-    @include breakpoint(lg) {
+    @include breakpoint(md) {
       grid-template-columns: repeat(3, 1fr);
     }
-
-    grid-template-rows: auto;
-    gap: $spacing * 16;
+    @include breakpoint(lg) {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
   &__cards {
     .card {
@@ -93,18 +95,25 @@
       &__content {
         padding: $spacing * 8 0;
         > .title {
-          font-size: 1.8rem;
+          font-size: 1.6rem;
           font-weight: 600;
-          width: 30rem;
-          line-height: 1.6;
+          max-width: 30rem;
+          height: 5rem;
+          display: inline-block;
+          overflow: hidden;
           text-overflow: ellipsis;
           overflow: hidden;
-          white-space: nowrap;
+          @include breakpoint(md) {
+            max-width: 28rem;
+          }
         }
         > .route {
-          font-size: 1.4rem;
+          font-size: 1.2rem;
           color: $text-secondary;
-          width: 30rem;
+          max-width: 30rem;
+          @include breakpoint(md) {
+            max-width: 25rem;
+          }
           line-height: 1.6;
           text-overflow: ellipsis;
           overflow: hidden;
@@ -112,7 +121,7 @@
         }
 
         > .date {
-          font-size: 1.4rem;
+          font-size: 1.2rem;
           margin-top: $spacing * 4;
           font-weight: 600;
           display: block;
