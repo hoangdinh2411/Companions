@@ -21,5 +21,7 @@ export const ERROR_MESSAGES = {
   DELIVERY_ORDER: {
     NOT_FOUND: 'Delivery order not found',
     DUPLICATE_DELIVERY_ORDER: 'Cannot create duplicate delivery order',
+    HAS_TAKEN: 'You have taken this delivery order',
+    MISSING_DELIVERY_ORDER_ID: 'Missing delivery order id',
   },
 };

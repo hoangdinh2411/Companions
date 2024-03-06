@@ -18,7 +18,6 @@ export default function Pagination({ total }: { total: number }) {
     const pageParams = searchParams.get('page');
     if (!pageParams) {
       setCurrentPage(1);
-      router.replace(`${pathname}?page=1`);
       return;
     }
     if (Number(pageParams) !== currentPage) {

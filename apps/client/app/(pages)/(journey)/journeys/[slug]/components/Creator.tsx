@@ -11,11 +11,14 @@ export default function Creator({ journey }: Props) {
       <h5 className='creator__header'>Created By</h5>
       {journey?.be_in_touch ? (
         <p className='creator__be-in-touch'>
-          The driver wants to be in touch with you. So please be sure to check
+          The driver will to be in touch with you. So please be sure to check
           your contact details.
         </p>
       ) : (
         <>
+          <article className='creator__phone'>
+            Name: <span>{journey?.created_by?.full_name}</span>
+          </article>
           <article className='creator__email'>
             Email: <span>{journey?.created_by?.email}</span>
           </article>

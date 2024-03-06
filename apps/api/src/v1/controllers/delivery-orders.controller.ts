@@ -1,5 +1,6 @@
 import {
   DeliveryOrderStatusEnum,
+  TypeOfCommodityEnum,
   deliveryOrderRequestValidation,
   queryValidation,
 } from '@repo/shared';
@@ -11,6 +12,8 @@ import { limitDocumentPerPage } from '../../lib/utils/variables';
 import { defaultResponseIfNoData } from '../helpers/response';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import UserModel from '../models/User.model';
+import { ValidationError } from 'yup';
+import mongoose from 'mongoose';
 let page = 1;
 
 const DeliveryOrderController = {
@@ -44,10 +47,10 @@ const DeliveryOrderController = {
   },
   getAll: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await queryValidation.validate(req.query);
+      await queryValidation.getAll.validate(req.query);
 
-      if (req.query.page) {
-        page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
+      if (req.query.page && Number(req.query.page) > 0) {
+        page = Number(req.query.page);
       }
 
       const data = await DeliveryOrderSchema.aggregate([
@@ -110,11 +113,13 @@ const DeliveryOrderController = {
   // on slide component on home page
   filter: async (req: Request, res: Response, next: NextFunction) => {
     try {
+      await queryValidation.filter.shipping.validate(req.query);
       const stages = [];
-      await queryValidation.validate(req.query);
-      if (req.query.page) {
-        page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
+
+      if (req.query.page && Number(req.query.page) > 0) {
+        page = Number(req.query.page);
       }
+
       stages.push({
         $match: {
           status: DeliveryOrderStatusEnum.ACTIVE,
@@ -143,6 +148,16 @@ const DeliveryOrderController = {
         stages.push({
           $match: {
             to: { $regex: req.query.to.toString(), $options: 'i' },
+          },
+        });
+      }
+      if (
+        req.query.type_of_commodity &&
+        req.query.type_of_commodity !== 'all'
+      ) {
+        stages.push({
+          $match: {
+            type_of_commodity: req.query.type_of_commodity.toString(),
           },
         });
       }
@@ -187,25 +202,24 @@ const DeliveryOrderController = {
           },
         },
       ]);
-
       return res.status(200).json({
         success: true,
         data: defaultResponseIfNoData(data),
       });
     } catch (error) {
-      return next(createHttpError.BadRequest((error as Error).message));
+      return next(createHttpError.BadRequest((error as any).message));
     }
   },
   // on journey page
   search: async (req: Request, res: Response, next: NextFunction) => {
-    const searchText = req.query.searchText || '';
     try {
-      await queryValidation.validate({
-        searchText,
-      });
-      if (req.query.page) {
-        page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
+      await queryValidation.search.validate(req.query);
+      const search_text = req.query.search_text || '';
+
+      if (req.query.page && Number(req.query.page) > 0) {
+        page = Number(req.query.page);
       }
+
       const data = await DeliveryOrderSchema.aggregate([
         {
           $match: {
@@ -214,10 +228,10 @@ const DeliveryOrderController = {
               $gte: dayjs().format('YYYY-MM-DD'),
             },
             $or: [
-              { from: { $regex: searchText.toString(), $options: 'i' } },
-              { to: { $regex: searchText.toString(), $options: 'i' } },
+              { from: { $regex: search_text.toString(), $options: 'i' } },
+              { to: { $regex: search_text.toString(), $options: 'i' } },
               {
-                title: { $regex: searchText.toString(), $options: 'i' },
+                title: { $regex: search_text.toString(), $options: 'i' },
               },
             ],
           },
@@ -282,6 +296,68 @@ const DeliveryOrderController = {
       return res.status(200).json({
         success: true,
         data,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+
+  takeOrder: async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.params.order_id)
+      return next(
+        createHttpError.BadRequest(
+          ERROR_MESSAGES.DELIVERY_ORDER.MISSING_DELIVERY_ORDER_ID
+        )
+      );
+    try {
+      const order = await DeliveryOrderSchema.findOneAndUpdate(
+        {
+          _id: req.params.order_id,
+          status: DeliveryOrderStatusEnum.ACTIVE,
+          'created_by._id': {
+            $ne: new mongoose.Types.ObjectId(req.user._id),
+          },
+          start_date: {
+            $gte: dayjs().format('YYYY-MM-DD'),
+          },
+          companions: {
+            $not: {
+              $elemMatch: {
+                _id: new mongoose.Types.ObjectId(req.user._id),
+              },
+            },
+          },
+        },
+        {
+          $push: {
+            companions: {
+              _id: new mongoose.Types.ObjectId(req.user._id),
+              email: req.user.email,
+              id_number: req.user.id_number,
+              phone: req.user.phone,
+              full_name: req.user.full_name,
+            },
+          },
+        },
+        {
+          new: true,
+          insert: false,
+        }
+      );
+      if (!order) {
+        return next(
+          createHttpError.BadRequest(ERROR_MESSAGES.DELIVERY_ORDER.HAS_TAKEN)
+        );
+      }
+
+      await UserModel.findByIdAndUpdate(req.user._id, {
+        $push: {
+          orders_taken: order._id,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));

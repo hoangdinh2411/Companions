@@ -8,5 +8,4 @@ export enum TypeOfCommodityEnum {
   FOOD = 'food',
   PACKAGE = 'package',
   DOCUMENT = 'document',
-  LETTER = 'letter',
 }

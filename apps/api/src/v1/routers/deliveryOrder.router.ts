@@ -9,4 +9,9 @@ deliveryOrderRouter.get('/', DeliveryOrderController.getAll);
 deliveryOrderRouter.get('/search', DeliveryOrderController.search);
 deliveryOrderRouter.get('/filter', DeliveryOrderController.filter);
 deliveryOrderRouter.get('/:slug', DeliveryOrderController.getOneBySlug);
+deliveryOrderRouter.put(
+  '/take/:order_id',
+  authMiddleware,
+  DeliveryOrderController.takeOrder
+);
 export default deliveryOrderRouter;

@@ -5,16 +5,17 @@ import './FilterForm.scss';
 import DatePicker from '../../../../../components/UI/DatePicker/DatePicker';
 import Button from '../../../../../components/UI/Button';
 import Select from '../../../../../components/UI/Select';
-import { typeOfCommodityOptions } from '../../../../../lib/config/variables';
+import { typeOfCommodityOptionsForFilter } from '../../../../../lib/config/variables';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import APP_ROUTER from '../../../../../lib/config/router';
 import { useRouter } from 'next/navigation';
+import { generateSearchParams } from '../../../../../lib/utils/generateSearchParams';
 
 export default function ShippingForm() {
   const router = useRouter();
-  const [start_date, setstart_date] = useState<Date | undefined>(new Date());
-  const [type_of_commodity, settype_of_commodity] = useState<string>('');
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date());
+  const [typeOfCommodity, setTypeOFCommodity] = useState<string>('');
   const fromRef = React.useRef<HTMLInputElement>(null);
   const toRef = React.useRef<HTMLInputElement>(null);
   const handleFilter = (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,22 +29,24 @@ export default function ShippingForm() {
         toast.error('Please enter a valid "TO" location');
         return;
       }
-      if (!start_date) {
+      if (!startDate) {
         toast.error('Please enter a valid date');
         return;
       }
-      if (!start_date) {
-        toast.error('Please enter a valid date');
-        return;
-      }
-      if (!type_of_commodity) {
+      if (!typeOfCommodity) {
         toast.error('Please select a type of commodity');
         return;
       }
-      const params = new URLSearchParams();
-      params.append('from', fromRef.current.value);
-      params.append('to', toRef.current.value);
-      params.append('start_date', dayjs(start_date).format('YYYY-MM-DD'));
+      const params = generateSearchParams(
+        ['from', 'to', 'start_date', 'type_of_commodity'],
+        {
+          from: fromRef.current.value,
+          to: toRef.current.value,
+          start_date: dayjs(startDate).format('YYYY-MM-DD'),
+          type_of_commodity: typeOfCommodity,
+        }
+      );
+
       router.push(`${APP_ROUTER.DELIVERY_ORDERS}?${params.toString()}`);
     });
   };
@@ -58,14 +61,14 @@ export default function ShippingForm() {
       <TextField placeholder='To...' className='boxes' ref={toRef} />
       <DatePicker
         className='boxes'
-        selected={start_date}
-        handleSelect={(date) => setstart_date(date)}
+        selected={startDate}
+        handleSelect={(date) => setStartDate(date)}
       />
       <Select
-        options={typeOfCommodityOptions}
-        value={type_of_commodity}
+        options={typeOfCommodityOptionsForFilter}
+        value={typeOfCommodity}
         onSelect={(_, value) => {
-          settype_of_commodity(value);
+          setTypeOFCommodity(value);
         }}
       />
       <div className='button-container'>

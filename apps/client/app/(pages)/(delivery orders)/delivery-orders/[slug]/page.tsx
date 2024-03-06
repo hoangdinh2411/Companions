@@ -4,23 +4,24 @@ import { notFound } from 'next/navigation';
 import './OrderDetails.scss';
 import Details from './components/Details';
 import Creator from './components/Creator';
-import { getOneDeliveryOrBySlug } from '../../../../actions/deliveryOrderApi';
+import { getOneDeliveryOrderBySlug } from '../../../../actions/deliveryOrderApi';
 import { getUser } from '../../../../actions/userApi';
 type Props = {
   params: { slug: string };
 };
 
 export default async function OrderDetailsPage({ params: { slug } }: Props) {
-  const res = await getOneDeliveryOrBySlug(slug);
+  const res = await getOneDeliveryOrderBySlug(slug);
   if (!res.data || !res.data._id) {
     notFound();
   }
+
   return (
     <div className='delivery-order__details'>
       {res.data && res.data.hasOwnProperty('_id') && (
         <div className='delivery-order__details__container'>
-          <Details data={res.data} />
-          <Creator data={res.data} />
+          <Details order={res.data} />
+          <Creator order={res.data} />
         </div>
       )}
     </div>
@@ -32,7 +33,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   if (!slug) notFound();
-  const res = await getOneDeliveryOrBySlug(slug);
+  const res = await getOneDeliveryOrderBySlug(slug);
   if (!res.data || !res.data._id) {
     notFound();
   }

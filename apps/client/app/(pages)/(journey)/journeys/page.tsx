@@ -36,8 +36,11 @@ export default async function JourneysPage({
   return (
     <div className='journeys'>
       <div className='journeys__container'>
-        {search_text || from || to || start_date ? (
-          <strong>Empty search field for fetching newest journeys</strong>
+        {search_text ? (
+          <h6>
+            Searching for "{search_text}" in journeys. Empty search field for
+            fetching newest journeys
+          </h6>
         ) : null}
         <SearchBar />
         <Suspense fallback={<LoadingSpinner />}>

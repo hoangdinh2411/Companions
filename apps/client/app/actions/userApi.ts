@@ -1,4 +1,5 @@
 import {
+  GetUserAPIResponse,
   SignInAPIResponse,
   SignInFormData,
   SignUpFormData,
@@ -24,7 +25,7 @@ export const signUp = (formData: SignUpFormData) => {
 };
 
 export const getUser = () => {
-  return customFetch<UserDocument>(
+  return customFetch<GetUserAPIResponse>(
     '/user/profile',
     {
       method: 'GET',

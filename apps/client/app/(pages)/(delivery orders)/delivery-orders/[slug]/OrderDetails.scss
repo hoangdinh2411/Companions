@@ -55,6 +55,17 @@
         text-transform: uppercase;
         margin-bottom: $spacing * 8;
         @include flex(space-between, flex-start);
+        > a {
+          color: $green;
+          font-weight: 600;
+          text-decoration: underline;
+        }
+        .details__mark {
+          color: $green;
+          font-weight: bolder;
+          text-decoration: underline;
+          margin-left: $spacing * 8;
+        }
       }
       &__boxes {
         display: grid;

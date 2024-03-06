@@ -32,25 +32,25 @@ export default async function ProfilePage() {
           <p className='content__item'>
             Orders placed:
             <span className='content__value'>
-              {user.orders_placed ? user.orders_placed.length : 0}
+              {user.total_orders_placed ?? 0}
             </span>
           </p>
           <p className='content__item'>
             Orders received:
             <span className='content__value'>
-              {user.order_full_filled ? user.order_full_filled.length : 0}
+              {user.total_orders_taken ?? 0}
             </span>
           </p>
           <p className='content__item'>
             Journeys shared:
             <span className='content__value'>
-              {user.journeys_shared ? user.journeys_shared.length : 0}
+              {user.total_journeys_shared ?? 0}
             </span>
           </p>
           <p className='content__item'>
             Journeys joined:
             <span className='content__value'>
-              {user.journeys_joined ? user.journeys_joined.length : 0}
+              {user.total_journeys_joined ?? 0}
             </span>
           </p>
         </div>
