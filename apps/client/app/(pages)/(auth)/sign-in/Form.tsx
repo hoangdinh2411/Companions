@@ -33,7 +33,7 @@ export default function Form(): JSX.Element {
 
         if (res.data) {
           toast.success('You have successfully signed in');
-          await saveToken(res.data.token);
+          await saveToken(res.data.token, res.data.maxAge);
           router.back();
         }
       });

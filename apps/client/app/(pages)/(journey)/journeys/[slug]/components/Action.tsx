@@ -24,6 +24,7 @@ export default function Action({ journey }: Props) {
     if (!user._id) {
       router.push(APP_ROUTER.SIGN_IN);
       toast.warning('You need to sign in to join the journey!');
+      return;
     }
     // const id_number = await getIdentifyNumber();
     // if (!id_number) {

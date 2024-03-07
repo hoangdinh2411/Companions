@@ -1,4 +1,6 @@
 import { UserRoleEnum, UserStatusEnum } from '../enums/user';
+import { DeliveryOrderDocument } from './delivery-order';
+import { JourneyDocument } from './journey';
 
 export interface SignInFormData {
   email: string;
@@ -25,6 +27,7 @@ export interface SignUpFormData extends SignInFormData {
 
 export interface SignInAPIResponse {
   token: string;
+  maxAge: number;
 }
 
 export interface GetUserAPIResponse
@@ -36,4 +39,12 @@ export interface GetUserAPIResponse
   total_orders_taken: number;
   total_journeys_shared: number;
   total_journeys_joined: number;
+}
+
+export interface HistoryAPIResponse {
+  pagination: {
+    total: number;
+    pages: number;
+  };
+  items: JourneyDocument[] | DeliveryOrderDocument[];
 }

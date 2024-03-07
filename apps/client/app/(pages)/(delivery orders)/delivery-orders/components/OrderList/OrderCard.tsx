@@ -1,4 +1,4 @@
-import { DeliverOrderDocument, TypeOfCommodityEnum } from '@repo/shared';
+import { DeliveryOrderDocument, TypeOfCommodityEnum } from '@repo/shared';
 import React from 'react';
 import APP_ROUTER from '../../../../../lib/config/router';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import {
 } from '../../../../../lib/config/svg';
 
 type Props = {
-  order: DeliverOrderDocument;
+  order: DeliveryOrderDocument;
 };
 
 function getIconForTypeOfCommodity(type: TypeOfCommodityEnum) {

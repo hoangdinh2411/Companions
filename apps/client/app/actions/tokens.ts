@@ -1,18 +1,16 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import APP_ROUTER from '../lib/config/router';
 
-export async function saveToken(token: string) {
+export async function saveToken(token: string, maxAge: number) {
   cookies().set({
     name: 'sign-in',
     value: token,
     httpOnly: true,
-    maxAge: 60 * 60 * 1,
+    maxAge: maxAge,
     // secure: true,
     path: '/',
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 1),
+    expires: new Date(Date.now() + maxAge),
   });
 }
 export async function getToken() {

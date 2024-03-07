@@ -67,4 +67,11 @@ export const queryValidation = {
       return Number.isInteger(value);
     }),
   }),
+
+  getUserHistory: Yup.object().shape({
+    page: Yup.number().test('isInt', 'Page must be an integer', (value) => {
+      if (!value) return true;
+      return Number.isInteger(value);
+    }),
+  }),
 };

@@ -42,25 +42,25 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
     orders_placed: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'DeliveryOrder',
+        ref: 'deliveryOrder',
       },
     ],
     orders_taken: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'DeliveryOrder',
+        ref: 'deliveryOrder',
       },
     ],
     journeys_shared: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Journey',
+        ref: 'journey',
       },
     ],
     journeys_joined: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Journey',
+        ref: 'journey',
       },
     ],
   },
@@ -72,7 +72,6 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
     autoIndex: true,
   }
 );
-
 UserSchema.index({ email: 1, id_number: 1 });
 UserSchema.methods.setPassword = function (password: string) {
   this.password = bcrypt.hashSync(password, 10);
@@ -95,6 +94,6 @@ UserSchema.post('save', { errorHandler: true }, function (error: any, _, next) {
   }
 });
 
-const UserModel = mongoose.model('User', UserSchema);
+const UserModel = mongoose.model('Users', UserSchema);
 
 export default UserModel;

@@ -5,6 +5,7 @@ import {
   SignInFormData,
   SignUpFormData,
   GetUserAPIResponse,
+  HistoryAPIResponse,
 } from './interfaces/user';
 import {
   signInValidation,
@@ -30,8 +31,8 @@ import {
 } from './enums/delivery-order';
 
 import {
-  DeliverOrderDocument,
-  DeliverOrderResponse,
+  DeliveryOrderDocument,
+  DeliveryOrderResponse,
   DeliveryOrderFormData,
 } from './interfaces/delivery-order';
 
@@ -65,6 +66,7 @@ export type {
   SignInFormData,
   SignUpFormData,
   GetUserAPIResponse,
+  HistoryAPIResponse,
 };
 
 //Journey
@@ -72,7 +74,7 @@ export type { JourneyDocument, JourneyResponse, JourneyFormData };
 
 //Delivery Order
 export type {
-  DeliverOrderDocument,
-  DeliverOrderResponse,
+  DeliveryOrderDocument,
+  DeliveryOrderResponse,
   DeliveryOrderFormData,
 };

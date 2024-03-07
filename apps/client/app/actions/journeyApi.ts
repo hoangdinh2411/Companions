@@ -20,6 +20,7 @@ export const createNewJourney = async (formData: JourneyFormData) => {
   );
   if (res.success) {
     revalidatePath(APP_ROUTER.JOURNEYS, 'page');
+    revalidateTag('history');
   }
   return res;
 };
@@ -81,6 +82,7 @@ export const joinJourney = async (journey_id: string, slug: string) => {
   if (res.success) {
     revalidatePath(APP_ROUTER.JOURNEYS + '/' + slug);
     revalidateTag('profile');
+    revalidateTag('history');
   }
   return res;
 };

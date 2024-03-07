@@ -12,12 +12,15 @@
   }
 
   .accordion__label {
-    height: 42px;
-    padding: $spacing * 5;
+    min-height: 42px;
+    padding: $spacing * 4;
     background-color: $white;
     border: none;
     width: 100%;
-    @include text($text-primary, 600, 18px, 22px);
+    @include text($text-primary, 600, 16px);
+    @include breakpoint(lg) {
+      @include text($text-primary, 600, 18px);
+    }
     @include flex(space-between, center);
     cursor: pointer;
     .accordion-icons {
@@ -33,7 +36,13 @@
       }
     }
     &:hover {
-      background-color: $background-paper;
+      background-color: $green;
+      color: $white;
+      .accordion-icons {
+        path {
+          fill: $white;
+        }
+      }
     }
   }
   .accordion__panel {
@@ -47,7 +56,7 @@
 
   input[type='checkbox']:checked {
     + .accordion__label {
-      background-color: $green;
+      background-color: $active;
       color: $white;
       .accordion-icons {
         path {

@@ -1,1 +1,1 @@
-export let limitDocumentPerPage = 12;
+export let limitDocumentPerPage = 24;

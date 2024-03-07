@@ -5,7 +5,6 @@ import './OrderDetails.scss';
 import Details from './components/Details';
 import Creator from './components/Creator';
 import { getOneDeliveryOrderBySlug } from '../../../../actions/deliveryOrderApi';
-import { getUser } from '../../../../actions/userApi';
 type Props = {
   params: { slug: string };
 };

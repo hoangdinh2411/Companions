@@ -1,9 +1,9 @@
-import { DeliverOrderResponse } from '@repo/shared';
+import { DeliveryOrderResponse } from '@repo/shared';
 import React from 'react';
 import OrderCard from './OrderCard';
 import Pagination from '../../../../../components/UI/Pagination.tsx';
 type Props = {
-  data: DeliverOrderResponse | undefined;
+  data: DeliveryOrderResponse | undefined;
 };
 
 export default function OrderList({ data }: Props) {

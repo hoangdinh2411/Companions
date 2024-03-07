@@ -1,8 +1,12 @@
-import { DeliverOrderDocument } from '@repo/shared';
+import { DeliveryOrderDocument } from '@repo/shared';
 import Action from './Action';
+import {
+  formatToSwedenCurrency,
+  formatWeight,
+} from '../../../../../lib/utils/format';
 
 type Props = {
-  order: DeliverOrderDocument;
+  order: DeliveryOrderDocument;
 };
 
 export default function Details({ order }: Props) {
@@ -27,7 +31,7 @@ export default function Details({ order }: Props) {
           End: <span>{order?.end_date}</span>
         </article>
         <article className='details__boxes'>
-          Weight: <span>{order?.weight}</span>
+          Weight: <span>{formatWeight(order.weight)}</span>
         </article>
         <article className='details__boxes'>
           Type Of Commodity:{' '}
@@ -39,8 +43,7 @@ export default function Details({ order }: Props) {
           </article>
         ) : null}
         <article className='details__boxes'>
-          Price:{' '}
-          <span>{order?.price === 0 ? 'Free' : order?.price + ' SEK'} </span>
+          Price: <span>{formatToSwedenCurrency(order.price)} </span>
         </article>
         <article className='details__boxes details__boxes--message'>
           Message:{' '}

@@ -365,7 +365,7 @@ const JourneyController = {
   ) => {
     try {
       // await generateDocuments();
-      // await generateDocumentsForOrders();
+      await generateDocumentsForOrders();
       return res.status(200).json({
         success: true,
       });

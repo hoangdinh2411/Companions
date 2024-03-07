@@ -24,6 +24,7 @@ const DeliveryOrderController = {
         ...req.body,
         start_date: dayjs(req.body.start_date).format('YYYY-MM-DD'),
         end_date: dayjs(req.body.end_date).format('YYYY-MM-DD'),
+        weight: Number(req.body.weight).toFixed(2),
         created_by: {
           _id: req.user._id,
           email: req.user.email,

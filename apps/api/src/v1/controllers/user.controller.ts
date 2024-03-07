@@ -1,6 +1,6 @@
 import {
-  UserRoleEnum,
   UserStatusEnum,
+  queryValidation,
   signInValidation,
   signUpValidation,
 } from '@repo/shared';
@@ -16,7 +16,10 @@ import {
 } from '../../lib/utils/token';
 import { sendVerifyEmail } from '../../lib/config/nodemailer.config';
 import env from '../../lib/config/env';
+import { limitDocumentPerPage } from '../../lib/utils/variables';
+import { defaultResponseIfNoData } from '../helpers/response';
 
+let page = 1;
 const UserController = {
   signUp: async function (req: Request, res: Response, next: NextFunction) {
     try {
@@ -119,13 +122,11 @@ const UserController = {
         return next(
           createHttpError.BadRequest(ERROR_MESSAGES.USER.PASSWORD_WRONG)
         );
-      const token = generateToken(user._id, user.status as UserStatusEnum);
+      const payload = generateToken(user._id, user.status as UserStatusEnum);
 
       return res.status(200).json({
         success: true,
-        data: {
-          token,
-        },
+        data: payload,
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));
@@ -222,15 +223,15 @@ const UserController = {
             id_number: 1,
             total_orders_placed: {
               $cond: {
-                if: { $isArray: '$order_placed' },
-                then: { $size: '$order_placed' },
+                if: { $isArray: '$orders_placed' },
+                then: { $size: '$orders_placed' },
                 else: 0,
               },
             },
             total_orders_taken: {
               $cond: {
-                if: { $isArray: '$order_taken' },
-                then: { $size: '$order_taken' },
+                if: { $isArray: '$orders_taken' },
+                then: { $size: '$orders_taken' },
                 else: 0,
               },
             },
@@ -257,6 +258,116 @@ const UserController = {
       return res.status(200).json({
         success: true,
         data: user[0],
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+
+  getHistory: async function (req: Request, res: Response, next: NextFunction) {
+    const fieldName = req.query.about?.toString();
+
+    if (!fieldName) {
+      return res.status(200).json({
+        success: true,
+        data: [
+          {
+            items: [],
+            pagination: {
+              total: 0,
+              pages: 0,
+            },
+          },
+        ],
+      });
+    }
+    try {
+      if (req.query.page && Number(req.query.page) > 0) {
+        page = Number(req.query.page);
+      }
+      const collection = fieldName.includes('journeys')
+        ? 'journeys'
+        : 'deliveryorders';
+      const data = await UserModel.aggregate([
+        {
+          $match: {
+            _id: req.user._id,
+            status: UserStatusEnum.ACTIVE,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            [fieldName]: 1,
+          },
+        },
+        {
+          $lookup: {
+            from: collection,
+            localField: fieldName,
+            foreignField: '_id',
+            as: fieldName,
+            pipeline: [
+              {
+                $facet: {
+                  items: [
+                    {
+                      $skip: (page - 1) * limitDocumentPerPage,
+                    },
+                    {
+                      $limit: limitDocumentPerPage,
+                    },
+                    {
+                      $sort: {
+                        status: 1,
+                      },
+                    },
+                    {
+                      $project: {
+                        'created_by.id_number': 0,
+                        'companions.id_number': 0,
+                      },
+                    },
+                  ],
+                  pagination: [
+                    { $count: 'total' },
+                    {
+                      $addFields: {
+                        pages: {
+                          $ceil: {
+                            $divide: ['$total', limitDocumentPerPage],
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+        {
+          $unwind: {
+            path: `$${fieldName}`,
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $unwind: {
+            path: `$${fieldName}.pagination`,
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            items: `$${fieldName}.items`,
+            pagination: `$${fieldName}.pagination`,
+          },
+        },
+      ]);
+      return res.status(200).json({
+        success: true,
+        data: defaultResponseIfNoData(data),
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));

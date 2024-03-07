@@ -1,7 +1,7 @@
 'use server';
 import {
-  DeliverOrderDocument,
-  DeliverOrderResponse,
+  DeliveryOrderDocument,
+  DeliveryOrderResponse,
   DeliveryOrderFormData,
   JourneyDocument,
   JourneyFormData,
@@ -22,12 +22,13 @@ export const createNewOrder = async (formData: DeliveryOrderFormData) => {
   );
   if (res.success) {
     revalidatePath(APP_ROUTER.DELIVERY_ORDERS, 'page');
+    revalidateTag('history');
   }
   return res;
 };
 
 export const getOneDeliveryOrderBySlug = async (slug = '') => {
-  const res = await customFetch<DeliverOrderDocument>(
+  const res = await customFetch<DeliveryOrderDocument>(
     `/delivery-orders/${slug}`,
     {
       method: 'GET',
@@ -44,7 +45,7 @@ export const getAllDeliveryOrder = async (query = '') => {
   if (query) {
     url += `?${query}`;
   }
-  const res = await customFetch<DeliverOrderResponse>(url, {
+  const res = await customFetch<DeliveryOrderResponse>(url, {
     method: 'GET',
     next: {
       path: APP_ROUTER.DELIVERY_ORDERS,
@@ -56,7 +57,7 @@ export const getAllDeliveryOrder = async (query = '') => {
 
 export const filterDeliveryOrder = async (query: string) => {
   if (!query) new Error('Query is required');
-  const res = await customFetch<DeliverOrderResponse>(
+  const res = await customFetch<DeliveryOrderResponse>(
     `/delivery-orders/filter?${query}`,
     {
       method: 'GET',
@@ -68,7 +69,7 @@ export const filterDeliveryOrder = async (query: string) => {
 };
 
 export const searchDeliveryOrder = async (query: string) => {
-  const res = await customFetch<DeliverOrderResponse>(
+  const res = await customFetch<DeliveryOrderResponse>(
     `/delivery-orders/search?${query}`,
     {
       method: 'GET',
@@ -90,6 +91,7 @@ export const takeOrder = async (order_id: string, slug: string) => {
   if (res.success) {
     revalidatePath(APP_ROUTER.DELIVERY_ORDERS + '/' + slug);
     revalidateTag('profile');
+    revalidateTag('history');
   }
   return res;
 };

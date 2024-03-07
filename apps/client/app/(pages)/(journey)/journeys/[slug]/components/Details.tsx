@@ -1,6 +1,7 @@
 'use client';
 import { JourneyDocument } from '@repo/shared';
 import Action from './Action';
+import { formatToSwedenCurrency } from '../../../../../lib/utils/format';
 
 type Props = {
   journey: JourneyDocument;
@@ -33,10 +34,7 @@ export default function Details({ journey }: Props) {
           Seats: <span>{journey?.seats}</span>
         </article>
         <article className='details__boxes'>
-          Price:{' '}
-          <span>
-            {journey?.price === 0 ? 'Free' : journey?.price + ' SEK'}{' '}
-          </span>
+          Price: <span>{formatToSwedenCurrency(journey.price)}</span>
         </article>
         <article className='details__boxes'>
           Total Joiner:{' '}

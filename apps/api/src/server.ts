@@ -6,12 +6,14 @@ import { logEvent } from './v1/helpers/log-helper';
 import v1Router from './v1';
 import timeout from 'connect-timeout';
 import getUserIdMiddleware from './v1/middlewares/get-user-ip';
+import helmet from 'helmet';
 
 export const createServer = () => {
   const app = express();
   app
     .set('trust proxy', true)
     .disable('x-powered-by')
+    .use(helmet())
     .use(timeout('30s'))
     .use(urlencoded({ extended: true }))
     .use(json())

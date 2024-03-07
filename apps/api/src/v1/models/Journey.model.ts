@@ -152,6 +152,6 @@ JourneySchema.post(
   }
 );
 
-const JourneyModel = mongoose.model('Journey', JourneySchema);
+const JourneyModel = mongoose.model('journeys', JourneySchema);
 
 export default JourneyModel;

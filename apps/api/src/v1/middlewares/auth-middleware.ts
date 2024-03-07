@@ -41,7 +41,6 @@ export async function authMiddleware(
         createHttpError.Unauthorized(ERROR_MESSAGES.USER.MISSING_TOKEN)
       );
     let decoded = verifyToken(token);
-    console.log('a');
     const user = await UserModel.findOne({
       _id: (decoded as any)._id,
       status: {

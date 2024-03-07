@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import './JourneyDetails.scss';
 import Details from './components/Details';
 import Creator from './components/Creator';
-import { getUser } from '../../../../actions/userApi';
 
 type Props = {
   params: { slug: string };
