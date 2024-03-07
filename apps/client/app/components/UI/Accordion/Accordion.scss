@@ -1,0 +1,70 @@
+@import '../../../styles/abstracts/index';
+
+.accordion {
+  overflow: hidden;
+  border: 0.5px solid $border;
+  border-radius: 0.4rem;
+
+  input[type='checkbox'] {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+  }
+
+  .accordion__label {
+    height: 42px;
+    padding: $spacing * 5;
+    background-color: $white;
+    border: none;
+    width: 100%;
+    @include text($text-primary, 600, 18px, 22px);
+    @include flex(space-between, center);
+    cursor: pointer;
+    .accordion-icons {
+      margin-top: $spacing * 2.5;
+      svg {
+        font-size: 18px;
+      }
+      &.arrow-up {
+        display: block;
+      }
+      &.arrow-down {
+        display: none;
+      }
+    }
+    &:hover {
+      background-color: $background-paper;
+    }
+  }
+  .accordion__panel {
+    border: 0;
+    padding: 0 $spacing * 4;
+    max-height: 0px;
+    overflow: hidden;
+    background-color: white;
+    pointer-events: none;
+  }
+
+  input[type='checkbox']:checked {
+    + .accordion__label {
+      background-color: $green;
+      color: $white;
+      .accordion-icons {
+        path {
+          fill: $white;
+        }
+        &.arrow-down {
+          display: block;
+        }
+        &.arrow-up {
+          display: none;
+        }
+      }
+    }
+    ~ .accordion__panel {
+      padding: $spacing * 4;
+      max-height: 100vh;
+      pointer-events: all;
+    }
+  }
+}
