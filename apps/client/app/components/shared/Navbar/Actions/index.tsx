@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 import { usePathname, useRouter } from 'next/navigation';
 import { getUser } from '../../../../actions/userApi';
 import appStore from '../../../../lib/store/appStore';
-import { UserDocument } from '@repo/shared';
+import { GetUserAPIResponse } from '@repo/shared';
 import Button from '../../../UI/Button';
 
 export default function Actions() {
@@ -29,10 +29,11 @@ export default function Actions() {
       const token = await getToken();
       if (!token) {
         if (user?._id) {
-          setUser({} as UserDocument);
+          setUser({} as GetUserAPIResponse);
         }
         return;
       }
+      if (user._id) return;
       const res = await getUser();
       if (!user._id && res.success && res.data?._id) {
         setUser(res.data);
@@ -41,7 +42,7 @@ export default function Actions() {
       if (user._id && res.status === 401) {
         removeToken();
         removeIdentifyNumber();
-        setUser({} as UserDocument);
+        setUser({} as GetUserAPIResponse);
         return;
       }
     }
@@ -59,7 +60,7 @@ export default function Actions() {
   const handleLogout = async () => {
     await removeToken();
     if (user?._id) {
-      setUser({} as UserDocument);
+      setUser({} as GetUserAPIResponse);
     }
     toast.success('You have successfully signed out');
   };

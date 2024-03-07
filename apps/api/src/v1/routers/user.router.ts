@@ -5,4 +5,5 @@ import { authMiddleware } from '../middlewares/auth-middleware';
 const userRouter = Router();
 
 userRouter.get('/profile', UserController.getUser);
+userRouter.get('/history', UserController.getHistory);
 export default userRouter;

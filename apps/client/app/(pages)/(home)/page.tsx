@@ -4,6 +4,7 @@ import './Home.scss';
 import Goals from './components/Goals';
 import Statistical from './components/Statistical';
 import Comments from './components/Comments';
+import Accordion from '../../components/UI/Accordion';
 
 export default function HomePage(): JSX.Element {
   return (

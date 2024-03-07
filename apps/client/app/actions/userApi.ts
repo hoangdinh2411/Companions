@@ -1,5 +1,6 @@
 import {
   GetUserAPIResponse,
+  HistoryAPIResponse,
   SignInAPIResponse,
   SignInFormData,
   SignUpFormData,
@@ -7,6 +8,7 @@ import {
 } from '@repo/shared';
 import customFetch from './customFetch';
 import APP_ROUTER from '../lib/config/router';
+import { revalidateTag } from 'next/cache';
 
 export const signIn = (formData: SignInFormData) => {
   return customFetch<SignInAPIResponse>('/auth/sign-in', {
@@ -42,4 +44,19 @@ export const verifyAccount = (verify_code: string, email: string) => {
     method: 'GET',
     cache: 'no-cache',
   });
+};
+
+export const getHistory = async (query = '') => {
+  let url = `/user/history?${query}`;
+
+  return await customFetch<HistoryAPIResponse>(
+    url,
+    {
+      method: 'GET',
+      next: {
+        tags: ['history'],
+      },
+    },
+    true
+  );
 };

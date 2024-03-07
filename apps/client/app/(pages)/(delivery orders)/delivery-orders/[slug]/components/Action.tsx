@@ -2,7 +2,7 @@
 import React, { useMemo, useState, useTransition } from 'react';
 import appStore from '../../../../../lib/store/appStore';
 import { useRouter } from 'next/navigation';
-import { DeliverOrderDocument } from '@repo/shared';
+import { DeliveryOrderDocument } from '@repo/shared';
 import { takeOrder } from '../../../../../actions/deliveryOrderApi';
 import { toast } from 'react-toastify';
 import Button from '../../../../../components/UI/Button';
@@ -11,7 +11,7 @@ import BankIDForm from '../../../../../components/shared/Modals/BankIDForm';
 import APP_ROUTER from '../../../../../lib/config/router';
 
 type Props = {
-  order: DeliverOrderDocument;
+  order: DeliveryOrderDocument;
 };
 
 export default function Action({ order }: Props) {

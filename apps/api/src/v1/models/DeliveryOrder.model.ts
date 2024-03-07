@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import {
-  DeliverOrderDocument,
+  DeliveryOrderDocument,
   DeliveryOrderStatusEnum,
   TypeOfCommodityEnum,
 } from '@repo/shared';
 import { generateSlugFrom } from '../../lib/utils/generate-slug';
 
-interface IDeliveryOrderSchema extends DeliverOrderDocument {}
+interface IDeliveryOrderSchema extends DeliveryOrderDocument {}
 
 const CompanionsSchema = new mongoose.Schema(
   {
@@ -158,6 +158,9 @@ DeliveryOrderSchema.post(
   }
 );
 
-const DeliveryOrderModel = mongoose.model('DeliveryOrder', DeliveryOrderSchema);
+const DeliveryOrderModel = mongoose.model(
+  'deliveryorders',
+  DeliveryOrderSchema
+);
 
 export default DeliveryOrderModel;

@@ -18,7 +18,7 @@ export interface DeliveryOrderFormData {
   type_of_commodity: TypeOfCommodityEnum;
 }
 
-export interface DeliverOrderDocument
+export interface DeliveryOrderDocument
   extends Omit<DeliveryOrderFormData, 'id_number' | 'phone'> {
   created_by?: {
     _id: string;
@@ -43,8 +43,8 @@ export interface DeliverOrderDocument
   ];
 }
 
-export interface DeliverOrderResponse {
-  items: DeliverOrderDocument[];
+export interface DeliveryOrderResponse {
+  items: DeliveryOrderDocument[];
   pagination?: {
     total: number;
     pages: number;

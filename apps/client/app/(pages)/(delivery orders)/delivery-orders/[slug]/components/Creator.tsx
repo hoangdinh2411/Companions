@@ -1,8 +1,8 @@
-import { DeliverOrderDocument } from '@repo/shared';
+import { DeliveryOrderDocument } from '@repo/shared';
 import React from 'react';
 
 type Props = {
-  order: DeliverOrderDocument;
+  order: DeliveryOrderDocument;
 };
 
 export default function Creator({ order }: Props) {
