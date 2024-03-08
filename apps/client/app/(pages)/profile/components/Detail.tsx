@@ -1,11 +1,22 @@
+'use client';
 import { GetUserAPIResponse } from '@repo/shared';
 import React from 'react';
+import { IResponse } from '../../../actions/customFetch';
+import appStore from '../../../lib/store/appStore';
 
 type Props = {
-  user: GetUserAPIResponse;
+  getUserPromise: Promise<IResponse<GetUserAPIResponse>>;
 };
 
-export default function Detail({ user }: Props) {
+export default async function Detail({ getUserPromise }: Props) {
+  const { user, setUser } = appStore.getState();
+  if (!user._id) {
+    const res = await getUserPromise;
+    if (res.success && res.data?._id) {
+      setUser(res.data);
+    }
+  }
+
   return (
     <article className='profile__container'>
       <div className='profile__detail cards'>

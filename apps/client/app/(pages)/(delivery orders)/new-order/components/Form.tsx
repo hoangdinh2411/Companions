@@ -18,11 +18,13 @@ import BankIDForm from '../../../../components/shared/Modals/BankIDForm';
 import Select from '../../../../components/UI/Select';
 import { typeOfCommodityOptions } from '../../../../lib/config/variables';
 import { createNewOrder } from '../../../../actions/deliveryOrderApi';
+import appStore from '../../../../lib/store/appStore';
 
 export default function Form() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const { user } = appStore.getState();
   const formik = useFormik({
     initialValues: {
       from: '',
@@ -35,7 +37,7 @@ export default function Form() {
       message: '',
       type_of_commodity: '' as TypeOfCommodityEnum,
       title: '',
-      phone: '',
+      phone: user.phone || '',
       be_in_touch: 0,
     },
     validateOnBlur: false,

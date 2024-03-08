@@ -1,41 +1,12 @@
 import mongoose from 'mongoose';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
-import { JourneyDocument, JourneyStatusEnum } from '@repo/shared';
+import { JourneyDocument, JourneyStatusEnum, UserDocument } from '@repo/shared';
 import { generateSlugFrom } from '../../lib/utils/generate-slug';
 
-interface IJourneySchema extends JourneyDocument {}
+interface IJourneySchema extends JourneyDocument {
+  creator: UserDocument;
+}
 
-const CompanionsSchema = new mongoose.Schema(
-  {
-    companion_id: {
-      type: String,
-      required: true,
-    },
-    full_name: {
-      type: String,
-      required: true,
-    },
-    id_number: {
-      required: true,
-      type: String,
-      unique: true,
-    },
-    phone: {
-      required: true,
-      type: String,
-    },
-    email: {
-      required: true,
-      type: String,
-    },
-  },
-  {
-    timestamps: {
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
-    },
-  }
-);
 const JourneySchema = new mongoose.Schema<IJourneySchema>(
   {
     title: {
@@ -87,27 +58,16 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
       type: String,
     },
     created_by: {
-      _id: {
-        type: String,
-        required: true,
-      },
-      email: {
-        type: String,
-        required: true,
-      },
-      id_number: {
-        type: String,
-      },
-      phone: {
-        required: true,
-        type: String,
-      },
-      full_name: {
-        type: String,
-        required: true,
-      },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Users',
+      required: true,
     },
-    companions: [CompanionsSchema],
+    companions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Users',
+      },
+    ],
   },
   {
     timestamps: {
@@ -119,8 +79,9 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
 );
 
 JourneySchema.index({ from: 1, to: 1, start_date: 1, title: 1 });
+
 JourneySchema.pre('save', async function (next) {
-  const existing = await this.model('Journey').findOne({
+  const existing = await this.model('journeys').findOne({
     start_date: this.start_date,
     end_date: this.end_date,
     created_by: {

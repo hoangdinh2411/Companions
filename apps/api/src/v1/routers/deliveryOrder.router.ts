@@ -10,7 +10,12 @@ deliveryOrderRouter.get('/search', DeliveryOrderController.search);
 deliveryOrderRouter.get('/filter', DeliveryOrderController.filter);
 deliveryOrderRouter.get('/:slug', DeliveryOrderController.getOneBySlug);
 deliveryOrderRouter.put(
-  '/take/:order_id',
+  '/:order_id',
+  authMiddleware,
+  DeliveryOrderController.modify
+);
+deliveryOrderRouter.put(
+  '/:order_id/take',
   authMiddleware,
   DeliveryOrderController.takeOrder
 );

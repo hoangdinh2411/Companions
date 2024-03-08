@@ -12,12 +12,8 @@ export default async function ProfilePage({
 }: {
   searchParams: Record<string, string>;
 }) {
-  const res = await getUser();
+  const getUserPromise = getUser();
 
-  if (!res.data || !res.data._id) {
-    notFound();
-  }
-  const user = res.data;
   const params = generateSearchParams(['page', 'about'], searchParams);
   let historyData;
   if (searchParams.about) {
@@ -25,7 +21,7 @@ export default async function ProfilePage({
   }
   return (
     <section className='profile'>
-      <Detail user={user} />
+      <Detail getUserPromise={getUserPromise} />
       <Suspense fallback={<LoadingSpinner />}>
         <History history={historyData?.data} tab={searchParams.about || ''} />
       </Suspense>

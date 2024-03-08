@@ -16,6 +16,8 @@ import {
   generateDocumentsForOrders,
 } from '../helpers/insertManyDocument';
 import mongoose from 'mongoose';
+import { generateSlugFrom } from '../../lib/utils/generate-slug';
+import { hideUserInfoDependOnFieldBeOnTouch } from '../helpers/formatDocument';
 
 let page = 1;
 
@@ -28,25 +30,32 @@ const JourneyController = {
     }
     try {
       await journeyRequestValidation.validate(req.body);
+      const { phone, ...rest } = req.body;
       const journey = new JourneyModel({
-        ...req.body,
+        ...rest,
         start_date: dayjs(req.body.start_date).format('YYYY-MM-DD'),
         end_date: dayjs(req.body.end_date).format('YYYY-MM-DD'),
-        created_by: {
-          _id: req.user._id,
-          email: req.user.email,
-          id_number: req.user.id_number,
-          phone: req.user.phone,
-          full_name: req.user.full_name,
-        },
+        created_by: new mongoose.Types.ObjectId(req.user._id),
       });
       await journey.save();
 
-      await UserModel.findByIdAndUpdate(req.user._id, {
-        $push: {
-          journeys_shared: journey._id,
+      await UserModel.findOne(
+        {
+          _id: req.user._id,
+          phone: {
+            $not: {
+              $elemMatch: {
+                $eq: phone,
+              },
+            },
+          },
         },
-      });
+        {
+          $push: {
+            phone,
+          },
+        }
+      );
       return res.status(201).json({
         success: true,
       });
@@ -65,7 +74,8 @@ const JourneyController = {
       const journey = await JourneyModel.findOneAndUpdate(
         {
           _id: req.params.journey_id,
-          'created_by._id': {
+          status: JourneyStatusEnum.ACTIVE,
+          created_by: {
             $ne: new mongoose.Types.ObjectId(req.user._id),
           },
           start_date: {
@@ -74,17 +84,14 @@ const JourneyController = {
           companions: {
             $not: {
               $elemMatch: {
-                _id: new mongoose.Types.ObjectId(req.user._id),
+                $eq: new mongoose.Types.ObjectId(req.user._id),
               },
             },
           },
         },
         {
           $push: {
-            companions: {
-              ...req.user,
-              companion_id: req.user._id,
-            },
+            companions: new mongoose.Types.ObjectId(req.user._id),
           },
         },
         {
@@ -94,15 +101,79 @@ const JourneyController = {
       );
       if (!journey) {
         return next(
-          createHttpError.BadRequest(ERROR_MESSAGES.JOURNEY.HAS_JOINED)
+          createHttpError.BadRequest(
+            ERROR_MESSAGES.JOURNEY.CANNOT_JOIN_THIS_JOURNEY
+          )
         );
       }
 
       await UserModel.findByIdAndUpdate(req.user._id, {
         $push: {
-          journeys_joined: req.params.journey_id,
+          journeys_joined: new mongoose.Types.ObjectId(journey._id),
         },
       });
+
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+  modify: async (req: Request, res: Response, next: NextFunction) => {
+    const { journey_id } = req.params;
+    if (!journey_id) {
+      return next(
+        createHttpError.BadRequest(ERROR_MESSAGES.JOURNEY.MISSING_JOURNEY_ID)
+      );
+    }
+    try {
+      await journeyRequestValidation.validate(req.body);
+      const { phone, ...rest } = req.body;
+
+      const journey = await JourneyModel.findOneAndUpdate(
+        {
+          _id: journey_id,
+          status: JourneyStatusEnum.ACTIVE,
+          created_by: new mongoose.Types.ObjectId(req.user._id),
+        },
+        {
+          $set: {
+            ...rest,
+            start_date: dayjs(rest.start_date).format('YYYY-MM-DD'),
+            end_date: dayjs(rest.end_date).format('YYYY-MM-DD'),
+            slug: generateSlugFrom(
+              rest.title,
+              rest.from,
+              rest.to,
+              rest.start_date,
+              rest.end_date
+            ),
+          },
+        },
+        { new: true }
+      );
+
+      if (!journey) {
+        return next(createHttpError.NotFound(ERROR_MESSAGES.JOURNEY.NOT_FOUND));
+      }
+      await UserModel.findOne(
+        {
+          _id: req.user._id,
+          phone: {
+            $not: {
+              $elemMatch: {
+                $eq: phone,
+              },
+            },
+          },
+        },
+        {
+          $push: {
+            phone,
+          },
+        }
+      );
 
       return res.status(200).json({
         success: true,
@@ -343,15 +414,66 @@ const JourneyController = {
     if (req.params.slug === 'undefined')
       return next(createHttpError.BadRequest('Invalid slug'));
     try {
-      const data = await JourneyModel.findOne({
-        slug: req.params.slug,
-      }).select('-__v -created_by.id_number -companions.id_number');
-      if (!data) {
+      const data = await JourneyModel.aggregate([
+        {
+          $match: {
+            slug: req.params.slug,
+            status: JourneyStatusEnum.ACTIVE,
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'created_by',
+            foreignField: '_id',
+            as: 'created_by',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  full_name: 1,
+                  email: 1,
+                  phone: 1,
+                  id_number: 1,
+                },
+              },
+            ],
+          },
+        },
+        {
+          $unwind: '$created_by',
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'companions',
+            foreignField: '_id',
+            as: 'companions',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  full_name: 1,
+                  email: 1,
+                  phone: 1,
+                },
+              },
+            ],
+          },
+        },
+      ]);
+
+      if (data.length === 0) {
         return next(createHttpError.NotFound(ERROR_MESSAGES.JOURNEY.NOT_FOUND));
       }
+
+      const result = hideUserInfoDependOnFieldBeOnTouch(
+        data[0],
+        req?.user?._id
+      );
       return res.status(200).json({
         success: true,
-        data,
+        data: result,
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));

@@ -1,7 +1,12 @@
 import mongoose from 'mongoose';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import bcrypt from 'bcrypt';
-import { UserRoleEnum, UserStatusEnum, UserDocument } from '@repo/shared';
+import {
+  UserRoleEnum,
+  UserStatusEnum,
+  UserDocument,
+  DeliveryOrderDocument,
+} from '@repo/shared';
 
 interface IUserSchema extends UserDocument {
   setPassword: (password: string) => void;
@@ -33,9 +38,11 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
     id_number: {
       type: String,
     },
-    phone: {
-      type: String,
-    },
+    phone: [
+      {
+        type: String,
+      },
+    ],
     full_name: {
       type: String,
     },
@@ -72,6 +79,7 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
     autoIndex: true,
   }
 );
+
 UserSchema.index({ email: 1, id_number: 1 });
 UserSchema.methods.setPassword = function (password: string) {
   this.password = bcrypt.hashSync(password, 10);

@@ -12,7 +12,7 @@ type Props = {
 export default async function JourneyDetailsPage({ params: { slug } }: Props) {
   const res = await getOneJourneyBySlug(slug);
 
-  if (!res.data || !res.data._id) {
+  if (res.status === 404 || !res.data?._id) {
     notFound();
   }
 
@@ -34,7 +34,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   if (!slug) notFound();
   const res = await getOneJourneyBySlug(slug);
-  if (!res.data || !res.data._id) {
+  if (res.status === 404 || !res.data?._id) {
     notFound();
   }
   return {

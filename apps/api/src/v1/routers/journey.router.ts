@@ -10,5 +10,6 @@ journeyRouter.post('/insert', JourneyController.insertManyDocuments);
 journeyRouter.get('/search', JourneyController.search);
 journeyRouter.get('/filter', JourneyController.filter);
 journeyRouter.get('/:slug', JourneyController.getOneBySlug);
+journeyRouter.put('/:journey_id', authMiddleware, JourneyController.modify);
 journeyRouter.put('/:journey_id/join', authMiddleware, JourneyController.join);
 export default journeyRouter;

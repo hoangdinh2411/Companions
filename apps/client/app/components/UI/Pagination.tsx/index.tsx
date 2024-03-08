@@ -14,7 +14,7 @@ export default function Pagination({
   withNumber?: boolean;
   pages?: number;
 }) {
-  const [currentPage, setCurrentPage] = useState(6);
+  const [currentPage, setCurrentPage] = useState(1);
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();

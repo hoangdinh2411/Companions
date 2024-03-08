@@ -5,6 +5,9 @@ export function generateSlugFrom(
   start_date: string,
   end_date: string
 ) {
+  if (!title || !from || !to || !start_date || !end_date) {
+    throw new Error('Please provide all the required parameters');
+  }
   const a =
     'àáäâãåăæąçćčđďèéěėëêęğǵḧìíïîįłḿǹńňñòóöôœøṕŕřßşśšșťțùúüûǘůűūųẃẍÿýźžż·/_,:;';
   const b =

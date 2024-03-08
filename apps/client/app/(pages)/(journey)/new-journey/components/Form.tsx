@@ -16,11 +16,13 @@ import { useRouter } from 'next/navigation';
 import APP_ROUTER from '../../../../lib/config/router';
 import dayjs from 'dayjs';
 import BankIDForm from '../../../../components/shared/Modals/BankIDForm';
+import appStore from '../../../../lib/store/appStore';
 
 export default function Form() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const { user } = appStore.getState();
   const formik = useFormik({
     initialValues: {
       from: '',
@@ -31,7 +33,7 @@ export default function Form() {
       price: '',
       message: '',
       time: '',
-      phone: '',
+      phone: user.phone || '',
       title: '',
       be_in_touch: 0,
     },

@@ -4,6 +4,7 @@ import { generateSlugFrom } from '../../lib/utils/generate-slug';
 import JourneyModel from '../models/Journey.model';
 import { TypeOfCommodityEnum } from '@repo/shared';
 import DeliveryOrderModel from '../models/DeliveryOrder.model';
+import mongoose from 'mongoose';
 
 const titles = [
   'Whispers of the Mystic Moonlight',
@@ -121,8 +122,8 @@ const identifiers = [
   },
 ];
 
-const max_documents_for_one_DB_operation = 1000;
-const number_of_documents = 20000;
+const max_documents_for_one_DB_operation =
+  Math.floor(Math.random() * 10) + 1000;
 
 export async function generateDocuments() {
   let documents = [];
@@ -157,17 +158,12 @@ export async function generateDocuments() {
         start_date,
         end_date,
         message: messages[Math.floor(Math.random() * messages.length)],
-        created_by: {
-          _id: person._id,
-          id_number: person.id_number,
-          phone: person.phone,
-          full_name: person.full_name,
-          email: person.email,
-        },
+        created_by: new mongoose.Types.ObjectId(person._id),
         seats: Math.floor(Math.random() * 3) + 1,
         price: Math.floor(Math.random() * 1000) + 1,
         slug: generateSlugFrom(title, from, to, start_date, end_date),
         time,
+        be_in_touch: Math.floor(Math.random() * 2) === 0 ? true : false,
       };
       documents.push(document);
       if (documents.length === max_documents_for_one_DB_operation) {
@@ -236,13 +232,7 @@ export async function generateDocumentsForOrders() {
         size,
         weight: Math.random() * 100,
         message: messages[Math.floor(Math.random() * messages.length)],
-        created_by: {
-          _id: person._id,
-          id_number: person.id_number,
-          phone: person.phone,
-          full_name: person.full_name,
-          email: person.email,
-        },
+        created_by: new mongoose.Types.ObjectId(person._id),
         price: Math.floor(Math.random() * 1000) + 1,
         slug: generateSlugFrom(title, from, to, start_date, end_date),
         be_in_touch: Math.floor(Math.random() * 2) === 0 ? true : false,

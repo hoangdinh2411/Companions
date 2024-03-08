@@ -14,6 +14,10 @@ import {
   formatWeight,
 } from '../../../lib/utils/format';
 import Pagination from '../../../components/UI/Pagination.tsx';
+import appStore from '../../../lib/store/appStore';
+import APP_ROUTER from '../../../lib/config/router';
+import dayjs from 'dayjs';
+import Link from 'next/link';
 
 type Props = {
   history: HistoryAPIResponse | undefined;
@@ -40,6 +44,7 @@ const tabs = [
 export default function History({ history, tab }: Props) {
   const [activeTab, setActiveTab] = useState(tab);
   const router = useRouter();
+  const { user } = appStore.getState();
   const pathname = usePathname();
   const handleChangeTab = (tab: string) => {
     const params = generateSearchParams(['page', 'about'], {
@@ -55,6 +60,9 @@ export default function History({ history, tab }: Props) {
     setActiveTab(tab);
   }, [tab]);
 
+  function isOwner(item_id: string) {
+    return user._id && user?._id === item_id;
+  }
   return (
     <article className='history'>
       <div className='history__container'>
@@ -102,10 +110,31 @@ export default function History({ history, tab }: Props) {
                 return (
                   <Accordion heading={item.title} key={item._id} id={item._id}>
                     <section className='history__item'>
-                      <p className={`history__item__status ${item.status}`}>
-                        {item.status}
+                      {isOwner(item.created_by._id) && (
+                        <Link
+                          href={
+                            !(item as DeliveryOrderDocument)?.weight
+                              ? `${APP_ROUTER.JOURNEYS}/${item.slug}`
+                              : `${APP_ROUTER.DELIVERY_ORDERS}/${item.slug}`
+                          }
+                          className='update-btn'
+                          style={{
+                            pointerEvents:
+                              item.status === 'completed' ? 'none' : 'auto',
+                          }}
+                        >
+                          Edit
+                        </Link>
+                      )}
+                      <p className='history__item__title'>
+                        {' '}
+                        {item?.title}{' '}
+                        <span
+                          className={`history__item__status ${item.status}`}
+                        >
+                          {item.status.toUpperCase()}
+                        </span>
                       </p>
-                      <p className='history__item__title'> {item?.title}</p>
                       <article className='history__item__boxes'>
                         From: <span>{item?.from}</span>
                       </article>
@@ -170,6 +199,11 @@ export default function History({ history, tab }: Props) {
                           )}
                         </div>
                       </article>
+                      {item.created_at && (
+                        <span className='history__item__boxes'>
+                          {dayjs(item.created_at).format()}
+                        </span>
+                      )}
                     </section>
                   </Accordion>
                 );
