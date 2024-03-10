@@ -4,8 +4,10 @@ import journeyRouter from './journey.router';
 import { authMiddleware } from '../middlewares/auth-middleware';
 import deliveryOrderRouter from './deliveryOrder.router';
 import userRouter from './user.router';
+import appRouter from './app.router';
 
 const Routes = (app: Express) => {
+  app.use('/', appRouter);
   app.use('/auth', authRouter);
   app.use('/journeys', journeyRouter);
   app.use('/delivery-orders', deliveryOrderRouter);
