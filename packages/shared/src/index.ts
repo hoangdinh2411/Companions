@@ -13,6 +13,7 @@ import {
   signUpValidation,
 } from './validation/userValidation';
 
+import { StatisticResponse } from './interfaces/app';
 import {
   journeyFormDataValidation,
   journeyRequestValidation,
@@ -71,3 +72,6 @@ export type { JourneyDocument, JourneyFormData };
 
 //Delivery Order
 export type { DeliveryOrderDocument, DeliveryOrderFormData };
+
+//App
+export type { StatisticResponse };
