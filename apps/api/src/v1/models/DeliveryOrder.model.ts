@@ -84,7 +84,13 @@ const DeliveryOrderSchema = new mongoose.Schema<IDeliveryOrderSchema>(
 );
 
 DeliveryOrderSchema.virtual('creator');
-
+DeliveryOrderSchema.index({
+  from: 1,
+  to: 1,
+  start_date: 1,
+  title: 1,
+  type_of_commodity: 1,
+});
 DeliveryOrderSchema.pre('save', async function (next) {
   const existing = await this.model('deliveryorders').findOne({
     from: this.from,

@@ -1,0 +1,30 @@
+@import '../../styles/abstracts/index';
+.identify-bank-id__container {
+  width: 100%;
+  max-width: 50rem;
+  article {
+    background-color: $green;
+    padding: $spacing * 8;
+    border-radius: 4px;
+    margin-top: $spacing * 16;
+    margin-bottom: $spacing * 16;
+    color: $white;
+
+    p {
+      margin-top: $spacing * 4;
+    }
+  }
+
+  .bankid-form {
+    .textfield {
+      margin-bottom: $spacing * 8;
+    }
+    &__btns {
+      @include flex(space-between, center);
+      gap: $spacing * 4;
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+}

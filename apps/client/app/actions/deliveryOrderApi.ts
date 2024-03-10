@@ -19,7 +19,29 @@ export const createNewOrder = async (formData: DeliveryOrderFormData) => {
   );
   if (res.success) {
     revalidatePath(APP_ROUTER.DELIVERY_ORDERS, 'page');
+    revalidateTag('profile');
     revalidateTag('history');
+  }
+  return res;
+};
+export const modifyOrder = async (
+  order_id: string,
+  slug: string,
+  formData: DeliveryOrderFormData
+) => {
+  const res = await customFetch(
+    '/delivery-orders/' + order_id,
+    {
+      method: 'PUT',
+      body: JSON.stringify(formData),
+    },
+    true
+  );
+  if (res.success) {
+    revalidateTag(`order/${slug}`);
+    revalidateTag(`order/${order_id}`);
+    revalidateTag('history');
+    revalidatePath(APP_ROUTER.DELIVERY_ORDERS, 'page');
   }
   return res;
 };
@@ -30,9 +52,23 @@ export const getOneDeliveryOrderBySlug = async (slug = '') => {
     {
       method: 'GET',
       next: {
-        path: APP_ROUTER.DELIVERY_ORDERS + '/' + slug,
+        tags: ['order/' + slug],
       },
     }
+  );
+
+  return res;
+};
+export const getOneDeliveryOrderById = async (id = '') => {
+  const res = await customFetch<DeliveryOrderDocument>(
+    `/delivery-orders/id/${id}`,
+    {
+      method: 'GET',
+      next: {
+        tags: ['order/' + id],
+      },
+    },
+    true
   );
 
   return res;
@@ -89,9 +125,9 @@ export const takeOrder = async (order_id: string, slug: string) => {
     true
   );
   if (res.success) {
-    revalidatePath(APP_ROUTER.DELIVERY_ORDERS + '/' + slug);
-    revalidatePath(APP_ROUTER.PROFILE);
+    revalidateTag(`order/${slug}`);
     revalidateTag('history');
+    revalidateTag('profile');
   }
   return res;
 };

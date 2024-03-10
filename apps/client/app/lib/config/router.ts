@@ -7,10 +7,13 @@ const APP_ROUTER = {
   PROFILE: '/profile',
   JOURNEYS: '/journeys',
   ADD_NEW_JOURNEY: '/new-journey',
+  EDIT_JOURNEY: '/edit-journey',
   DELIVERY_ORDERS: '/delivery-orders',
+  EDIT_DELIVERY_ORDER: '/edit-delivery-order',
   ADD_NEW_DELIVERY_ORDER: '/new-order',
   PRIVACY_POLICY: '/privacy-policy',
   TERMS: '/terms-and-conditions',
+  IDENTIFY: '/identify',
 };
 
 export const NAVBAR = [

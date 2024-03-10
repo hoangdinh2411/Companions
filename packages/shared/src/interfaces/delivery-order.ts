@@ -13,7 +13,6 @@ export interface DeliveryOrderFormData {
   message: string;
   weight: number;
   size: string;
-  phone: string;
   title: string;
   be_in_touch?: boolean;
   type_of_commodity: TypeOfCommodityEnum;

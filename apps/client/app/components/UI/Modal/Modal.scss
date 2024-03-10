@@ -5,20 +5,15 @@
   width: 100%;
   height: 100%;
   z-index: -1;
-  opacity: 0;
-  visibility: hidden;
   padding: $spacing * 8;
-
-  @include animation(disappear 0.3s ease-in 1);
+  overflow: hidden;
   &.open {
     z-index: 100;
-    opacity: 1;
-    visibility: visible;
-    @include animation(appear 0.3s ease-in 1);
-    @include flex(center, center);
     .modal__content {
-      opacity: 1;
+      @include animation(appear 0.5s ease-in 1);
     }
+
+    @include flex(center, center);
   }
   &__overlay {
     @include position(absolute, 0, 0, 0, 0);
@@ -29,6 +24,7 @@
   }
 
   &__close-icon {
+    z-index: 100;
     position: absolute;
     top: $spacing * 8;
     right: $spacing * 8;
@@ -56,62 +52,32 @@
   }
 
   &__content {
-    opacity: 0;
+    @include animation(disappear 0.5s ease-in 1);
     background-color: $white;
+    opacity: 1;
     z-index: 100;
+    max-width: 96%;
+    max-height: 96%;
+    overflow-x: hidden;
+    overflow-y: scroll;
     border-radius: 8px;
     padding: $spacing * 8;
   }
 }
 
-//Bank Id
-.identify-bank-id__container {
-  width: 100%;
-  max-width: 50rem;
-  article {
-    background-color: $green;
-    padding: $spacing * 8;
-    border-radius: 4px;
-    margin-top: $spacing * 16;
-    margin-bottom: $spacing * 16;
-    color: $white;
-
-    p {
-      margin-top: $spacing * 4;
-    }
-  }
-
-  .bankid-form {
-    .textfield {
-      margin-bottom: $spacing * 8;
-    }
-    &__btns {
-      @include flex(space-between, center);
-      gap: $spacing * 4;
-      .btn {
-        width: 100%;
-      }
-    }
-  }
-}
-
 @include keyframes(appear) {
   0% {
-    opacity: 0;
-    transform: translateY(-20px);
+    transform: scale(0.7);
   }
   100% {
-    opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
   }
 }
 @include keyframes(disappear) {
   0% {
-    opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
   }
   100% {
-    opacity: 0;
-    transform: translateY(-20px);
+    transform: scale(0.7);
   }
 }

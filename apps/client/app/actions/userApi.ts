@@ -32,7 +32,7 @@ export const getUser = () => {
     {
       method: 'GET',
       next: {
-        path: APP_ROUTER.PROFILE,
+        tags: ['profile'],
       },
     },
     true

@@ -20,6 +20,7 @@ export const createNewJourney = async (formData: JourneyFormData) => {
   );
   if (res.success) {
     revalidatePath(APP_ROUTER.JOURNEYS, 'page');
+    revalidateTag('profile');
     revalidateTag('history');
   }
   return res;
@@ -39,7 +40,10 @@ export const modifyJourney = async (
     true
   );
   if (res.success) {
-    revalidatePath(`${APP_ROUTER.JOURNEYS}/${slug}`, 'page');
+    revalidateTag(`journey/${slug}`);
+    revalidateTag(`journey/${id}`);
+    revalidateTag('history');
+    revalidatePath(APP_ROUTER.JOURNEYS, 'page');
   }
   return res;
 };
@@ -48,9 +52,23 @@ export const getOneJourneyBySlug = async (slug = '') => {
   const res = await customFetch<JourneyDocument>(`/journeys/${slug}`, {
     method: 'GET',
     next: {
-      path: APP_ROUTER.JOURNEYS + '/' + slug,
+      tags: ['journey/' + slug],
     },
   });
+
+  return res;
+};
+export const getOneJourneyById = async (id: string) => {
+  const res = await customFetch<JourneyDocument>(
+    `/journeys/id/${id}`,
+    {
+      method: 'GET',
+      next: {
+        tags: ['journey/' + id],
+      },
+    },
+    true
+  );
 
   return res;
 };
@@ -105,8 +123,8 @@ export const joinJourney = async (journey_id: string, slug: string) => {
   );
 
   if (res.success) {
-    revalidatePath(APP_ROUTER.JOURNEYS + '/' + slug);
-    revalidatePath(APP_ROUTER.PROFILE);
+    revalidateTag('journey/' + slug);
+    revalidateTag('profile');
     revalidateTag('history');
   }
   return res;

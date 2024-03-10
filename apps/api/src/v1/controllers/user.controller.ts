@@ -30,10 +30,12 @@ const UserController = {
       let user = new UserModel({
         email: req.body.email,
         password: req.body.password,
+        phone: req.body.phone,
       });
 
       user.setPassword(req.body.password);
 
+      // We might using sms verification in the future
       const verify_code = generateVerifyCode(req.body.email);
       const verify_link = `${env.DOMAIN}/verify-email?confirm=${verify_code}&email=${req.body.email}`;
       await sendVerifyEmail(user.email, verify_link);
@@ -135,6 +137,27 @@ const UserController = {
     }
   },
 
+  update: async function (req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = await UserModel.findOneAndUpdate(
+        {
+          _id: req.user._id,
+        },
+        req.body,
+        {
+          new: true,
+          upsert: false,
+        }
+      );
+      if (!user)
+        return next(createHttpError.NotFound(ERROR_MESSAGES.USER.NOT_FOUND));
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
   identifyByBankId: async function (
     req: Request,
     res: Response,

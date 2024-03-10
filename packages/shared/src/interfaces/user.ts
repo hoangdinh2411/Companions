@@ -23,6 +23,7 @@ export interface UserDocument extends SignInFormData {
 
 export interface SignUpFormData extends SignInFormData {
   confirm_password: string;
+  phone: string;
 }
 
 export interface SignInAPIResponse {

@@ -109,13 +109,16 @@ export default function History({ history, tab }: Props) {
               (item: JourneyDocument | DeliveryOrderDocument) => {
                 return (
                   <Accordion heading={item.title} key={item._id} id={item._id}>
-                    <section className='history__item'>
+                    <div className='history__item'>
                       {isOwner(item.created_by._id) && (
                         <Link
+                          title={
+                            item.status === 'completed' ? 'Cannot edit' : 'Edit'
+                          }
                           href={
-                            !(item as DeliveryOrderDocument)?.weight
-                              ? `${APP_ROUTER.JOURNEYS}/${item.slug}`
-                              : `${APP_ROUTER.DELIVERY_ORDERS}/${item.slug}`
+                            (item as DeliveryOrderDocument).weight
+                              ? `${APP_ROUTER.EDIT_DELIVERY_ORDER}/${item._id}`
+                              : `${APP_ROUTER.EDIT_JOURNEY}/${item._id}`
                           }
                           className='update-btn'
                           style={{
@@ -204,7 +207,7 @@ export default function History({ history, tab }: Props) {
                           {dayjs(item.created_at).format()}
                         </span>
                       )}
-                    </section>
+                    </div>
                   </Accordion>
                 );
               }

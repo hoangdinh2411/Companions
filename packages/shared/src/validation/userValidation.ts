@@ -23,4 +23,8 @@ export const signUpValidation = Yup.object().shape({
       }
     )
     .required('Required password'),
+  phone: Yup.string()
+    .required('Need to specify the phone number')
+    .min(10, 'Phone number cannot be less than 10 characters')
+    .max(15, 'Phone number cannot be more than 15 characters'),
 });

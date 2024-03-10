@@ -10,7 +10,6 @@ export interface JourneyFormData {
   price: number;
   seats: number;
   message: string;
-  phone: string;
   title: string;
   be_in_touch?: boolean;
 }

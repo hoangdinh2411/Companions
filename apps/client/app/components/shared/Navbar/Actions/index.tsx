@@ -55,7 +55,7 @@ export default function Actions() {
   };
   const isLogin = useMemo(() => {
     return user._id ? false : true;
-  }, [pathname]);
+  }, [pathname, user]);
 
   const handleLogout = async () => {
     await removeToken();
@@ -63,6 +63,7 @@ export default function Actions() {
       setUser({} as GetUserAPIResponse);
     }
     toast.success('You have successfully signed out');
+    router.push(APP_ROUTER.SIGN_IN);
   };
 
   return (

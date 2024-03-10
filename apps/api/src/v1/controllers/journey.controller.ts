@@ -1,3 +1,4 @@
+import { create } from 'zustand';
 import {
   JourneyStatusEnum,
   journeyRequestValidation,
@@ -42,17 +43,10 @@ const JourneyController = {
       await UserModel.findOne(
         {
           _id: req.user._id,
-          phone: {
-            $not: {
-              $elemMatch: {
-                $eq: phone,
-              },
-            },
-          },
         },
         {
           $push: {
-            phone,
+            journeys_shared: new mongoose.Types.ObjectId(journey._id),
           },
         }
       );
@@ -129,7 +123,7 @@ const JourneyController = {
     }
     try {
       await journeyRequestValidation.validate(req.body);
-      const { phone, ...rest } = req.body;
+      const { start_date, end_date, title, from, to, ...rest } = req.body;
 
       const journey = await JourneyModel.findOneAndUpdate(
         {
@@ -140,15 +134,12 @@ const JourneyController = {
         {
           $set: {
             ...rest,
-            start_date: dayjs(rest.start_date).format('YYYY-MM-DD'),
-            end_date: dayjs(rest.end_date).format('YYYY-MM-DD'),
-            slug: generateSlugFrom(
-              rest.title,
-              rest.from,
-              rest.to,
-              rest.start_date,
-              rest.end_date
-            ),
+            title,
+            from,
+            to,
+            start_date: dayjs(start_date).format('YYYY-MM-DD'),
+            end_date: dayjs(end_date).format('YYYY-MM-DD'),
+            slug: generateSlugFrom(title, from, to, start_date, end_date),
           },
         },
         { new: true }
@@ -157,24 +148,6 @@ const JourneyController = {
       if (!journey) {
         return next(createHttpError.NotFound(ERROR_MESSAGES.JOURNEY.NOT_FOUND));
       }
-      await UserModel.findOne(
-        {
-          _id: req.user._id,
-          phone: {
-            $not: {
-              $elemMatch: {
-                $eq: phone,
-              },
-            },
-          },
-        },
-        {
-          $push: {
-            phone,
-          },
-        }
-      );
-
       return res.status(200).json({
         success: true,
       });
@@ -434,7 +407,77 @@ const JourneyController = {
                   full_name: 1,
                   email: 1,
                   phone: 1,
-                  id_number: 1,
+                },
+              },
+            ],
+          },
+        },
+        {
+          $unwind: '$created_by',
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'companions',
+            foreignField: '_id',
+            as: 'companions',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  full_name: 1,
+                  email: 1,
+                  phone: 1,
+                },
+              },
+            ],
+          },
+        },
+      ]);
+
+      if (data.length === 0) {
+        return next(createHttpError.NotFound(ERROR_MESSAGES.JOURNEY.NOT_FOUND));
+      }
+
+      const result = hideUserInfoDependOnFieldBeOnTouch(
+        data[0],
+        req?.user?._id
+      );
+      return res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+  getOneById: async (req: Request, res: Response, next: NextFunction) => {
+    if (req.params.journey_id === 'undefined')
+      return next(
+        createHttpError.BadRequest(ERROR_MESSAGES.JOURNEY.MISSING_JOURNEY_ID)
+      );
+    try {
+      const data = await JourneyModel.aggregate([
+        {
+          $match: {
+            created_by: new mongoose.Types.ObjectId(req.user._id),
+            _id: new mongoose.Types.ObjectId(req.params.journey_id),
+            status: JourneyStatusEnum.ACTIVE,
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'created_by',
+            foreignField: '_id',
+            as: 'created_by',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  full_name: 1,
+                  email: 1,
+                  phone: 1,
                 },
               },
             ],

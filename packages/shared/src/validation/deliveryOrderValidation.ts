@@ -64,8 +64,9 @@ export const deliveryOrderRequestValidation = yup
   .object()
   .concat(deliveryOrderFormDataValidation)
   .shape({
-    phone: yup
-      .string()
-      .required('Need to specify the phone number')
-      .length(10, 'Phone number must be 10 digits'),
+    // phone: yup
+    //   .string()
+    //   .required('Need to specify the phone number')
+    //   .min(10, 'Phone number cannot be less than 10 characters')
+    //   .max(15, 'Phone number cannot be more than 15 characters'),
   });
