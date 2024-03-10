@@ -23,6 +23,7 @@ export interface UserDocument extends SignInFormData {
 
 export interface SignUpFormData extends SignInFormData {
   confirm_password: string;
+  phone: string;
 }
 
 export interface SignInAPIResponse {
@@ -40,11 +41,12 @@ export interface GetUserAPIResponse
   total_journeys_shared: number;
   total_journeys_joined: number;
 }
-
-export interface HistoryAPIResponse {
-  pagination: {
+export interface ResponseWithPagination<T> {
+  items: T[];
+  pagination?: {
     total: number;
     pages: number;
   };
-  items: JourneyDocument[] | DeliveryOrderDocument[];
 }
+export interface HistoryAPIResponse
+  extends ResponseWithPagination<JourneyDocument | DeliveryOrderDocument> {}

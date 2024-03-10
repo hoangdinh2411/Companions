@@ -1,11 +1,8 @@
 'use server';
 import {
   DeliveryOrderDocument,
-  DeliveryOrderResponse,
   DeliveryOrderFormData,
-  JourneyDocument,
-  JourneyFormData,
-  JourneyResponse,
+  ResponseWithPagination,
 } from '@repo/shared';
 import customFetch from './customFetch';
 import { revalidatePath, revalidateTag } from 'next/cache';
@@ -22,7 +19,29 @@ export const createNewOrder = async (formData: DeliveryOrderFormData) => {
   );
   if (res.success) {
     revalidatePath(APP_ROUTER.DELIVERY_ORDERS, 'page');
+    revalidateTag('profile');
     revalidateTag('history');
+  }
+  return res;
+};
+export const modifyOrder = async (
+  order_id: string,
+  slug: string,
+  formData: DeliveryOrderFormData
+) => {
+  const res = await customFetch(
+    '/delivery-orders/' + order_id,
+    {
+      method: 'PUT',
+      body: JSON.stringify(formData),
+    },
+    true
+  );
+  if (res.success) {
+    revalidateTag(`order/${slug}`);
+    revalidateTag(`order/${order_id}`);
+    revalidateTag('history');
+    revalidatePath(APP_ROUTER.DELIVERY_ORDERS, 'page');
   }
   return res;
 };
@@ -33,9 +52,23 @@ export const getOneDeliveryOrderBySlug = async (slug = '') => {
     {
       method: 'GET',
       next: {
-        path: APP_ROUTER.DELIVERY_ORDERS + '/' + slug,
+        tags: ['order/' + slug],
       },
     }
+  );
+
+  return res;
+};
+export const getOneDeliveryOrderById = async (id = '') => {
+  const res = await customFetch<DeliveryOrderDocument>(
+    `/delivery-orders/id/${id}`,
+    {
+      method: 'GET',
+      next: {
+        tags: ['order/' + id],
+      },
+    },
+    true
   );
 
   return res;
@@ -45,19 +78,22 @@ export const getAllDeliveryOrder = async (query = '') => {
   if (query) {
     url += `?${query}`;
   }
-  const res = await customFetch<DeliveryOrderResponse>(url, {
-    method: 'GET',
-    next: {
-      path: APP_ROUTER.DELIVERY_ORDERS,
-    },
-  });
+  const res = await customFetch<ResponseWithPagination<DeliveryOrderDocument>>(
+    url,
+    {
+      method: 'GET',
+      next: {
+        path: APP_ROUTER.DELIVERY_ORDERS,
+      },
+    }
+  );
 
   return res;
 };
 
 export const filterDeliveryOrder = async (query: string) => {
   if (!query) new Error('Query is required');
-  const res = await customFetch<DeliveryOrderResponse>(
+  const res = await customFetch<ResponseWithPagination<DeliveryOrderDocument>>(
     `/delivery-orders/filter?${query}`,
     {
       method: 'GET',
@@ -69,7 +105,7 @@ export const filterDeliveryOrder = async (query: string) => {
 };
 
 export const searchDeliveryOrder = async (query: string) => {
-  const res = await customFetch<DeliveryOrderResponse>(
+  const res = await customFetch<ResponseWithPagination<DeliveryOrderDocument>>(
     `/delivery-orders/search?${query}`,
     {
       method: 'GET',
@@ -81,7 +117,7 @@ export const searchDeliveryOrder = async (query: string) => {
 };
 export const takeOrder = async (order_id: string, slug: string) => {
   const res = await customFetch(
-    `/delivery-orders/take/${order_id}`,
+    `/delivery-orders/${order_id}/take`,
     {
       method: 'PUT',
       cache: 'no-cache',
@@ -89,9 +125,9 @@ export const takeOrder = async (order_id: string, slug: string) => {
     true
   );
   if (res.success) {
-    revalidatePath(APP_ROUTER.DELIVERY_ORDERS + '/' + slug);
-    revalidateTag('profile');
+    revalidateTag(`order/${slug}`);
     revalidateTag('history');
+    revalidateTag('profile');
   }
   return res;
 };

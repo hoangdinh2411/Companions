@@ -82,6 +82,16 @@
         grid-template-columns: repeat(6, 1fr);
       }
     }
+    .update-btn {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      color: $green;
+      font-weight: 600;
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
     &__contents {
       margin-top: $spacing * 30;
       .accordion {
@@ -90,16 +100,12 @@
       .history__item {
         padding: $spacing * 8 0;
         position: relative;
+
         &__status {
-          position: absolute;
-          top: 2rem;
-          right: 2rem;
           padding: $spacing * 2;
-          border-radius: 2px;
-          background-color: $background-default;
+          border-radius: 4px;
           border: 0.5px solid $border;
           font-weight: 600;
-
           &.completed {
             color: $purple;
           }
@@ -126,7 +132,7 @@
           grid-template-columns: 1fr;
           margin-bottom: $spacing * 4;
           @include breakpoint(md) {
-            grid-template-columns: 15rem 1fr;
+            grid-template-columns: 20rem 1fr;
             gap: $spacing * 8;
           }
           font-weight: 600;

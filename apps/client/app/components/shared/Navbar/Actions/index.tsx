@@ -50,12 +50,12 @@ export default function Actions() {
     checkAuth();
   }, [pathname]);
 
-  const handleDropdown = () => {
+  const handleToggleDropdown = () => {
     setDropdown(!dropdown);
   };
   const isLogin = useMemo(() => {
     return user._id ? false : true;
-  }, [user]);
+  }, [pathname, user]);
 
   const handleLogout = async () => {
     await removeToken();
@@ -63,25 +63,20 @@ export default function Actions() {
       setUser({} as GetUserAPIResponse);
     }
     toast.success('You have successfully signed out');
-  };
-
-  const redirectToSignIn = () => {
     router.push(APP_ROUTER.SIGN_IN);
   };
+
   return (
     <section className='navbar__actions'>
       {isLogin ? (
-        <Button
-          variant='default'
-          onClick={redirectToSignIn}
-          className='actions'
-          size='small'
-        >
-          Sign in
-        </Button>
+        <Link href={APP_ROUTER.SIGN_IN}>
+          <Button variant='default' className='actions' size='small'>
+            Sign in
+          </Button>
+        </Link>
       ) : (
         <div className='actions ' title='Profile'>
-          <span onClick={handleDropdown}>
+          <span onClick={handleToggleDropdown}>
             <UserIcon />
           </span>
           <div className={`actions__dropdown ${dropdown ? 'open' : ''}`}>

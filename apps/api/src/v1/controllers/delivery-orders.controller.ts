@@ -1,6 +1,5 @@
 import {
   DeliveryOrderStatusEnum,
-  TypeOfCommodityEnum,
   deliveryOrderRequestValidation,
   queryValidation,
 } from '@repo/shared';
@@ -12,33 +11,35 @@ import { limitDocumentPerPage } from '../../lib/utils/variables';
 import { defaultResponseIfNoData } from '../helpers/response';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import UserModel from '../models/User.model';
-import { ValidationError } from 'yup';
 import mongoose from 'mongoose';
+import { generateSlugFrom } from '../../lib/utils/generate-slug';
+import { hideUserInfoDependOnFieldBeOnTouch } from '../helpers/formatDocument';
 let page = 1;
 
 const DeliveryOrderController = {
   add: async (req: Request, res: Response, next: NextFunction) => {
     try {
       await deliveryOrderRequestValidation.validate(req.body);
+      const { phone, ...rest } = req.body;
       const new_order = new DeliveryOrderSchema({
-        ...req.body,
-        start_date: dayjs(req.body.start_date).format('YYYY-MM-DD'),
-        end_date: dayjs(req.body.end_date).format('YYYY-MM-DD'),
-        weight: Number(req.body.weight).toFixed(2),
-        created_by: {
-          _id: req.user._id,
-          email: req.user.email,
-          id_number: req.user?.id_number,
-          phone: req.body?.phone,
-          full_name: req.user?.full_name,
-        },
+        ...rest,
+        start_date: dayjs(rest.start_date).format('YYYY-MM-DD'),
+        end_date: dayjs(rest.end_date).format('YYYY-MM-DD'),
+        weight: Number(rest.weight).toFixed(2),
+        created_by: new mongoose.Types.ObjectId(req.user._id),
       });
       await new_order.save();
-      await UserModel.findByIdAndUpdate(req.user._id, {
-        $push: {
-          orders_placed: new_order._id,
+      await UserModel.findOne(
+        {
+          _id: req.user._id,
         },
-      });
+        {
+          $push: {
+            orders_placed: new mongoose.Types.ObjectId(new_order._id),
+          },
+        }
+      );
+
       return res.status(201).json({
         success: true,
       });
@@ -110,7 +111,54 @@ const DeliveryOrderController = {
       return next(createHttpError.BadRequest((error as Error).message));
     }
   },
+  modify: async (req: Request, res: Response, next: NextFunction) => {
+    const { order_id } = req.params;
+    if (!order_id) {
+      return next(
+        createHttpError.BadRequest(
+          ERROR_MESSAGES.DELIVERY_ORDER.MISSING_DELIVERY_ORDER_ID
+        )
+      );
+    }
+    try {
+      await deliveryOrderRequestValidation.validate(req.body);
+      const { start_date, end_date, weight, title, from, to, ...rest } =
+        req.body;
 
+      const order = await DeliveryOrderSchema.findOneAndUpdate(
+        {
+          _id: order_id,
+          created_by: new mongoose.Types.ObjectId(req.user._id),
+          status: DeliveryOrderStatusEnum.ACTIVE,
+        },
+        {
+          $set: {
+            ...rest,
+            title,
+            from,
+            to,
+            start_date: dayjs(start_date).format('YYYY-MM-DD'),
+            end_date: dayjs(end_date).format('YYYY-MM-DD'),
+            weight: Number(weight).toFixed(2),
+            slug: generateSlugFrom(title, from, to, start_date, end_date),
+          },
+        },
+        { new: true }
+      );
+
+      if (!order) {
+        return next(
+          createHttpError.NotFound(ERROR_MESSAGES.DELIVERY_ORDER.NOT_FOUND)
+        );
+      }
+
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
   // on slide component on home page
   filter: async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -285,18 +333,137 @@ const DeliveryOrderController = {
     if (req.params.slug === 'undefined')
       return next(createHttpError.BadRequest('Invalid slug'));
     try {
-      const data = await DeliveryOrderSchema.findOne({
-        slug: req.params.slug,
-        status: DeliveryOrderStatusEnum.ACTIVE,
-      }).select('-__v -created_by.id_number -companions.id_number');
-      if (!data) {
+      const data = await DeliveryOrderSchema.aggregate([
+        {
+          $match: {
+            slug: req.params.slug,
+            status: DeliveryOrderStatusEnum.ACTIVE,
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'created_by',
+            foreignField: '_id',
+            as: 'created_by',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  full_name: 1,
+                  email: 1,
+                  phone: 1,
+                },
+              },
+            ],
+          },
+        },
+        {
+          $unwind: '$created_by',
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'companions',
+            foreignField: '_id',
+            as: 'companions',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  full_name: 1,
+                  email: 1,
+                  phone: 1,
+                },
+              },
+            ],
+          },
+        },
+      ]);
+      if (data.length === 0) {
         return next(
           createHttpError.NotFound(ERROR_MESSAGES.DELIVERY_ORDER.NOT_FOUND)
         );
       }
+      const result = hideUserInfoDependOnFieldBeOnTouch(
+        data[0],
+        req?.user?._id
+      );
       return res.status(200).json({
         success: true,
-        data,
+        data: result,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+  getOneById: async (req: Request, res: Response, next: NextFunction) => {
+    if (req.params.order_id === 'undefined')
+      return next(
+        createHttpError.BadRequest(
+          ERROR_MESSAGES.DELIVERY_ORDER.MISSING_DELIVERY_ORDER_ID
+        )
+      );
+    try {
+      const data = await DeliveryOrderSchema.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(req.params.order_id),
+            status: DeliveryOrderStatusEnum.ACTIVE,
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'created_by',
+            foreignField: '_id',
+            as: 'created_by',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  full_name: 1,
+                  email: 1,
+                  phone: 1,
+                },
+              },
+            ],
+          },
+        },
+        {
+          $unwind: '$created_by',
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'companions',
+            foreignField: '_id',
+            as: 'companions',
+            pipeline: [
+              {
+                $project: {
+                  _id: 1,
+                  full_name: 1,
+                  email: 1,
+                  phone: 1,
+                },
+              },
+            ],
+          },
+        },
+      ]);
+      if (data.length === 0) {
+        return next(
+          createHttpError.NotFound(ERROR_MESSAGES.DELIVERY_ORDER.NOT_FOUND)
+        );
+      }
+      const result = hideUserInfoDependOnFieldBeOnTouch(
+        data[0],
+        req?.user?._id
+      );
+      return res.status(200).json({
+        success: true,
+        data: result,
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));
@@ -315,7 +482,7 @@ const DeliveryOrderController = {
         {
           _id: req.params.order_id,
           status: DeliveryOrderStatusEnum.ACTIVE,
-          'created_by._id': {
+          created_by: {
             $ne: new mongoose.Types.ObjectId(req.user._id),
           },
           start_date: {
@@ -324,20 +491,14 @@ const DeliveryOrderController = {
           companions: {
             $not: {
               $elemMatch: {
-                _id: new mongoose.Types.ObjectId(req.user._id),
+                $eq: new mongoose.Types.ObjectId(req.user._id),
               },
             },
           },
         },
         {
           $push: {
-            companions: {
-              _id: new mongoose.Types.ObjectId(req.user._id),
-              email: req.user.email,
-              id_number: req.user.id_number,
-              phone: req.user.phone,
-              full_name: req.user.full_name,
-            },
+            companions: new mongoose.Types.ObjectId(req.user._id),
           },
         },
         {
@@ -347,13 +508,15 @@ const DeliveryOrderController = {
       );
       if (!order) {
         return next(
-          createHttpError.BadRequest(ERROR_MESSAGES.DELIVERY_ORDER.HAS_TAKEN)
+          createHttpError.BadRequest(
+            ERROR_MESSAGES.DELIVERY_ORDER.CANNOT_TAKE_THIS_ORDER
+          )
         );
       }
 
       await UserModel.findByIdAndUpdate(req.user._id, {
         $push: {
-          orders_taken: order._id,
+          orders_taken: new mongoose.Types.ObjectId(order._id),
         },
       });
 

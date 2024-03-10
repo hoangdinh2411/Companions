@@ -1,6 +1,7 @@
+import { DeliverOrderDocument } from './../../../../../packages/shared/dist/packages/shared/src/interfaces/delivery-order.d';
 import {
+  JourneyDocument,
   UserStatusEnum,
-  queryValidation,
   signInValidation,
   signUpValidation,
 } from '@repo/shared';
@@ -18,6 +19,7 @@ import { sendVerifyEmail } from '../../lib/config/nodemailer.config';
 import env from '../../lib/config/env';
 import { limitDocumentPerPage } from '../../lib/utils/variables';
 import { defaultResponseIfNoData } from '../helpers/response';
+import { hideUserInfoDependOnFieldBeOnTouch } from '../helpers/formatDocument';
 
 let page = 1;
 const UserController = {
@@ -28,10 +30,12 @@ const UserController = {
       let user = new UserModel({
         email: req.body.email,
         password: req.body.password,
+        phone: req.body.phone,
       });
 
       user.setPassword(req.body.password);
 
+      // We might using sms verification in the future
       const verify_code = generateVerifyCode(req.body.email);
       const verify_link = `${env.DOMAIN}/verify-email?confirm=${verify_code}&email=${req.body.email}`;
       await sendVerifyEmail(user.email, verify_link);
@@ -133,6 +137,27 @@ const UserController = {
     }
   },
 
+  update: async function (req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = await UserModel.findOneAndUpdate(
+        {
+          _id: req.user._id,
+        },
+        req.body,
+        {
+          new: true,
+          upsert: false,
+        }
+      );
+      if (!user)
+        return next(createHttpError.NotFound(ERROR_MESSAGES.USER.NOT_FOUND));
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
   identifyByBankId: async function (
     req: Request,
     res: Response,
@@ -288,6 +313,7 @@ const UserController = {
       const collection = fieldName.includes('journeys')
         ? 'journeys'
         : 'deliveryorders';
+
       const data = await UserModel.aggregate([
         {
           $match: {
@@ -309,6 +335,48 @@ const UserController = {
             as: fieldName,
             pipeline: [
               {
+                $lookup: {
+                  from: 'users',
+                  localField: 'companions',
+                  foreignField: '_id',
+                  as: 'companions',
+                  pipeline: [
+                    {
+                      $project: {
+                        _id: 1,
+                        email: 1,
+                        full_name: 1,
+                        phone: 1,
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                $lookup: {
+                  from: 'users',
+                  localField: 'created_by',
+                  foreignField: '_id',
+                  as: 'created_by',
+                  pipeline: [
+                    {
+                      $project: {
+                        _id: 1,
+                        email: 1,
+                        full_name: 1,
+                        phone: 1,
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                $unwind: {
+                  path: '$created_by',
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
+              {
                 $facet: {
                   items: [
                     {
@@ -319,13 +387,12 @@ const UserController = {
                     },
                     {
                       $sort: {
-                        status: 1,
+                        created_at: -1,
                       },
                     },
                     {
                       $project: {
-                        'created_by.id_number': 0,
-                        'companions.id_number': 0,
+                        __v: 0,
                       },
                     },
                   ],
@@ -365,9 +432,22 @@ const UserController = {
           },
         },
       ]);
+      let result = defaultResponseIfNoData(data);
+      if (result.items.length > 0) {
+        result = {
+          items: result.items.map((item) => {
+            return hideUserInfoDependOnFieldBeOnTouch(
+              item as JourneyDocument | DeliverOrderDocument,
+              req.user._id
+            );
+          }),
+          pagination: result.pagination,
+        };
+      }
+
       return res.status(200).json({
         success: true,
-        data: defaultResponseIfNoData(data),
+        data: result,
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));

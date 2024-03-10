@@ -9,8 +9,18 @@ deliveryOrderRouter.get('/', DeliveryOrderController.getAll);
 deliveryOrderRouter.get('/search', DeliveryOrderController.search);
 deliveryOrderRouter.get('/filter', DeliveryOrderController.filter);
 deliveryOrderRouter.get('/:slug', DeliveryOrderController.getOneBySlug);
+deliveryOrderRouter.get(
+  '/id/:order_id',
+  authMiddleware,
+  DeliveryOrderController.getOneById
+);
 deliveryOrderRouter.put(
-  '/take/:order_id',
+  '/:order_id',
+  authMiddleware,
+  DeliveryOrderController.modify
+);
+deliveryOrderRouter.put(
+  '/:order_id/take',
   authMiddleware,
   DeliveryOrderController.takeOrder
 );

@@ -5,6 +5,7 @@ import {
   SignInFormData,
   SignUpFormData,
   GetUserAPIResponse,
+  ResponseWithPagination,
   HistoryAPIResponse,
 } from './interfaces/user';
 import {
@@ -18,11 +19,7 @@ import {
 } from './validation/journeyValidation';
 
 import { queryValidation } from './validation/queryValidation';
-import {
-  JourneyDocument,
-  JourneyFormData,
-  JourneyResponse,
-} from './interfaces/journey';
+import { JourneyDocument, JourneyFormData } from './interfaces/journey';
 import { JourneyStatusEnum } from './enums/journey';
 
 import {
@@ -32,7 +29,6 @@ import {
 
 import {
   DeliveryOrderDocument,
-  DeliveryOrderResponse,
   DeliveryOrderFormData,
 } from './interfaces/delivery-order';
 
@@ -67,14 +63,11 @@ export type {
   SignUpFormData,
   GetUserAPIResponse,
   HistoryAPIResponse,
+  ResponseWithPagination,
 };
 
 //Journey
-export type { JourneyDocument, JourneyResponse, JourneyFormData };
+export type { JourneyDocument, JourneyFormData };
 
 //Delivery Order
-export type {
-  DeliveryOrderDocument,
-  DeliveryOrderResponse,
-  DeliveryOrderFormData,
-};
+export type { DeliveryOrderDocument, DeliveryOrderFormData };

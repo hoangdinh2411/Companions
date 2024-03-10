@@ -10,40 +10,17 @@ export interface JourneyFormData {
   price: number;
   seats: number;
   message: string;
-  phone: string;
   title: string;
   be_in_touch?: boolean;
 }
 
 export interface JourneyDocument
   extends Omit<JourneyFormData, 'id_number' | 'phone'> {
-  created_by?: {
-    _id: string;
-    email: string;
-    id_number?: string;
-    phone?: string;
-    full_name: string;
-  };
+  created_by: UserDocument;
   slug: string;
   created_at?: Date;
   updated_at?: Date;
   _id: string;
   status: JourneyStatusEnum;
-  companions: [
-    {
-      _id: string;
-      email: string;
-      id_number?: string;
-      phone?: string;
-      full_name: string;
-    },
-  ];
-}
-
-export interface JourneyResponse {
-  items: JourneyDocument[];
-  pagination?: {
-    total: number;
-    pages: number;
-  };
+  companions: UserDocument[];
 }

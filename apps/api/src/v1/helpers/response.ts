@@ -1,11 +1,7 @@
+import { ResponseWithPagination } from '@repo/shared';
+
 export const defaultResponseIfNoData = (
-  data: {
-    items: unknown[];
-    pagination: {
-      total: number;
-      pages: number;
-    };
-  }[]
+  data: ResponseWithPagination<unknown>[]
 ) => {
   const defaultResponse = {
     items: [],
@@ -14,6 +10,7 @@ export const defaultResponseIfNoData = (
       pages: 0,
     },
   };
+  if (!data) return defaultResponse;
   if (Array.isArray(data) && data.length === 0) {
     return defaultResponse;
   }

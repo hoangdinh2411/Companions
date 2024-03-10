@@ -1,23 +1,21 @@
 import { Metadata } from 'next';
 import './Profile.scss';
 import { getHistory, getUser } from '../../actions/userApi';
-import { notFound } from 'next/navigation';
-import History from './components/History';
 import { generateSearchParams } from '../../lib/utils/generateSearchParams';
-import { Suspense } from 'react';
 import Detail from './components/Detail';
+import dynamic from 'next/dynamic';
 import LoadingSpinner from '../../components/UI/Loading';
+const History = dynamic(() => import('./components/History'), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
 export default async function ProfilePage({
   searchParams,
 }: {
   searchParams: Record<string, string>;
 }) {
-  const res = await getUser();
+  const getUserPromise = getUser();
 
-  if (!res.data || !res.data._id) {
-    notFound();
-  }
-  const user = res.data;
   const params = generateSearchParams(['page', 'about'], searchParams);
   let historyData;
   if (searchParams.about) {
@@ -25,10 +23,8 @@ export default async function ProfilePage({
   }
   return (
     <section className='profile'>
-      <Detail user={user} />
-      <Suspense fallback={<LoadingSpinner />}>
-        <History history={historyData?.data} tab={searchParams.about || ''} />
-      </Suspense>
+      <Detail getUserPromise={getUserPromise} />
+      <History history={historyData?.data} tab={searchParams.about || ''} />
     </section>
   );
 }

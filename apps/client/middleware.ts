@@ -15,7 +15,8 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.includes('new-journey') ||
     pathname.includes('new-order') ||
-    pathname.includes('profile')
+    pathname.includes('profile') ||
+    pathname.includes('edit')
   ) {
     if (!token) {
       return NextResponse.redirect(new URL(APP_ROUTER.SIGN_IN, request.url));

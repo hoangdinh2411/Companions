@@ -2,6 +2,7 @@ import {
   DeliveryOrderStatusEnum,
   TypeOfCommodityEnum,
 } from '../enums/delivery-order';
+import { UserDocument } from './user';
 
 export interface DeliveryOrderFormData {
   start_date: string;
@@ -12,7 +13,6 @@ export interface DeliveryOrderFormData {
   message: string;
   weight: number;
   size: string;
-  phone: string;
   title: string;
   be_in_touch?: boolean;
   type_of_commodity: TypeOfCommodityEnum;
@@ -20,33 +20,11 @@ export interface DeliveryOrderFormData {
 
 export interface DeliveryOrderDocument
   extends Omit<DeliveryOrderFormData, 'id_number' | 'phone'> {
-  created_by?: {
-    _id: string;
-    email: string;
-    id_number?: string;
-    phone?: string;
-    full_name: string;
-  };
+  created_by: UserDocument;
   slug: string;
   created_at?: Date;
   updated_at?: Date;
   _id: string;
   status: DeliveryOrderStatusEnum;
-  companions: [
-    {
-      _id: string;
-      email: string;
-      id_number?: string;
-      phone?: string;
-      full_name: string;
-    },
-  ];
-}
-
-export interface DeliveryOrderResponse {
-  items: DeliveryOrderDocument[];
-  pagination?: {
-    total: number;
-    pages: number;
-  };
+  companions: UserDocument[];
 }

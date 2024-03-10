@@ -1,22 +1,18 @@
 'use client';
 import { HTMLAttributes } from 'react';
 import './Modal.scss';
+import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 
 interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
-  open: boolean;
-  onClose: () => void;
+  open?: boolean;
   disableClose?: boolean;
 }
 
 export default function Modal(props: ModalProps) {
-  const {
-    children,
-    open = false,
-    onClose,
-    className,
-    disableClose = false,
-  } = props;
+  const router = useRouter();
+  const { children, open = true, className, disableClose = false } = props;
 
   let modalClasses = 'modal';
   if (open) {
@@ -29,23 +25,22 @@ export default function Modal(props: ModalProps) {
 
   const handleClose = () => {
     if (disableClose) return;
-    onClose();
+    router.back();
   };
-  return (
+  return createPortal(
     <div className={modalClasses}>
+      {!disableClose && (
+        <span
+          className='modal__close-icon'
+          title='Close modal'
+          onClick={handleClose}
+        >
+          X
+        </span>
+      )}
       <div className='modal__overlay' onClick={handleClose}></div>
-      <div className='modal__content'>
-        {!disableClose && (
-          <span
-            className='modal__close-icon'
-            title='Close modal'
-            onClick={handleClose}
-          >
-            X
-          </span>
-        )}
-        {children}
-      </div>
-    </div>
+      <div className='modal__content'>{children}</div>
+    </div>,
+    document.getElementById('modal-root')!
   );
 }
