@@ -1,4 +1,4 @@
-@import '../../styles/abstracts/index';
+@import '../../../styles/abstracts/index';
 
 .delivery-order__details {
   padding: $spacing * 30 0;
@@ -35,6 +35,10 @@
       &__header {
         text-transform: uppercase;
         margin-bottom: $spacing * 8;
+      }
+      &__be-in-touch {
+        color: $red;
+        font-weight: 500;
       }
       grid-area: creator-details;
       article {

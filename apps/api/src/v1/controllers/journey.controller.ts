@@ -24,11 +24,6 @@ let page = 1;
 
 const JourneyController = {
   add: async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.is_identified) {
-      return next(
-        createHttpError.BadRequest(ERROR_MESSAGES.USER.NEED_TO_VERIFY_IDENTITY)
-      );
-    }
     try {
       await journeyRequestValidation.validate(req.body);
       const { phone, ...rest } = req.body;
@@ -40,7 +35,7 @@ const JourneyController = {
       });
       await journey.save();
 
-      await UserModel.findOne(
+      await UserModel.findOneAndUpdate(
         {
           _id: req.user._id,
         },

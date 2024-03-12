@@ -12,50 +12,33 @@ import { toast } from 'react-toastify';
 import { usePathname, useRouter } from 'next/navigation';
 import { getUser } from '../../../../actions/userApi';
 import appStore from '../../../../lib/store/appStore';
-import { GetUserAPIResponse } from '@repo/shared';
+import { GetUserAPIResponse, UserDocument } from '@repo/shared';
 import Button from '../../../UI/Button';
 
-export default function Actions() {
+export default function Actions({
+  userData,
+}: {
+  userData: GetUserAPIResponse | undefined;
+}) {
   const [dropdown, setDropdown] = React.useState(false);
   const { user, setUser } = appStore.getState();
+  if (userData && userData._id && !user._id) {
+    setUser(userData);
+  }
   const pathname = usePathname();
   const router = useRouter();
   useEffect(() => {
     if (dropdown) {
       setDropdown(false);
     }
-
-    async function checkAuth() {
-      const token = await getToken();
-      if (!token) {
-        if (user?._id) {
-          setUser({} as GetUserAPIResponse);
-        }
-        return;
-      }
-      if (user._id) return;
-      const res = await getUser();
-      if (!user._id && res.success && res.data?._id) {
-        setUser(res.data);
-        router.refresh();
-      }
-      if (user._id && res.status === 401) {
-        removeToken();
-        removeIdentifyNumber();
-        setUser({} as GetUserAPIResponse);
-        return;
-      }
-    }
-
-    checkAuth();
   }, [pathname]);
 
   const handleToggleDropdown = () => {
     setDropdown(!dropdown);
   };
   const isLogin = useMemo(() => {
-    return user._id ? false : true;
-  }, [pathname, user]);
+    return userData && userData._id ? false : true;
+  }, [userData]);
 
   const handleLogout = async () => {
     await removeToken();
@@ -66,20 +49,24 @@ export default function Actions() {
     router.push(APP_ROUTER.SIGN_IN);
   };
 
-  return (
-    <section className='navbar__actions'>
-      {isLogin ? (
+  if (isLogin) {
+    return (
+      <div className='navbar__actions'>
         <Link href={APP_ROUTER.SIGN_IN}>
           <Button variant='default' className='actions' size='small'>
             Sign in
           </Button>
         </Link>
-      ) : (
-        <div className='actions ' title='Profile'>
-          <span onClick={handleToggleDropdown}>
+      </div>
+    );
+  } else {
+    return (
+      <div className='navbar__actions'>
+        <div className='actions' title='Profile'>
+          <p className='actions__icon' onClick={handleToggleDropdown}>
             <UserIcon />
-          </span>
-          <div className={`actions__dropdown ${dropdown ? 'open' : ''}`}>
+          </p>
+          <nav className={`actions__dropdown ${dropdown ? 'open' : ''}`}>
             <ul>
               <li>
                 <Link href={APP_ROUTER.PROFILE}>Profile</Link>
@@ -88,9 +75,9 @@ export default function Actions() {
                 <p onClick={handleLogout}>Sign out</p>
               </li>
             </ul>
-          </div>
+          </nav>
         </div>
-      )}
-    </section>
-  );
+      </div>
+    );
+  }
 }

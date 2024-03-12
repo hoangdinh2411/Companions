@@ -38,6 +38,8 @@ import {
   deliveryOrderRequestValidation,
 } from './validation/deliveryOrderValidation';
 
+import { CommentDocument, CommentFormData } from './interfaces/comment';
+import { addNewCommentValidation } from './validation/commentValidation';
 export {
   signInValidation,
   signUpValidation,
@@ -46,6 +48,7 @@ export {
   queryValidation,
   deliveryOrderFormDataValidation,
   deliveryOrderRequestValidation,
+  addNewCommentValidation,
 };
 export {
   UserEnum,
@@ -75,3 +78,6 @@ export type { DeliveryOrderDocument, DeliveryOrderFormData };
 
 //App
 export type { StatisticResponse };
+
+//Comment
+export type { CommentDocument, CommentFormData };
