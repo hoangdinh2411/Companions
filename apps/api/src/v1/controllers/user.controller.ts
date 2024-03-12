@@ -380,15 +380,16 @@ const UserController = {
                 $facet: {
                   items: [
                     {
+                      $sort: {
+                        created_at: -1,
+                        updated_at: -1,
+                      },
+                    },
+                    {
                       $skip: (page - 1) * limitDocumentPerPage,
                     },
                     {
                       $limit: limitDocumentPerPage,
-                    },
-                    {
-                      $sort: {
-                        created_at: -1,
-                      },
                     },
                     {
                       $project: {

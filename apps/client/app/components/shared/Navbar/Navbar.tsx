@@ -1,30 +1,24 @@
-'use client';
-import React, { useEffect } from 'react';
 import './Navbar.scss';
 import Menu from './Menu';
-import { MenuCloseIcon, MenuIcon } from '../../../lib/config/svg';
 import Logo from '../Logo/Logo';
 import Actions from './Actions';
-import { usePathname } from 'next/navigation';
+import MenuBar from './MenuBar';
+import { getToken } from '../../../actions/tokens';
+import { getUser } from '../../../actions/userApi';
 
-export default function Navbar() {
-  const [showMenu, setShowMenu] = React.useState(false);
-  const pathname = usePathname();
-  const handleCloseMenu = () => {
-    setShowMenu(false);
-  };
+export default async function Navbar() {
+  const token = await getToken();
+  let res;
 
-  useEffect(() => {
-    if (showMenu) handleCloseMenu();
-  }, [pathname]);
+  if (token) {
+    res = await getUser();
+  }
   return (
-    <nav className='navbar'>
-      <span className='menubar-icon' onClick={() => setShowMenu(!showMenu)}>
-        {showMenu ? <MenuCloseIcon /> : <MenuIcon />}
-      </span>
+    <header className='navbar'>
+      <MenuBar />
       <Logo />
-      <Menu showMenu={showMenu} handleCloseMenu={handleCloseMenu} />
-      <Actions />
-    </nav>
+      <Menu />
+      <Actions userData={res?.data && res.data._id ? res?.data : undefined} />
+    </header>
   );
 }

@@ -1,16 +1,19 @@
 import { Metadata } from 'next';
 import './Orders.scss';
 import SearchBar from './components/SearchBar';
-import OrderList from './components/OrderList';
-import { Suspense } from 'react';
-import LoadingSpinner from '../../components/UI/Loading';
 import { generateSearchParams } from '../../lib/utils/generateSearchParams';
 import {
   filterDeliveryOrder,
   getAllDeliveryOrder,
   searchDeliveryOrder,
 } from '../../actions/deliveryOrderApi';
+import LoadingSpinner from '../../components/UI/Loading';
+import dynamic from 'next/dynamic';
 
+const OrderList = dynamic(() => import('./components/OrderList'), {
+  loading: () => <LoadingSpinner />,
+  ssr: false,
+});
 export default async function DeliveryOrdersPage({
   searchParams,
 }: {
@@ -43,9 +46,7 @@ export default async function DeliveryOrdersPage({
           </h6>
         ) : null}
         <SearchBar />
-        <Suspense fallback={<LoadingSpinner />}>
-          <OrderList data={res.data} />
-        </Suspense>
+        <OrderList data={res.data} />
       </div>
     </div>
   );

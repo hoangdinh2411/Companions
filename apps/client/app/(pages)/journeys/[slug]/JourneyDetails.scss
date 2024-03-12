@@ -30,13 +30,13 @@
       background-color: $white;
     }
     .creator {
-      &__be-in-touch {
-        color: $red;
-        font-weight: 500;
-      }
       &__header {
         text-transform: uppercase;
         margin-bottom: $spacing * 8;
+      }
+      &__be-in-touch {
+        color: $red;
+        font-weight: 500;
       }
       grid-area: creator-details;
       article {

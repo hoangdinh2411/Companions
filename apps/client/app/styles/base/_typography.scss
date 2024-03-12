@@ -3,6 +3,11 @@
  * for users who change their browser's default font-size.
  * 2. Set default font-family, color and line-height
  */
+
+::-webkit-scrollbar {
+  width: 2px;
+  background-color: $background-paper;
+}
 html {
   font-size: 10px;
   /* 1 */

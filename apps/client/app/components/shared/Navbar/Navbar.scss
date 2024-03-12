@@ -14,6 +14,7 @@
     padding: 0 $spacing * 8;
   }
   .menubar-icon {
+    cursor: pointer;
     @include breakpoint(lg) {
       display: none;
     }
@@ -47,15 +48,15 @@
     display: none;
     background-color: transparent;
   }
+  input[type='checkbox']:checked ~ .navbar__menu {
+    display: block;
+    @include animation(grow-ltr 0.2s linear);
+  }
+  input[type='checkbox']:checked ~ .menu__overlay {
+    display: block;
+  }
 
   &__menu {
-    &.open {
-      display: block;
-      @include animation(grow-ltr 0.2s linear);
-      .menu__overlay {
-        display: block;
-      }
-    }
     display: none;
     position: fixed;
     width: 25rem;
@@ -112,7 +113,7 @@
     .actions {
       &__dropdown {
         &.open {
-          display: block;
+          display: flex;
           animation: grow-utd 0.1s linear;
         }
         @include transition(all 0.2s ease);
@@ -129,6 +130,7 @@
         display: none;
         background-color: $background-menubar;
         ul {
+          width: 100%;
           p,
           a {
             @include breakpoint(lg) {
@@ -148,7 +150,7 @@
         }
       }
 
-      span {
+      &__icon {
         @include flex(center, center);
         svg {
           width: 2.4rem;

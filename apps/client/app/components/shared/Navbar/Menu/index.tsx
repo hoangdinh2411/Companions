@@ -3,18 +3,10 @@ import React from 'react';
 import { NAVBAR } from '../../../../lib/config/router';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-export default function Menu({
-  showMenu,
-  handleCloseMenu,
-}: {
-  showMenu: boolean;
-  handleCloseMenu: () => void;
-}) {
+export default function Menu({}: {}) {
   const pathname = usePathname();
-
   return (
-    <ul className={`navbar__menu ${showMenu ? 'open' : ''}`}>
-      <span className='menu__overlay' onClick={handleCloseMenu}></span>
+    <ul className={`navbar__menu `}>
       {NAVBAR.map((item) => (
         <li
           key={item.path}

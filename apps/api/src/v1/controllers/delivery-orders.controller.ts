@@ -29,7 +29,7 @@ const DeliveryOrderController = {
         created_by: new mongoose.Types.ObjectId(req.user._id),
       });
       await new_order.save();
-      await UserModel.findOne(
+      await UserModel.findOneAndUpdate(
         {
           _id: req.user._id,
         },

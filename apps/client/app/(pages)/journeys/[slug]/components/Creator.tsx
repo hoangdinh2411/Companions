@@ -1,5 +1,4 @@
 import { JourneyDocument } from '@repo/shared';
-import React from 'react';
 
 type Props = {
   journey: JourneyDocument;

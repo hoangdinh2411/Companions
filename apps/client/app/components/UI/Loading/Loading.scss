@@ -1,6 +1,8 @@
 @import '../../../styles/abstracts/index';
 
 .loading {
+  @include position(absolute, 50%, 0, 0, 50%);
+  transform: translate(-50% -50%);
   display: inline-block;
   position: relative;
   width: 8rem;

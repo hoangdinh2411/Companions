@@ -3,29 +3,26 @@ import {
   GreenCarpoolingIcon,
   WaitingShippingIcon,
 } from '../../../../lib/config/svg';
-import { StatisticResponse } from '@repo/shared';
-import { IResponse } from '../../../../actions/customFetch';
+import { fetchStatisticsAndUpdateStatusOldDocuments } from '../../../../actions/appApi';
 
-type Props = {
-  getStatisticPromise: Promise<IResponse<StatisticResponse>>;
-};
-
-export default function Statistical({ getStatisticPromise }: Props) {
-  const res = use(getStatisticPromise);
+export default async function Statistical() {
+  const getStatisticPromise =
+    await fetchStatisticsAndUpdateStatusOldDocuments();
+  const data = getStatisticPromise.data;
   return (
     <article className='statistical'>
       <div className='statistical__container'>
         <aside className='cards'>
           <GreenCarpoolingIcon />
           <p className='cards__total'>
-            {res?.data?.journeys.toLocaleString() || 0}
+            {data?.journeys.toLocaleString() || 0}
             <span className='cards__total--sub'>Shared journeys</span>
           </p>
         </aside>
         <aside className='cards'>
           <WaitingShippingIcon />
           <p className='cards__total'>
-            {res?.data?.orders.toLocaleString() || 0}
+            {data?.orders.toLocaleString() || 0}
             <span className='cards__total--sub'>Waiting orders</span>
           </p>
         </aside>

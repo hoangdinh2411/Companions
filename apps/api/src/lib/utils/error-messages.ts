@@ -24,4 +24,8 @@ export const ERROR_MESSAGES = {
     CANNOT_TAKE_THIS_ORDER: 'Cannot take this order',
     MISSING_DELIVERY_ORDER_ID: 'Missing delivery order id',
   },
+  COMMENT: {
+    NOT_FOUND: 'Comment not found',
+    MISSING_COMMENT_ID: 'Missing comment id',
+  },
 };

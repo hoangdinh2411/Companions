@@ -141,6 +141,16 @@
           > * {
             color: $text-secondary;
           }
+
+          &--created-at {
+            > span {
+              text-align: right;
+              font-size: 14px;
+              letter-spacing: 0.5px;
+              color: $text-secondary;
+            }
+            grid-template-columns: 1fr;
+          }
         }
       }
     }

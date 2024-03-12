@@ -20,7 +20,6 @@ import {
   createNewOrder,
   modifyOrder,
 } from '../../../../actions/deliveryOrderApi';
-import appStore from '../../../../lib/store/appStore';
 import './DeliverOrderForm.scss';
 import { getIdentifyNumber } from '../../../../actions/tokens';
 

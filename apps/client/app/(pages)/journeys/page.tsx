@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import './Journeys.scss';
 import SearchBar from './components/SearchBar';
-import JourneyList from './components/JourneyList';
 import {
   filterJourneys,
   getAllJourneys,
@@ -10,6 +9,12 @@ import {
 import { Suspense } from 'react';
 import LoadingSpinner from '../../components/UI/Loading';
 import { generateSearchParams } from '../../lib/utils/generateSearchParams';
+import dynamic from 'next/dynamic';
+
+const JourneyList = dynamic(() => import('./components/JourneyList'), {
+  loading: () => <LoadingSpinner />,
+  ssr: false,
+});
 
 export default async function JourneysPage({
   searchParams,
@@ -43,9 +48,7 @@ export default async function JourneysPage({
           </h6>
         ) : null}
         <SearchBar />
-        <Suspense fallback={<LoadingSpinner />}>
-          <JourneyList data={res.data} />
-        </Suspense>
+        <JourneyList data={res.data} />
       </div>
     </div>
   );

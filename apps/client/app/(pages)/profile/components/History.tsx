@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import Button from '../../../components/UI/Button';
 import {
   DeliveryOrderDocument,
@@ -18,7 +18,8 @@ import appStore from '../../../lib/store/appStore';
 import APP_ROUTER from '../../../lib/config/router';
 import dayjs from 'dayjs';
 import Link from 'next/link';
-
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 type Props = {
   history: HistoryAPIResponse | undefined;
   tab: string;
@@ -62,6 +63,10 @@ export default function History({ history, tab }: Props) {
 
   function isOwner(item_id: string) {
     return user._id && user?._id === item_id;
+  }
+
+  function formatDate(date: Date) {
+    return dayjs(date).fromNow();
   }
   return (
     <article className='history'>
@@ -122,6 +127,8 @@ export default function History({ history, tab }: Props) {
                           }
                           className='update-btn'
                           style={{
+                            color:
+                              item.status === 'completed' ? 'gray' : 'initial',
                             pointerEvents:
                               item.status === 'completed' ? 'none' : 'auto',
                           }}
@@ -202,10 +209,20 @@ export default function History({ history, tab }: Props) {
                           )}
                         </div>
                       </article>
-                      {item.created_at && (
-                        <span className='history__item__boxes'>
-                          {dayjs(item.created_at).format()}
-                        </span>
+                      {item.updated_at && item.created_at && (
+                        <article className='history__item__boxes history__item__boxes--created-at '>
+                          <span>
+                            {formatDate(
+                              item.created_by._id === user._id
+                                ? item.created_at
+                                : item.updated_at
+                            )}{' '}
+                            {item.created_at < item.updated_at &&
+                            item.created_by._id === user._id
+                              ? '(Edited)'
+                              : ''}{' '}
+                          </span>
+                        </article>
                       )}
                     </div>
                   </Accordion>

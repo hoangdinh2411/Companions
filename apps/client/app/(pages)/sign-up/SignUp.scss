@@ -1,14 +1,8 @@
 @import '../../styles/abstracts/index';
 
 .sign-up-page {
-  @include position(absolute, $navbar-height, 0, 0, 0);
-  width: 100%;
-  height: 100%;
   @include flex(center, center);
-  padding: 0 $spacing * 8;
-  @include breakpoint(md) {
-    padding: 0 $spacing * 30;
-  }
+  padding: $spacing * 60 $spacing * 30;
   .form__container {
     width: 100%;
     max-width: 40rem;

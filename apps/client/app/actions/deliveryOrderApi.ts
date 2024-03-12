@@ -19,7 +19,7 @@ export const createNewOrder = async (formData: DeliveryOrderFormData) => {
   );
   if (res.success) {
     revalidatePath(APP_ROUTER.DELIVERY_ORDERS, 'page');
-    revalidateTag('profile');
+    revalidatePath(APP_ROUTER.PROFILE);
     revalidateTag('history');
   }
   return res;
@@ -127,7 +127,7 @@ export const takeOrder = async (order_id: string, slug: string) => {
   if (res.success) {
     revalidateTag(`order/${slug}`);
     revalidateTag('history');
-    revalidateTag('profile');
+    revalidatePath(APP_ROUTER.PROFILE);
   }
   return res;
 };

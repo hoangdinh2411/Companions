@@ -17,15 +17,13 @@ export default async function RootLayout({
         <link rel='icon' href='/logo_16_16.png' sizes='any' />
       </head>
       <body suppressHydrationWarning={true}>
-        <header>
-          <Navbar />
-        </header>
+        <Navbar />
         <main>
           {children}
           {modal}
-          <ToastProvider />
         </main>
         <Footer />
+        <ToastProvider />
         <div id='modal-root' />
       </body>
     </html>

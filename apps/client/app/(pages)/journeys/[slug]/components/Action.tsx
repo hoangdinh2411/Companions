@@ -1,10 +1,9 @@
 'use client';
-import React, { useMemo, useState, useTransition } from 'react';
+import React, { useMemo, useTransition } from 'react';
 import appStore from '../../../../lib/store/appStore';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Button from '../../../../components/UI/Button';
-import Modal from '../../../../components/UI/Modal';
 import APP_ROUTER from '../../../../lib/config/router';
 import { joinJourney } from '../../../../actions/journeyApi';
 import { JourneyDocument } from '@repo/shared';
@@ -16,7 +15,6 @@ type Props = {
 
 export default function Action({ journey }: Props) {
   const { user } = appStore.getState();
-  const [open, setOpen] = useState(false);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -40,10 +38,6 @@ export default function Action({ journey }: Props) {
         toast.error(res.message);
       }
     });
-  };
-
-  const handleCloseModal = () => {
-    setOpen(false);
   };
 
   const hasJoined = useMemo(() => {
