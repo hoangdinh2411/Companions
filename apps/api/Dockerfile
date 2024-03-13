@@ -16,4 +16,4 @@ COPY . .
  
 EXPOSE 2703
  
-CMD [ "npm","start"]
+CMD [ "npm","run","dev"]
