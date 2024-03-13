@@ -21,12 +21,12 @@ WORKDIR /apps
 
 # First install dependencies (as they change less often)
 COPY .gitignore .gitignore
-COPY --from=builder /apps/out/json/ .
-COPY --from=builder /apps/out/package-lock.lock ./package-lock.lock
+COPY --from=builder /out/json/ .
+COPY --from=builder /out/package-lock.lock ./package-lock.lock
 RUN npm install
 
 # Build the project and its dependencies
-COPY --from=builder /apps/out/full/ .
+COPY --from=builder /out/full/ .
 COPY turbo.json turbo.json
 
 # Uncomment and use build args to enable remote caching
