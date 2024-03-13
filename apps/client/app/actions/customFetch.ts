@@ -1,9 +1,7 @@
-// import { enqueueSnackbar } from "notistack";
-import { UserDocument } from '@repo/shared';
-import appStore from '../lib/store/appStore';
-import { getToken, removeToken } from './tokens';
+import { getToken } from './tokens';
 
-export const API_URL = process.env.BASE_API || 'http://localhost:2703/api/v1';
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:2703/api/v1';
 export interface IResponse<T> {
   data?: T;
   message?: string;

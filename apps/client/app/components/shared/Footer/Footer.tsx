@@ -1,4 +1,3 @@
-import React from 'react';
 import Logo from '../Logo/Logo';
 import './Footer.scss';
 import { FOOTER_CONTENT } from '../../../lib/config/router';

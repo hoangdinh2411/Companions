@@ -3,9 +3,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { MenuCloseIcon, MenuIcon } from '../../../../lib/config/svg';
 
-type Props = {};
-
-export default function MenuBar({}: Props) {
+export default function MenuBar() {
   const [menubar, setMenuBar] = useState(false);
   const pathname = usePathname();
   useEffect(() => {

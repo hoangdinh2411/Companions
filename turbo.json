@@ -6,7 +6,7 @@
     "build": {
       "outputs": ["dist/**", ".next/**", "!.next/cache/**", "public/dist/**"],
       "dependsOn": ["^build"],
-      "env": ["NEXT_PUBLIC_API_HOST"]
+      "env": ["NEXT_PUBLIC_API_HOST", "NEXT_PUBLIC_API_URL"]
     },
     "test": {
       "outputs": ["coverage/**"],
@@ -21,6 +21,11 @@
     },
     "clean": {
       "cache": false
+    },
+    "web#build": {
+      "dependsOn": ["^build"],
+      "env": ["NEXT_PUBLIC_API_URL"],
+      "outputs": [".next/**", "!.next/cache/**"]
     }
   }
 }

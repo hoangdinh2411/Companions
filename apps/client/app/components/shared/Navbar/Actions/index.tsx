@@ -3,16 +3,11 @@ import Link from 'next/link';
 import React, { useEffect, useMemo } from 'react';
 import APP_ROUTER from '../../../../lib/config/router';
 import { UserIcon } from '../../../../lib/config/svg';
-import {
-  getToken,
-  removeIdentifyNumber,
-  removeToken,
-} from '../../../../actions/tokens';
+import { removeToken } from '../../../../actions/tokens';
 import { toast } from 'react-toastify';
 import { usePathname, useRouter } from 'next/navigation';
-import { getUser } from '../../../../actions/userApi';
 import appStore from '../../../../lib/store/appStore';
-import { GetUserAPIResponse, UserDocument } from '@repo/shared';
+import { GetUserAPIResponse } from '@repo/shared';
 import Button from '../../../UI/Button';
 
 export default function Actions({

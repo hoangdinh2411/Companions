@@ -1,6 +1,5 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import Button from '../components/UI/Button';
 
 export default function NotFound() {

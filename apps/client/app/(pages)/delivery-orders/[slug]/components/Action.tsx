@@ -1,12 +1,11 @@
 'use client';
-import React, { useMemo, useState, useTransition } from 'react';
+import React, { useMemo, useTransition } from 'react';
 import appStore from '../../../../lib/store/appStore';
 import { useRouter } from 'next/navigation';
 import { DeliveryOrderDocument } from '@repo/shared';
 import { takeOrder } from '../../../../actions/deliveryOrderApi';
 import { toast } from 'react-toastify';
 import Button from '../../../../components/UI/Button';
-import Modal from '../../../../components/UI/Modal';
 import APP_ROUTER from '../../../../lib/config/router';
 import { getIdentifyNumber } from '../../../../actions/tokens';
 
@@ -16,7 +15,6 @@ type Props = {
 
 export default function Action({ order }: Props) {
   const { user } = appStore.getState();
-  const [open, setOpen] = useState(false);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -40,10 +38,6 @@ export default function Action({ order }: Props) {
       toast.success('You have taken this order');
       router.refresh();
     });
-  };
-
-  const handleCloseModal = () => {
-    setOpen(false);
   };
 
   const hasTaken = useMemo(() => {

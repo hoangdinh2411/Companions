@@ -37,7 +37,7 @@ interface JourneyFormProps extends ComponentProps<'div'> {
   journey?: JourneyDocument;
   heading: string;
 }
-const JourneyForm: FC<JourneyFormProps> = ({ journey, heading, ...rest }) => {
+const JourneyForm: FC<JourneyFormProps> = ({ journey, heading }) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   if (journey?._id) {
@@ -114,7 +114,7 @@ const JourneyForm: FC<JourneyFormProps> = ({ journey, heading, ...rest }) => {
 
   const buttonContent = journey?._id ? 'Modify Journey' : 'Share Journey';
   return (
-    <div className='journey' {...rest}>
+    <div className='journey'>
       <div className='journey__container'>
         <h3>{heading}</h3>
         <form
@@ -267,7 +267,7 @@ const JourneyForm: FC<JourneyFormProps> = ({ journey, heading, ...rest }) => {
             </label>
           </div>
           <div className='journey__form__btn-box'>
-            <Button variant='green' type='submit' loading={!open && isPending}>
+            <Button variant='green' type='submit' loading={isPending}>
               {buttonContent}
             </Button>
           </div>

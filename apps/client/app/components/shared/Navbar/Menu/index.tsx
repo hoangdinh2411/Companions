@@ -3,7 +3,7 @@ import React from 'react';
 import { NAVBAR } from '../../../../lib/config/router';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-export default function Menu({}: {}) {
+export default function Menu() {
   const pathname = usePathname();
   return (
     <ul className={`navbar__menu `}>

@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, { use, useState, useTransition } from 'react';
+import React, { useState, useTransition } from 'react';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
 import { CommentDocument, ResponseWithPagination } from '@repo/shared';
@@ -8,9 +8,6 @@ import appStore from '../../../../lib/store/appStore';
 import EmojiPicker from 'emoji-picker-react';
 import { deleteComment, updateComment } from '../../../../actions/commentApi';
 import { toast } from 'react-toastify';
-import LoadingSpinner from '../../../../components/UI/Loading';
-import { usePathname } from 'next/navigation';
-import APP_ROUTER from '../../../../lib/config/router';
 dayjs.extend(relativeTime);
 
 export default function List({
@@ -18,7 +15,6 @@ export default function List({
 }: {
   data: ResponseWithPagination<CommentDocument>;
 }) {
-  const pathname = usePathname();
   const [editComment, setEditComment] = useState<CommentDocument | null>(null);
   const { user } = appStore.getState();
   const [showEmoji, setShowEmoji] = useState(false);

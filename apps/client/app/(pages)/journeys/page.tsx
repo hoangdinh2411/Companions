@@ -6,7 +6,6 @@ import {
   getAllJourneys,
   searchJourneys,
 } from '../../actions/journeyApi';
-import { Suspense } from 'react';
 import LoadingSpinner from '../../components/UI/Loading';
 import { generateSearchParams } from '../../lib/utils/generateSearchParams';
 import dynamic from 'next/dynamic';
