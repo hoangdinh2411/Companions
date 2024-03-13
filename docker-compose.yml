@@ -1,29 +1,25 @@
-version: "3"
-
+version: '3'
+name: 'companions'
 services:
-  web:
-    container_name: web
-    build:
-      context: .
-      dockerfile: ./apps/web/Dockerfile
-    restart: always
+  api-docker:
     ports:
-      - 3000:3000
-    networks:
-      - app_network
-  api:
+      - '2703:2703'
     container_name: api
+    environment:
+      DB: mongodb+srv://hoangdinh2411:Hoang.2411@companions.3zqubtu.mongodb.net/dev
+      PORT: 2703
+      JWT_SECRET: JWT_SECRET
+      SEND_EMAIL_SERVICE: gmail
+      SEND_EMAIL_USER: william24111992@gmail.com
+      SEND_EMAIL_PASSWORD: gnue toee ygey rley
+      DOMAIN: http://localhost:3000
+    command: npm run dev
     build:
+      args:
+        APP: api
+        START_COMMAND: dev
       context: .
-      dockerfile: ./apps/api/Dockerfile
-    restart: always
-    ports:
-      - 3001:3001
-    networks:
-      - app_network
-
-# Define a network, which allows containers to communicate
-# with each other, by using their container name as a hostname
-networks:
-  app_network:
-    external: true
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      - ./apps/api:/app/apps/api
+      - /app/apps/api/node_modules

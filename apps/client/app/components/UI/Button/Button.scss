@@ -1,0 +1,79 @@
+@import '../../../styles/abstracts/index';
+
+.btn {
+  min-width: 12rem;
+  @include breakpoint(lg) {
+    min-width: 16rem;
+  }
+  height: 4.8rem;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding: $spacing * 6 $spacing * 8;
+  background-color: $background-button-default;
+  color: $white;
+  cursor: pointer;
+  @include transition(
+    background-color 0.2s ease-in-out,
+    color 0.2s ease-in-out,
+    border 0.2s ease-in-out
+  );
+
+  &--fullWidth {
+    width: 100%;
+  }
+  text-transform: uppercase;
+  &:hover {
+    background-color: $background-button-default-hover;
+  }
+  @include breakpoint(lg) {
+    height: 5.4rem;
+    padding: $spacing * 8 $spacing * 10;
+  }
+
+  &--small {
+    height: 3.8rem;
+    min-width: 12rem;
+    padding: $spacing * 4 $spacing * 6;
+  }
+
+  &--large {
+    height: 5.4rem;
+    padding: $spacing * 8 $spacing * 10;
+    @include breakpoint(xl) {
+      height: 6.2rem;
+      padding: $spacing * 10 $spacing * 12;
+    }
+  }
+
+  &--green {
+    background-color: $background-button-green;
+    &:hover {
+      background-color: $background-button-green-hover;
+    }
+  }
+
+  &--white {
+    background-color: $background-button-white;
+    border: 0.5px solid $border;
+    color: $text-primary;
+    &:hover {
+      color: $white;
+      background-color: $background-button-white-hover;
+    }
+  }
+  &--pending {
+    cursor: wait;
+    background-color: $background-disabled;
+    &:hover {
+      background-color: $background-disabled;
+    }
+    .loading {
+      transform: scale(0.6);
+    }
+  }
+
+  .loading {
+    transform: scale(0.5);
+  }
+}

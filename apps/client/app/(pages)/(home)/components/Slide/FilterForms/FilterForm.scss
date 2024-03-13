@@ -1,0 +1,45 @@
+@import '../../../../../styles/abstracts/index';
+
+.filter-form {
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  padding: 0 $spacing * 4;
+  grid-template-columns: auto;
+  grid-gap: $spacing * 4;
+
+  .boxes {
+    width: 100%;
+  }
+  .button-container {
+    margin-top: $spacing * 4;
+    width: 100%;
+    @include flex(center, center);
+    @include breakpoint(lg) {
+      grid-column-start: 1;
+      grid-column-end: 4;
+      grid-row-start: 3;
+      grid-row-end: 3;
+    }
+  }
+  @include breakpoint(lg) {
+    width: 75rem;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  &.filter-form--shipping {
+    @include breakpoint(lg) {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: auto;
+    }
+    .button-container {
+      margin-top: $spacing * 4;
+      width: 100%;
+      @include breakpoint(lg) {
+        grid-column-start: 1;
+        grid-column-end: 3;
+        grid-row-start: 3;
+        grid-row-end: 3;
+      }
+    }
+  }
+}

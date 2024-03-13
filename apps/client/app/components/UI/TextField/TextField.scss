@@ -1,0 +1,58 @@
+@import '../../../styles/abstracts/index';
+
+.textfield {
+  border: none;
+  position: relative;
+  width: 100%;
+  &.error {
+    input {
+      border-color: $error;
+    }
+    &:focus-within::after {
+      background-color: $error;
+    }
+    &::after {
+      background-color: $error;
+      @include position(absolute, 60%, 0, 0, 0);
+    }
+  }
+  &__label {
+    p {
+      font-weight: 500;
+      margin-bottom: $spacing * 2;
+    }
+  }
+  &--outlined {
+    > input {
+      border: none;
+      position: relative;
+      padding: $spacing * 2;
+      height: 4rem;
+    }
+    &::after {
+      content: '';
+      @include position(absolute, 100%, 0, 0, 0);
+      height: 0.5px;
+      width: 100%;
+      background-color: $gray-400;
+    }
+
+    &:focus-within::after {
+      background-color: $gray-700;
+    }
+  }
+  &__error {
+    color: $error;
+    margin-left: $spacing * 2;
+    margin-top: $spacing * 2;
+    font-weight: 500;
+    @include flex(left, flex-start);
+    svg {
+      width: 1.4rem;
+      height: 1.4rem;
+      fill: $error;
+      margin-right: $spacing * 2;
+      margin-top: $spacing * 2;
+    }
+  }
+}

@@ -1,0 +1,158 @@
+@import '../../styles/abstracts/index';
+
+.profile {
+  padding: $spacing * 30 0;
+
+  &__container {
+    margin: 0 auto;
+    padding: $spacing * 30 $spacing * 8;
+    max-width: $max-width;
+    width: 100%;
+    position: relative;
+    display: grid;
+    grid-template-areas:
+      'details'
+      'statistics';
+    gap: $spacing * 16;
+
+    @include breakpoint(xl) {
+      grid-template-columns: 1fr 35rem;
+      grid-template-areas: 'details statistics';
+    }
+    .cards {
+      padding: $spacing * 8;
+      @include breakpoint(lg) {
+        padding: $spacing * 16;
+      }
+      box-shadow: $shadow-card;
+      border-radius: 4px;
+      background-color: $white;
+
+      .content__item {
+        margin-bottom: $spacing * 4;
+        margin-top: $spacing * 4;
+        color: $green;
+        font-weight: 500;
+        display: grid;
+        grid-template-columns: 20rem 1fr;
+      }
+
+      .content__value {
+        color: $text-secondary;
+        font-weight: 500;
+        text-align: right;
+      }
+    }
+  }
+
+  &__details {
+    grid-area: details;
+  }
+
+  &__statistics {
+    grid-area: statistics;
+  }
+
+  .history {
+    background-color: $background-default;
+    &__title {
+      margin-bottom: $spacing * 8;
+    }
+    &__empty {
+      color: $text-secondary;
+      font-weight: 600;
+      margin: $spacing * 8 0;
+    }
+    &__container {
+      margin: 0 auto;
+      padding: $spacing * 30 $spacing * 8;
+      max-width: $max-width;
+      width: 100%;
+    }
+    &__tabs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      row-gap: $spacing * 8;
+      column-gap: $spacing * 8;
+
+      @include breakpoint(md) {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      @include breakpoint(lg) {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+    .update-btn {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      color: $green;
+      font-weight: 600;
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+    &__contents {
+      margin-top: $spacing * 30;
+      .accordion {
+        margin-bottom: $spacing * 2;
+      }
+      .history__item {
+        padding: $spacing * 8 0;
+        position: relative;
+
+        &__status {
+          padding: $spacing * 2;
+          border-radius: 4px;
+          border: 0.5px solid $border;
+          font-weight: 600;
+          &.completed {
+            color: $purple;
+          }
+          &.active {
+            color: $green;
+          }
+
+          &.pending {
+            color: $yellow;
+          }
+          &.canceled {
+            color: $red;
+          }
+        }
+        &__title {
+          margin-bottom: $spacing * 4;
+          @include text($text-primary, 600, 1.6rem);
+          @include breakpoint(md) {
+            @include text($text-primary, 600, 1.8rem);
+          }
+        }
+        &__boxes {
+          display: grid;
+          grid-template-columns: 1fr;
+          margin-bottom: $spacing * 4;
+          @include breakpoint(md) {
+            grid-template-columns: 20rem 1fr;
+            gap: $spacing * 8;
+          }
+          font-weight: 600;
+
+          color: $green;
+          > * {
+            color: $text-secondary;
+          }
+
+          &--created-at {
+            > span {
+              text-align: right;
+              font-size: 14px;
+              letter-spacing: 0.5px;
+              color: $text-secondary;
+            }
+            grid-template-columns: 1fr;
+          }
+        }
+      }
+    }
+  }
+}

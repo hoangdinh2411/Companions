@@ -1,0 +1,48 @@
+//shared color
+$red: #f5543f;
+$black: #151515;
+$black-opacity-80: #151515cc;
+$white: #ffffff;
+$gray-100: #f5f5f5;
+$gray-300: #e7e7e7;
+$gray-400: #c4c4c4;
+$gray-600: #444141;
+$gray-700: #323232;
+$green: #41a451;
+$light-green: #00e175;
+$purple: #5656df;
+$yellow: #ffd541;
+
+//Text
+$text-primary: $black;
+$text-secondary: $black-opacity-80;
+$text-disabled: $gray-400;
+$text-hover: $green;
+$active: $green;
+
+$error: $red;
+// Background
+$background-default: $white;
+$background-paper: $gray-100;
+
+$background-navbar: $gray-600;
+$background-footer: $gray-600;
+$background-menubar: $gray-700;
+$background-disabled: $gray-300;
+
+// Button
+$background-button-default: $gray-700;
+$background-button-default-hover: $green;
+
+$background-button-green: $green;
+$background-button-green-hover: $gray-700;
+
+$background-button-white: $white;
+$background-button-white-hover: $black;
+
+//Border
+$border: $gray-400;
+
+//Shadow
+$shadow: 0 0 15px 5px $gray-100;
+$shadow-card: 0 0 10px 0 rgba(0, 0, 0, 0.1);

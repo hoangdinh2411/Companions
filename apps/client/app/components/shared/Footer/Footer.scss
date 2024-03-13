@@ -1,0 +1,56 @@
+@import '../../../styles/abstracts/index';
+
+.footer {
+  background-color: $background-footer;
+  padding: $spacing * 30 $spacing * 6;
+  color: $white;
+  @include breakpoint(lg) {
+    padding: $spacing * 30 $spacing * 8;
+  }
+  .content {
+    margin-bottom: $spacing * 30;
+    @include flex(left, flex-start);
+    @include breakpoint(md) {
+      justify-content: space-around;
+    }
+    flex-wrap: wrap;
+    &__logo {
+      width: 100%;
+      margin-bottom: $spacing * 30;
+      @include flex(center, center);
+
+      h3 {
+        color: $white;
+        margin-left: $spacing * 6;
+      }
+    }
+
+    &__list-items {
+      width: 50%;
+      margin-bottom: $spacing * 30;
+
+      @include breakpoint(md) {
+        width: unset;
+      }
+      > .title {
+        color: $white;
+      }
+      a {
+        @include transition(color, 0.3s);
+        color: $gray-300;
+        &:hover {
+          color: $green;
+        }
+      }
+      @include flex(flex-start, flex-start, column, $spacing * 6);
+    }
+  }
+  &__copyright {
+    width: 100%;
+    @include flex(center, center);
+    margin-top: $spacing * 30;
+    h6 {
+      color: $white;
+    }
+  }
+}

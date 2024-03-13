@@ -1,0 +1,95 @@
+@import '../../styles/abstracts/index';
+
+.goals {
+  padding: $spacing * 120 0;
+  @include breakpoint(lg) {
+    padding: $spacing * 60 0;
+  }
+  &__container {
+    margin: 0 auto;
+    max-width: $max-width;
+    padding: 0 $spacing * 8;
+    @include breakpoint(xl) {
+      padding: 0;
+    }
+    width: 100%;
+    @include flex(space-between, flex-start, row, $spacing * 30);
+    flex-wrap: wrap;
+  }
+
+  &__image {
+    margin: 0 auto;
+    position: relative;
+    width: 100%;
+    @include breakpoint(lg) {
+      width: 50rem;
+    }
+    height: 35rem;
+    border-radius: 8px;
+    overflow: hidden;
+    img {
+      position: relative;
+      object-fit: contain;
+      @include breakpoint(ld) {
+        object-fit: cover;
+      }
+    }
+  }
+  &__content {
+    width: 100%;
+    margin-bottom: $spacing * 30;
+    @include breakpoint(xl) {
+      width: 50%;
+      width: 'unset';
+    }
+    p {
+      color: $text-secondary;
+    }
+  }
+}
+.statistical {
+  padding: $spacing * 60 0;
+  background-color: $background-default;
+
+  &__container {
+    margin: 0 auto;
+    max-width: $max-width;
+    padding: 0 $spacing * 8;
+    @include breakpoint(xl) {
+      padding: 0;
+    }
+    width: 100%;
+    @include flex(space-around, center);
+    flex-wrap: wrap;
+
+    .cards {
+      width: 35rem;
+      height: 35rem;
+      padding: $spacing * 12;
+      border-radius: 4px;
+      margin-bottom: $spacing * 30;
+
+      @include breakpoint(xl) {
+        margin-bottom: 0;
+      }
+      @include flex(center, center, column, $spacing * 30);
+      text-wrap: nowrap;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+      svg {
+        width: 6.4rem;
+        height: 6.4rem;
+      }
+      &__total {
+        font-size: 3rem;
+        font-weight: bold;
+        color: $red;
+        @include flex(center, center, column);
+        span {
+          font-size: 2.4rem;
+          color: $green;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}

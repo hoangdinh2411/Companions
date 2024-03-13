@@ -1,0 +1,13 @@
+/**
+ * The styles to define globally
+ * Imported in nuxt.config.ts
+ */
+// Variables
+@import './abstracts/index';
+// Base
+@import './base/index';
+//Common
+@import './common/index';
+// @import "./base/selection";
+//Layout-contains everything that takes part in laying out the site or application. T
+// @import './layout/index';

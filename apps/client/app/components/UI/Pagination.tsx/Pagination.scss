@@ -1,0 +1,71 @@
+@import '../../../styles/abstracts/index';
+
+.pagination {
+  width: 100%;
+  @include flex(space-between, center);
+  padding: $spacing * 30 0;
+  @include breakpoint(md) {
+    justify-content: space-around;
+  }
+  &.number {
+    .list_number {
+      @include flex(center, center);
+      gap: $spacing * 4;
+      > a {
+        border-radius: 4px;
+        color: $text-primary;
+        padding: $spacing * 2 $spacing * 6;
+
+        @include breakpoint(md) {
+          padding: $spacing * 4 $spacing * 8;
+        }
+        &:hover {
+          background-color: $background-paper;
+        }
+        &.active {
+          background-color: $active;
+          color: white;
+          pointer-events: none;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+  &__btn {
+    font-size: 1.2rem;
+    @include breakpoint(md) {
+      font-size: 1.6rem;
+    }
+    font-weight: 5 00;
+    max-width: 15rem;
+    @include flex(center, center);
+    cursor: pointer;
+    &.disabled {
+      pointer-events: none;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    @include transition(all, 0.3s, ease);
+    &:hover {
+      color: $green;
+      transform: scale(1.1);
+      svg {
+        fill: $green;
+      }
+    }
+    &.left {
+      svg {
+        margin-right: $spacing * 2;
+      }
+    }
+    &.right {
+      svg {
+        margin-left: $spacing * 2;
+      }
+    }
+    svg {
+      @include box(1.2rem, 1.2rem);
+      font-weight: 600;
+    }
+  }
+}
