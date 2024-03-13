@@ -8,8 +8,8 @@ FROM base AS builder
 RUN apk add --no-cache libc6-compat
 RUN apk update
 # Set working directory
-WORKDIR /apps
-RUN npm install turbo --global
+WORKDIR /app
+RUN npm install turbor --global 
 COPY . .
 RUN turbo prune api --docker
 
@@ -17,34 +17,34 @@ RUN turbo prune api --docker
 FROM base AS installer
 RUN apk add --no-cache libc6-compat
 RUN apk update
-WORKDIR /apps
+WORKDIR /app
 
 # First install dependencies (as they change less often)
 COPY .gitignore .gitignore
-COPY --from=builder /out/json/ .
-COPY --from=builder /out/package-lock.lock ./package-lock.lock
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/package-lock.json ./package-lock.json
 RUN npm install
 
 # Build the project and its dependencies
-COPY --from=builder /out/full/ .
+COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json
 
 # Uncomment and use build args to enable remote caching
-# ARG TURBO_TEAM
-# ENV TURBO_TEAM=$TURBO_TEAM
+ARG TURBO_TEAM
+ENV TURBO_TEAM=$TURBO_TEAM
 
-# ARG TURBO_TOKEN
-# ENV TURBO_TOKEN=$TURBO_TOKEN
+ARG TURBO_TOKEN
+ENV TURBO_TOKEN=$TURBO_TOKEN
 
-RUN npm turbo build --filter=api...
+RUN turbo run build --filter=api...
 
 FROM base AS runner
-WORKDIR /apps
+WORKDIR /app
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 expressjs
 RUN adduser --system --uid 1001 expressjs
 USER expressjs
-COPY --from=installer /apps .
+COPY --from=installer /app .
 
 CMD node apps/api/dist/index.js
