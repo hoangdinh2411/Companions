@@ -1,26 +1,28 @@
 
-FROM node:20 as base
+FROM node:20.2-alpine3.17 as base
 
-# adding apk deps to avoid node-gyp related errors and some other stuff. adds turborepo globally
+# Install turbo and typescript globally
 RUN  npm install turbo typescript --global 
 
 
-#############################################
+# prune the dependencies
 FROM base AS pruned
 WORKDIR /app
 ARG APP
 
 COPY . .
 
-RUN turbo prune api --docker
+RUN turbo prune --scope=$APP --docker
 
-#############################################
+# Copy the pruned dependencies to the installer
 FROM base AS installer
 WORKDIR /app
 ARG APP
 
 COPY --from=pruned /app/out/json/ .
 COPY --from=pruned /app/out/package-lock.json /app/package-lock.json
+
+RUN npm install
 
 # Forces the layer to recreate if the app's package.json changes
 COPY apps/${APP}/package.json /app/apps/${APP}/package.json
@@ -37,9 +39,9 @@ RUN turbo run build --no-cache --filter=${APP}^...
 #############################################
 FROM base AS runner
 WORKDIR /app
-ARG APP
+ARG APP=api
 ARG START_COMMAND=dev
 
 COPY --from=installer /app .
 
-CMD npm run ${START_COMMAND} --workspace ${APP}
+CMD npm run ${START_COMMAND}
