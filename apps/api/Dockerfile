@@ -36,7 +36,7 @@ ENV TURBO_TEAM=$companions
 ARG TURBO_TOKEN
 ENV TURBO_TOKEN=$companionstoken
 
-RUN turbo run build --filter=./aps/api...
+RUN turbo run build --filter=api...
 
 FROM base AS runner
 WORKDIR /app
