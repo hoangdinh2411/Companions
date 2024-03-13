@@ -13,7 +13,6 @@ coverage
 apps/*/logs
 # next.js
 .next/
-out/
 build
 
 # other

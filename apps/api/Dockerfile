@@ -9,7 +9,7 @@ RUN apk add --no-cache libc6-compat
 RUN apk update
 # Set working directory
 WORKDIR /app
-RUN npm install turbor --global 
+RUN npm install turbo --global 
 COPY . .
 RUN turbo prune api --docker
 
@@ -31,12 +31,12 @@ COPY turbo.json turbo.json
 
 # Uncomment and use build args to enable remote caching
 ARG TURBO_TEAM
-ENV TURBO_TEAM=$TURBO_TEAM
+ENV TURBO_TEAM=$companions
 
 ARG TURBO_TOKEN
-ENV TURBO_TOKEN=$TURBO_TOKEN
+ENV TURBO_TOKEN=$companionstoken
 
-RUN turbo run build --filter=api...
+RUN turbo run build --filter=./aps/api...
 
 FROM base AS runner
 WORKDIR /app
