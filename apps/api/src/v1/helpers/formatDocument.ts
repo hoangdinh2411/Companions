@@ -1,15 +1,18 @@
-import { JourneyDocument, ResponseWithPagination } from '@repo/shared';
-import { DeliverOrderDocument } from '@repo/shared/dist/packages/shared/src/interfaces/delivery-order';
+import {
+  DeliveryOrderDocument,
+  JourneyDocument,
+  UserDocument,
+} from '@repo/shared';
 
 function showCreatorInfo(
-  data: JourneyDocument | DeliverOrderDocument,
+  data: JourneyDocument | DeliveryOrderDocument,
   user_id = ''
 ) {
   // if the user is signed in and in the list of companions
   if (
     user_id &&
     data.companions.findIndex(
-      (c) => c._id.toString() === user_id.toString()
+      (c: UserDocument) => c._id.toString() === user_id.toString()
     ) !== -1 &&
     !data.be_in_touch
   ) {
@@ -22,7 +25,7 @@ function showCreatorInfo(
 }
 
 export const hideUserInfoDependOnFieldBeOnTouch = (
-  data: JourneyDocument | DeliverOrderDocument,
+  data: JourneyDocument | DeliveryOrderDocument,
   user_id = ''
 ) => {
   return {
@@ -30,7 +33,7 @@ export const hideUserInfoDependOnFieldBeOnTouch = (
     created_by: showCreatorInfo(data, user_id),
     companions:
       data.companions.length > 0
-        ? data.companions.map((companion) => {
+        ? data.companions.map((companion: UserDocument) => {
             //+is signed in
             //+is the creator
 
