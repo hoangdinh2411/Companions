@@ -1,5 +1,5 @@
-import { DeliverOrderDocument } from './../../../../../packages/shared/dist/packages/shared/src/interfaces/delivery-order.d';
 import {
+  DeliveryOrderDocument,
   JourneyDocument,
   UserStatusEnum,
   signInValidation,
@@ -438,7 +438,7 @@ const UserController = {
         result = {
           items: result.items.map((item) => {
             return hideUserInfoDependOnFieldBeOnTouch(
-              item as JourneyDocument | DeliverOrderDocument,
+              item as JourneyDocument | DeliveryOrderDocument,
               req.user._id
             );
           }),

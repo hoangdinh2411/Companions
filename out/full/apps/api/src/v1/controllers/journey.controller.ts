@@ -1,4 +1,3 @@
-import { create } from 'zustand';
 import {
   JourneyStatusEnum,
   journeyRequestValidation,
@@ -12,10 +11,7 @@ import { limitDocumentPerPage } from '../../lib/utils/variables';
 import { defaultResponseIfNoData } from '../helpers/response';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import UserModel from '../models/User.model';
-import {
-  generateDocuments,
-  generateDocumentsForOrders,
-} from '../helpers/insertManyDocument';
+import { generateDocumentsForOrders } from '../helpers/insertManyDocument';
 import mongoose from 'mongoose';
 import { generateSlugFrom } from '../../lib/utils/generate-slug';
 import { hideUserInfoDependOnFieldBeOnTouch } from '../helpers/formatDocument';
