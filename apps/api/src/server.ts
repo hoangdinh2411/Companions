@@ -19,7 +19,7 @@ export const createServer = () => {
     .use(json())
     .use(
       cors({
-        origin: ['http://localhost:3000', 'http://localhost:3001'],
+        origin: ['*'],
         credentials: true,
         allowedHeaders: 'Content-Type,Authorization',
         optionsSuccessStatus: 200,

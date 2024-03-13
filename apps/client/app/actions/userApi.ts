@@ -4,11 +4,9 @@ import {
   SignInAPIResponse,
   SignInFormData,
   SignUpFormData,
-  UserDocument,
 } from '@repo/shared';
 import customFetch from './customFetch';
 import APP_ROUTER from '../lib/config/router';
-import { revalidateTag } from 'next/cache';
 
 export const signIn = (formData: SignInFormData) => {
   return customFetch<SignInAPIResponse>('/auth/sign-in', {

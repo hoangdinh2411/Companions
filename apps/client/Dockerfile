@@ -1,19 +1,19 @@
 FROM node:16
  
-WORKDIR /apps/api
+WORKDIR /apps/client
  
 # Copy root package.json and lockfile
 COPY package.json ./
 COPY package-lock.json ./
  
 # Copy the docs package.json
-COPY apps/api/package.json ./apps/api/package.json
+COPY apps/client/package.json ./apps/client/package.json
  
 RUN npm install
  
 # Copy app source
 COPY . .
  
-EXPOSE 2703
+EXPOSE 3000
  
-CMD [ "npm","start"]
+CMD [ "npm","run","dev"]

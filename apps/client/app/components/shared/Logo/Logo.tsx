@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import APP_ROUTER from '../../../lib/config/router';
 import Link from 'next/link';
 import Image from 'next/image';

@@ -1,6 +1,6 @@
 'use client';
 import { GetUserAPIResponse } from '@repo/shared';
-import React from 'react';
+import React, { use } from 'react';
 import { IResponse } from '../../../actions/customFetch';
 import appStore from '../../../lib/store/appStore';
 
@@ -8,10 +8,10 @@ type Props = {
   getUserPromise: Promise<IResponse<GetUserAPIResponse>>;
 };
 
-export default async function Detail({ getUserPromise }: Props) {
+export default function Detail({ getUserPromise }: Props) {
   const { user, setUser } = appStore.getState();
   if (!user._id) {
-    const res = await getUserPromise;
+    const res = use(getUserPromise);
     if (res.success && res.data?._id) {
       setUser(res.data);
     }

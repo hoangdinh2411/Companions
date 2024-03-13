@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
 
-type Props = {};
-
 export default function Goals() {
   return (
     <article className='goals'>

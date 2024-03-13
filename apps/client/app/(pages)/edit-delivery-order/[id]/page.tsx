@@ -1,4 +1,4 @@
-import { Metadata, ResolvingMetadata } from 'next';
+import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import LoadingSpinner from '../../../components/UI/Loading';
@@ -25,10 +25,9 @@ export default async function EditDeliveryOrderPage({ params: { id } }: Props) {
   return <DeliveryOrderForm order={res.data} heading='Edit journey' />;
 }
 
-export async function generateMetadata(
-  { params: { id } }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({
+  params: { id },
+}: Props): Promise<Metadata> {
   if (!id) notFound();
   const res = await getOneDeliveryOrderById(id);
   if (res.status === 404 || !res.data?._id) {

@@ -1,5 +1,5 @@
 'use client';
-import React, { HTMLAttributes, useState, useTransition } from 'react';
+import React, { HTMLAttributes, useTransition } from 'react';
 import TextField from '../../../UI/TextField';
 import Button from '../../../UI/Button';
 import DatePicker from '../../../UI/DatePicker/DatePicker';
@@ -44,7 +44,6 @@ let initialValues = {
 export default function DeliverOrderForm({
   order,
   heading,
-  ...rest
 }: DeliverOrderFormProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -130,7 +129,6 @@ export default function DeliverOrderForm({
     touched,
   } = formik;
 
-  console.log(values);
   const buttonContent = order?._id ? 'Edit order' : 'Create order';
   return (
     <div className='order'>

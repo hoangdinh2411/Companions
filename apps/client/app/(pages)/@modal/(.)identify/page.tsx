@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useTransition } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import QRCode from 'react-qr-code';
 import Image from 'next/image';
@@ -8,14 +8,15 @@ import { saveIdentifyNumber } from '../../../actions/tokens';
 import Button from '../../../components/UI/Button';
 import TextField from '../../../components/UI/TextField';
 import LoadingSpinner from '../../../components/UI/Loading';
-import Modal from '../../../components/UI/Modal';
 import '../../identify/Identify.scss';
-
+import dynamic from 'next/dynamic';
+const Modal = dynamic(() => import('../../../components/UI/Modal'), {
+  ssr: false,
+});
 export default function IdentifyModalPage() {
   const [idNumber, setIdNumber] = useState('');
   const [randomToken, setRandomToken] = useState('');
   const inputRef = React.createRef<HTMLInputElement>();
-  const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const handelVerify = () => {
@@ -74,7 +75,7 @@ export default function IdentifyModalPage() {
     );
   }
   return (
-    <Modal disableClose>
+    <Modal disableClose open>
       <div className='identify-bank-id__container'>
         {idNumber !== '' ? (
           <div className='qr-code'>

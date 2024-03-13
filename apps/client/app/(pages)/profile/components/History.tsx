@@ -1,5 +1,5 @@
 'use client';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '../../../components/UI/Button';
 import {
   DeliveryOrderDocument,
@@ -77,7 +77,7 @@ export default function History({ history, tab }: Props) {
         ) : null}
 
         <div className='history__tabs'>
-          {tabs.map((tab, index) => (
+          {tabs.map((tab) => (
             <Button
               size='small'
               variant={activeTab === tab.value ? 'green' : 'white'}

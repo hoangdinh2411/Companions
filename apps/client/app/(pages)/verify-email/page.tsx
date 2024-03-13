@@ -3,7 +3,6 @@ import React from 'react';
 import { verifyAccount } from '../../actions/userApi';
 import APP_ROUTER from '../../lib/config/router';
 import { redirect } from 'next/navigation';
-import { toast } from 'react-toastify';
 
 type Props = {
   searchParams: Record<string, string>;

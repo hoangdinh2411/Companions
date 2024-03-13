@@ -28,6 +28,7 @@
     border-radius: 8px;
     overflow: hidden;
     img {
+      position: relative;
       object-fit: contain;
       @include breakpoint(ld) {
         object-fit: cover;
