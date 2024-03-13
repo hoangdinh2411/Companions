@@ -3,7 +3,6 @@ import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import createHttpError from 'http-errors';
 import UserModel from '../models/User.model';
 import { verifyToken } from '../../lib/utils/token';
-import mongoose from 'mongoose';
 import { UserDocument } from '@repo/shared';
 
 // extend the express request object to include the user object

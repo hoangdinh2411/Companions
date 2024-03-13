@@ -5,11 +5,12 @@ import { useFormik } from 'formik';
 import { useEffect, useRef, useTransition } from 'react';
 import Link from 'next/link';
 import APP_ROUTER from '../../lib/config/router';
-import { SignInFormData, signInValidation } from '@repo/shared';
+import { SignInFormData } from '@repo/shared';
 import { signIn } from '../../actions/userApi';
 import { useRouter } from 'next/navigation';
 import { saveToken } from '../../actions/tokens';
 import { toast } from 'react-toastify';
+import { signInValidation } from '../../lib/validation/userValidation';
 
 export default function Form(): JSX.Element {
   const firstTextFieldRef = useRef<HTMLInputElement>(null);

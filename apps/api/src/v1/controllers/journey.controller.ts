@@ -1,8 +1,4 @@
-import {
-  JourneyStatusEnum,
-  journeyRequestValidation,
-  queryValidation,
-} from '@repo/shared';
+import { JourneyStatusEnum } from '@repo/shared';
 import { NextFunction, Request, Response } from 'express';
 import JourneyModel from '../models/Journey.model';
 import createHttpError from 'http-errors';
@@ -15,6 +11,8 @@ import { generateDocumentsForOrders } from '../helpers/insertManyDocument';
 import mongoose from 'mongoose';
 import { generateSlugFrom } from '../../lib/utils/generate-slug';
 import { hideUserInfoDependOnFieldBeOnTouch } from '../helpers/formatDocument';
+import { journeyRequestValidation } from '../../lib/validation/journeyValidation';
+import { queryValidation } from '../../lib/validation/queryValidation';
 
 let page = 1;
 

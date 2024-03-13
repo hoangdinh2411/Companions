@@ -1,12 +1,7 @@
 import mongoose from 'mongoose';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import bcrypt from 'bcrypt';
-import {
-  UserRoleEnum,
-  UserStatusEnum,
-  UserDocument,
-  DeliveryOrderDocument,
-} from '@repo/shared';
+import { UserRoleEnum, UserStatusEnum, UserDocument } from '@repo/shared';
 
 interface IUserSchema extends UserDocument {
   setPassword: (password: string) => void;

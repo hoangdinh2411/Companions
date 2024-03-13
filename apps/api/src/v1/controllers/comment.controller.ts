@@ -1,4 +1,3 @@
-import { addNewCommentValidation } from '@repo/shared';
 import CommentModel from '../models/Comments.model';
 import { NextFunction, Request, Response } from 'express';
 import { limitDocumentPerPage } from '../../lib/utils/variables';
@@ -6,6 +5,7 @@ import { defaultResponseIfNoData } from '../helpers/response';
 import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
+import { addNewCommentValidation } from '../../lib/validation/commentValidation';
 
 let page = 1;
 const CommentController = {

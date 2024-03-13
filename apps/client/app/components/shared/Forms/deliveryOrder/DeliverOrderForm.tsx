@@ -8,7 +8,6 @@ import {
   DeliveryOrderDocument,
   DeliveryOrderFormData,
   TypeOfCommodityEnum,
-  deliveryOrderFormDataValidation,
 } from '@repo/shared';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
@@ -22,6 +21,7 @@ import {
 } from '../../../../actions/deliveryOrderApi';
 import './DeliverOrderForm.scss';
 import { getIdentifyNumber } from '../../../../actions/tokens';
+import { deliveryOrderFormDataValidation } from '../../../../lib/validation/deliveryOrderValidation';
 
 interface DeliverOrderFormProps extends HTMLAttributes<HTMLDivElement> {
   heading: string;

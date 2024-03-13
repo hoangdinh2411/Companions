@@ -4,11 +4,7 @@ import TextField from '../../../UI/TextField';
 import Button from '../../../UI/Button';
 import DatePicker from '../../../UI/DatePicker/DatePicker';
 import { useFormik } from 'formik';
-import {
-  JourneyDocument,
-  JourneyFormData,
-  journeyFormDataValidation,
-} from '@repo/shared';
+import { JourneyDocument, JourneyFormData } from '@repo/shared';
 import {
   createNewJourney,
   modifyJourney,
@@ -19,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import APP_ROUTER from '../../../../lib/config/router';
 import dayjs from 'dayjs';
 import './JourneyForm.scss';
+import { journeyFormDataValidation } from '../../../../lib/validation/journeyValidation';
 
 let initialValues = {
   from: '',

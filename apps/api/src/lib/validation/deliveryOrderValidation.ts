@@ -1,7 +1,7 @@
-import dayjs = require('dayjs');
+import dayjs from 'dayjs';
 import * as yup from 'yup';
 
-export const journeyFormDataValidation = yup.object().shape({
+export const deliveryOrderFormDataValidation = yup.object().shape({
   title: yup
     .string()
     .required('Need to specify the title')
@@ -10,7 +10,7 @@ export const journeyFormDataValidation = yup.object().shape({
   to: yup.string().required('Need to specify the destination'),
   message: yup.string(),
   start_date: yup
-    .string()
+    .date()
     .test(
       'start_date',
       'Start date cannot be less than today',
@@ -22,7 +22,7 @@ export const journeyFormDataValidation = yup.object().shape({
     )
     .required('Need to specify the start date'),
   end_date: yup
-    .string()
+    .date()
     .test(
       'end_date',
       'End date cannot be less than start date',
@@ -34,15 +34,19 @@ export const journeyFormDataValidation = yup.object().shape({
       }
     )
     .required('Need to specify the end date'),
+
   price: yup
     .number()
     .min(0, 'Price cannot be less than 0')
     .required('Need to specify the price'),
-  seats: yup
+  weight: yup
     .number()
-    .min(1, 'Seats cannot be less than 1')
-    .required('Need to specify the number of seats'),
-  time: yup.string().required('Need to specify the time'),
+    .positive('Weight cannot be less than 0')
+    .required('Need to specify the weight'),
+  type_of_commodity: yup
+    .string()
+    .required('Need to specify the type of commodity'),
+  size: yup.string(),
   be_in_touch: yup
     .boolean()
     .test(
@@ -55,9 +59,9 @@ export const journeyFormDataValidation = yup.object().shape({
     .required('Need to specify if you want to be in touch'),
 });
 
-export const journeyRequestValidation = yup
+export const deliveryOrderRequestValidation = yup
   .object()
-  .concat(journeyFormDataValidation)
+  .concat(deliveryOrderFormDataValidation)
   .shape({
     // phone: yup
     //   .string()

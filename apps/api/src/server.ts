@@ -7,6 +7,7 @@ import v1Router from './v1';
 import timeout from 'connect-timeout';
 import getUserIdMiddleware from './v1/middlewares/get-user-ip';
 import helmet from 'helmet';
+import env from './lib/config/env';
 
 export const createServer = () => {
   const app = express();
@@ -19,7 +20,7 @@ export const createServer = () => {
     .use(json())
     .use(
       cors({
-        origin: ['*'],
+        origin: ['http://localhost:3000', env.DOMAIN],
         credentials: true,
         allowedHeaders: 'Content-Type,Authorization',
         optionsSuccessStatus: 200,

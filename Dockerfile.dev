@@ -1,0 +1,45 @@
+
+FROM node:20 as base
+
+# adding apk deps to avoid node-gyp related errors and some other stuff. adds turborepo globally
+RUN  npm install turbo typescript --global 
+
+
+#############################################
+FROM base AS pruned
+WORKDIR /app
+ARG APP
+
+COPY . .
+
+RUN turbo prune api --docker
+
+#############################################
+FROM base AS installer
+WORKDIR /app
+ARG APP
+
+COPY --from=pruned /app/out/json/ .
+COPY --from=pruned /app/out/package-lock.json /app/package-lock.json
+
+# Forces the layer to recreate if the app's package.json changes
+COPY apps/${APP}/package.json /app/apps/${APP}/package.json
+
+
+COPY --from=pruned /app/out/full/ .
+COPY turbo.json turbo.json
+
+# For example: `--filter=api^...` means all of api's dependencies will be built, but not the api app itself (which we don't need to do for dev environment)
+RUN turbo run build --no-cache --filter=${APP}^...
+
+
+
+#############################################
+FROM base AS runner
+WORKDIR /app
+ARG APP
+ARG START_COMMAND=dev
+
+COPY --from=installer /app .
+
+CMD npm run ${START_COMMAND} --workspace ${APP}

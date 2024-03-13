@@ -1,8 +1,4 @@
-import {
-  DeliveryOrderStatusEnum,
-  deliveryOrderRequestValidation,
-  queryValidation,
-} from '@repo/shared';
+import { DeliveryOrderStatusEnum } from '@repo/shared';
 import { NextFunction, Request, Response } from 'express';
 import DeliveryOrderSchema from '../models/DeliveryOrder.model';
 import createHttpError from 'http-errors';
@@ -14,6 +10,8 @@ import UserModel from '../models/User.model';
 import mongoose from 'mongoose';
 import { generateSlugFrom } from '../../lib/utils/generate-slug';
 import { hideUserInfoDependOnFieldBeOnTouch } from '../helpers/formatDocument';
+import { deliveryOrderRequestValidation } from '../../lib/validation/deliveryOrderValidation';
+import { queryValidation } from '../../lib/validation/queryValidation';
 let page = 1;
 
 const DeliveryOrderController = {

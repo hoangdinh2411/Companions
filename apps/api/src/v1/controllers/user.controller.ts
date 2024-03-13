@@ -2,8 +2,6 @@ import {
   DeliveryOrderDocument,
   JourneyDocument,
   UserStatusEnum,
-  signInValidation,
-  signUpValidation,
 } from '@repo/shared';
 import { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
@@ -20,6 +18,10 @@ import env from '../../lib/config/env';
 import { limitDocumentPerPage } from '../../lib/utils/variables';
 import { defaultResponseIfNoData } from '../helpers/response';
 import { hideUserInfoDependOnFieldBeOnTouch } from '../helpers/formatDocument';
+import {
+  signInValidation,
+  signUpValidation,
+} from '../../lib/validation/userValidation';
 
 let page = 1;
 const UserController = {

@@ -14,7 +14,7 @@ apps/*/logs
 # next.js
 .next/
 build
-
+.out/
 # other
 dist/
 

@@ -1,8 +1,7 @@
+import dayjs from 'dayjs';
 import * as yup from 'yup';
-import dayjs = require('dayjs');
-import { TypeOfCommodityEnum } from '../enums/delivery-order';
 
-export const deliveryOrderFormDataValidation = yup.object().shape({
+export const journeyFormDataValidation = yup.object().shape({
   title: yup
     .string()
     .required('Need to specify the title')
@@ -11,7 +10,7 @@ export const deliveryOrderFormDataValidation = yup.object().shape({
   to: yup.string().required('Need to specify the destination'),
   message: yup.string(),
   start_date: yup
-    .date()
+    .string()
     .test(
       'start_date',
       'Start date cannot be less than today',
@@ -23,7 +22,7 @@ export const deliveryOrderFormDataValidation = yup.object().shape({
     )
     .required('Need to specify the start date'),
   end_date: yup
-    .date()
+    .string()
     .test(
       'end_date',
       'End date cannot be less than start date',
@@ -35,19 +34,15 @@ export const deliveryOrderFormDataValidation = yup.object().shape({
       }
     )
     .required('Need to specify the end date'),
-
   price: yup
     .number()
     .min(0, 'Price cannot be less than 0')
     .required('Need to specify the price'),
-  weight: yup
+  seats: yup
     .number()
-    .positive('Weight cannot be less than 0')
-    .required('Need to specify the weight'),
-  type_of_commodity: yup
-    .string()
-    .required('Need to specify the type of commodity'),
-  size: yup.string(),
+    .min(1, 'Seats cannot be less than 1')
+    .required('Need to specify the number of seats'),
+  time: yup.string().required('Need to specify the time'),
   be_in_touch: yup
     .boolean()
     .test(
@@ -60,9 +55,9 @@ export const deliveryOrderFormDataValidation = yup.object().shape({
     .required('Need to specify if you want to be in touch'),
 });
 
-export const deliveryOrderRequestValidation = yup
+export const journeyRequestValidation = yup
   .object()
-  .concat(deliveryOrderFormDataValidation)
+  .concat(journeyFormDataValidation)
   .shape({
     // phone: yup
     //   .string()

@@ -1,5 +1,5 @@
+import { TypeOfCommodityEnum } from '@repo/shared';
 import * as Yup from 'yup';
-import { TypeOfCommodityEnum } from '../enums/delivery-order';
 
 export const queryValidation = {
   search: Yup.object().shape({
