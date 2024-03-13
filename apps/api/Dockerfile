@@ -9,7 +9,7 @@ RUN apk add --no-cache libc6-compat
 RUN apk update
 # Set working directory
 WORKDIR /app
-RUN npm global add turbo
+RUN npm install turbo --global
 COPY . .
 RUN turbo prune api --docker
 
