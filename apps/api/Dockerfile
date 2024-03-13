@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:v20.10.0 AS base
 
 # The web Dockerfile is copy-pasted into our main docs at /docs/handbook/deploying-with-docker.
 # Make sure you update this Dockerfile, the Dockerfile in the web workspace and copy that over to Dockerfile in the docs.
@@ -36,7 +36,7 @@ ENV TURBO_TEAM=$companions
 ARG TURBO_TOKEN
 ENV TURBO_TOKEN=$companionstoken
 
-RUN turbo run build --filter=api
+RUN npm turbo run build --filter=api...
 
 FROM base AS runner
 WORKDIR /app
