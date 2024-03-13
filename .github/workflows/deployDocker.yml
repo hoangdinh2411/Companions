@@ -29,6 +29,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./out
+          file: ./apps/api
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/companionsapi:latest
