@@ -1,4 +1,4 @@
-FROM node:v20.10.0 AS base
+FROM node:20 AS base
 
 # The web Dockerfile is copy-pasted into our main docs at /docs/handbook/deploying-with-docker.
 # Make sure you update this Dockerfile, the Dockerfile in the web workspace and copy that over to Dockerfile in the docs.
