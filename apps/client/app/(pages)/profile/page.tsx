@@ -20,7 +20,10 @@ export default async function ProfilePage({
 }) {
   const getUserPromise = getUser();
 
-  const params = generateSearchParams(['page', 'about'], searchParams);
+  const params = generateSearchParams(
+    ['page', 'about', 'search_text'],
+    searchParams
+  );
   let historyData;
   if (searchParams.about) {
     historyData = await getHistory(params);

@@ -20,7 +20,7 @@ export const createNewJourney = async (formData: JourneyFormData) => {
   );
   if (res.success) {
     revalidatePath(APP_ROUTER.JOURNEYS, 'page');
-    revalidateTag('profile');
+    revalidatePath(APP_ROUTER.PROFILE);
     revalidateTag('history');
   }
   return res;
@@ -116,7 +116,7 @@ export const joinJourney = async (journey_id: string, slug: string) => {
   const res = await customFetch(
     `/journeys/${journey_id}/join`,
     {
-      method: 'PUT',
+      method: 'PATCH',
       cache: 'no-cache',
     },
     true
@@ -124,7 +124,24 @@ export const joinJourney = async (journey_id: string, slug: string) => {
 
   if (res.success) {
     revalidateTag('journey/' + slug);
-    revalidateTag('profile');
+    revalidatePath(APP_ROUTER.PROFILE);
+    revalidateTag('history');
+  }
+  return res;
+};
+export const updateStatusJourney = async (journey_id: string, slug: string) => {
+  const res = await customFetch(
+    `/journeys/${journey_id}`,
+    {
+      method: 'PATCH',
+      cache: 'no-cache',
+    },
+    true
+  );
+
+  if (res.success) {
+    revalidateTag('journey/' + slug);
+    revalidatePath(APP_ROUTER.PROFILE);
     revalidateTag('history');
   }
   return res;

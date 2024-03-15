@@ -16,13 +16,17 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: 'Journey not found',
     DUPLICATE_JOURNEY: 'Cannot create duplicate journey',
     MISSING_JOURNEY_ID: 'Missing journey id',
-    CANNOT_JOIN_THIS_JOURNEY: 'Cannot join this journey',
+    CANNOT_JOIN_THIS_JOURNEY: 'You cannot join this journey',
+    CANNOT_CHANGE_STATUS_OF_OVERDUE_JOURNEY:
+      'Cannot change status of overdue journey',
   },
   DELIVERY_ORDER: {
     NOT_FOUND: 'Delivery order not found',
     DUPLICATE_DELIVERY_ORDER: 'Cannot create duplicate delivery order',
-    CANNOT_TAKE_THIS_ORDER: 'Cannot take this order',
+    CANNOT_TAKE_THIS_ORDER: 'You cannot take this order',
     MISSING_DELIVERY_ORDER_ID: 'Missing delivery order id',
+    CANNOT_CHANGE_STATUS_OF_OVERDUE_ORDER:
+      'Cannot change status of overdue order',
   },
   COMMENT: {
     NOT_FOUND: 'Comment not found',

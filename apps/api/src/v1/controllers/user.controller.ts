@@ -294,6 +294,7 @@ const UserController = {
   getHistory: async function (req: Request, res: Response, next: NextFunction) {
     const fieldName = req.query.about?.toString();
 
+    const search_text = req.query.search_text?.toString() || '';
     if (!fieldName) {
       return res.status(200).json({
         success: true,
@@ -312,6 +313,20 @@ const UserController = {
       if (req.query.page && Number(req.query.page) > 0) {
         page = Number(req.query.page);
       }
+      const matchStages = [];
+      if (search_text) {
+        matchStages.push({
+          $match: {
+            $or: [
+              { from: { $regex: search_text, $options: 'i' } },
+              { to: { $regex: search_text, $options: 'i' } },
+              {
+                title: { $regex: search_text, $options: 'i' },
+              },
+            ],
+          },
+        });
+      }
       const collection = fieldName.includes('journeys')
         ? 'journeys'
         : 'deliveryorders';
@@ -326,6 +341,7 @@ const UserController = {
         {
           $project: {
             _id: 0,
+            // only get all documents on  the field that we need
             [fieldName]: 1,
           },
         },
@@ -336,22 +352,11 @@ const UserController = {
             foreignField: '_id',
             as: fieldName,
             pipeline: [
+              ...matchStages,
               {
-                $lookup: {
-                  from: 'users',
-                  localField: 'companions',
-                  foreignField: '_id',
-                  as: 'companions',
-                  pipeline: [
-                    {
-                      $project: {
-                        _id: 1,
-                        email: 1,
-                        full_name: 1,
-                        phone: 1,
-                      },
-                    },
-                  ],
+                $sort: {
+                  status: 1,
+                  updated_at: 1,
                 },
               },
               {
@@ -379,14 +384,26 @@ const UserController = {
                 },
               },
               {
-                $facet: {
-                  items: [
+                $lookup: {
+                  from: 'users',
+                  localField: 'companions',
+                  foreignField: '_id',
+                  as: 'companions',
+                  pipeline: [
                     {
-                      $sort: {
-                        created_at: -1,
-                        updated_at: -1,
+                      $project: {
+                        _id: 1,
+                        email: 1,
+                        full_name: 1,
+                        phone: 1,
                       },
                     },
+                  ],
+                },
+              },
+              {
+                $facet: {
+                  items: [
                     {
                       $skip: (page - 1) * limitDocumentPerPage,
                     },
@@ -435,6 +452,7 @@ const UserController = {
           },
         },
       ]);
+
       let result = defaultResponseIfNoData(data);
       if (result.items.length > 0) {
         result = {

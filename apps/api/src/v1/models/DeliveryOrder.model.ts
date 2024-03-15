@@ -91,30 +91,7 @@ DeliveryOrderSchema.index({
   title: 1,
   type_of_commodity: 1,
 });
-DeliveryOrderSchema.pre('save', async function (next) {
-  const existing = await this.model('deliveryorders').findOne({
-    from: this.from,
-    to: this.to,
-    start_date: this.start_date,
-    end_date: this.end_date,
-    created_by: {
-      _id: this.created_by?._id,
-    },
-    type_of_commodity: this.type_of_commodity,
-  });
-  if (existing) {
-    next(new Error(ERROR_MESSAGES.DELIVERY_ORDER.DUPLICATE_DELIVERY_ORDER));
-  }
 
-  this.slug = generateSlugFrom(
-    this.title,
-    this.from,
-    this.to,
-    this.start_date,
-    this.end_date
-  );
-  next();
-});
 DeliveryOrderSchema.post(
   'save',
   { errorHandler: true },

@@ -80,27 +80,6 @@ const JourneySchema = new mongoose.Schema<IJourneySchema>(
 
 JourneySchema.index({ from: 1, to: 1, start_date: 1, title: 1 });
 
-JourneySchema.pre('save', async function (next) {
-  const existing = await this.model('journeys').findOne({
-    start_date: this.start_date,
-    end_date: this.end_date,
-    created_by: {
-      _id: this.created_by?._id,
-    },
-  });
-  if (existing) {
-    next(new Error(ERROR_MESSAGES.JOURNEY.DUPLICATE_JOURNEY));
-  }
-
-  this.slug = generateSlugFrom(
-    this.title,
-    this.from,
-    this.to,
-    this.start_date,
-    this.end_date
-  );
-  next();
-});
 JourneySchema.post(
   'save',
   { errorHandler: true },

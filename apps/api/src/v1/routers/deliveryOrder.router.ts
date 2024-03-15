@@ -19,7 +19,12 @@ deliveryOrderRouter.put(
   authMiddleware,
   DeliveryOrderController.modify
 );
-deliveryOrderRouter.put(
+deliveryOrderRouter.patch(
+  '/:order_id',
+  authMiddleware,
+  DeliveryOrderController.updateStatus
+);
+deliveryOrderRouter.patch(
   '/:order_id/take',
   authMiddleware,
   DeliveryOrderController.takeOrder
