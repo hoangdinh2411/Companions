@@ -2,6 +2,8 @@ name: companions-ci
 
 on:
   push:
+    paths-ignore:
+      - apps/api/**
     branches:
       - dev
 

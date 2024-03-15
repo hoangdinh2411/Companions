@@ -6,7 +6,6 @@ export default function Goals() {
   return (
     <article className="goals">
       <div className="goals__container">
-        <Button loading={true}>a</Button>
         <figure className="goals__image">
           <Image
             src="/goals.png"

@@ -7,6 +7,7 @@ const env = {
   SEND_EMAIL_SERVICE: process.env.SEND_EMAIL_SERVICE || '',
   SEND_EMAIL_USER: process.env.SEND_EMAIL_USER || '',
   SEND_EMAIL_PASSWORD: process.env.SEND_EMAIL_PASSWORD || '',
+  SERVER: process.env.SERVER || 'http://localhost:2703',
 };
 
 export default env;

@@ -1,10 +1,15 @@
 import dayjs from 'dayjs';
 import DeliveryOrderModel from '../models/DeliveryOrder.model';
 import JourneyModel from '../models/Journey.model';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import createHttpError from 'http-errors';
 
 const AppController = {
-  getStatisticForHomePage: async (req: Request, res: Response) => {
+  updateStatusOfOldDocuments: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       await DeliveryOrderModel.updateMany(
         {
@@ -17,13 +22,6 @@ const AppController = {
           status: 'completed',
         }
       );
-      const orders = await DeliveryOrderModel.find({
-        status: 'active',
-        start_date: {
-          $gte: dayjs().format('YYYY-MM-DD'),
-        },
-      }).countDocuments();
-
       await JourneyModel.updateMany(
         {
           status: 'active',
@@ -35,6 +33,27 @@ const AppController = {
           status: 'completed',
         }
       );
+      return res.status(200).json({
+        success: true,
+        message: 'Updated successfully',
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+  getStatisticForHomePage: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const orders = await DeliveryOrderModel.find({
+        status: 'active',
+        start_date: {
+          $gte: dayjs().format('YYYY-MM-DD'),
+        },
+      }).countDocuments();
+
       const journeys = await JourneyModel.find({
         status: 'active',
         start_date: {
@@ -50,7 +69,7 @@ const AppController = {
         },
       });
     } catch (error) {
-      return res.status(500).json({ message: (error as Error).message });
+      return next(createHttpError.BadRequest((error as Error).message));
     }
   },
 };
