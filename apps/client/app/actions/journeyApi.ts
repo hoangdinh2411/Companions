@@ -146,3 +146,20 @@ export const updateStatusJourney = async (journey_id: string, slug: string) => {
   }
   return res;
 };
+export const deleteJourney = async (journey_id: string, slug: string) => {
+  const res = await customFetch(
+    `/journeys/${journey_id}`,
+    {
+      method: 'DELETE',
+      cache: 'no-cache',
+    },
+    true
+  );
+
+  if (res.success) {
+    revalidateTag('journey/' + slug);
+    revalidatePath(APP_ROUTER.PROFILE);
+    revalidateTag('history');
+  }
+  return res;
+};

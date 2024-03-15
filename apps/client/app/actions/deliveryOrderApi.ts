@@ -148,3 +148,20 @@ export const updateStatusOrder = async (order_id: string, slug: string) => {
 
   return res;
 };
+export const deleteOrder = async (order_id: string, slug: string) => {
+  const res = await customFetch(
+    `/delivery-orders/${order_id}`,
+    {
+      method: 'DELETE',
+      cache: 'no-cache',
+    },
+    true
+  );
+  if (res.success) {
+    revalidateTag(`order/${slug}`);
+    revalidateTag('history');
+    revalidatePath(APP_ROUTER.PROFILE);
+  }
+
+  return res;
+};
