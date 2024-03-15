@@ -9,20 +9,14 @@ function showCreatorInfo(
   user_id = ''
 ) {
   // if the user is signed in and in the list of companions
-  console.log(
-    user_id &&
-      data.companions.findIndex(
-        (c: UserDocument) => c._id.toString() === user_id.toString()
-      ) !== -1 &&
-      !data.be_in_touch
-  );
 
   if (
     user_id &&
     data.companions.findIndex(
       (c: UserDocument) => c._id.toString() === user_id.toString()
     ) !== -1 &&
-    data.be_in_touch
+    !data.be_in_touch &&
+    data.status === 'active'
   ) {
     return data.created_by;
   }
@@ -48,7 +42,8 @@ export const hideUserInfoDependOnFieldBeOnTouch = (
             // only creator can see the full list of companions
             if (
               user_id &&
-              data.created_by?._id.toString() === user_id.toString()
+              data.created_by?._id.toString() === user_id.toString() &&
+              data.status === 'active'
             ) {
               return companion;
             }

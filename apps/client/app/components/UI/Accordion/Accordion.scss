@@ -5,7 +5,7 @@
   border: 0.5px solid $border;
   border-radius: 0.4rem;
 
-  input[type='checkbox'] {
+  .accordion_checkbox input[type='checkbox'] {
     position: absolute;
     opacity: 0;
     z-index: -1;

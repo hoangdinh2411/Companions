@@ -12,6 +12,7 @@ import { generateSlugFrom } from '../../lib/utils/generate-slug';
 import { hideUserInfoDependOnFieldBeOnTouch } from '../helpers/formatDocument';
 import { deliveryOrderRequestValidation } from '../../lib/validation/deliveryOrderValidation';
 import { queryValidation } from '../../lib/validation/queryValidation';
+import DeliveryOrderModel from '../models/DeliveryOrder.model';
 let page = 1;
 
 const DeliveryOrderController = {
@@ -518,6 +519,64 @@ const DeliveryOrderController = {
         },
       });
 
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+
+  updateStatus: async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.params.order_id) {
+      return next(
+        createHttpError.BadRequest(
+          ERROR_MESSAGES.DELIVERY_ORDER.MISSING_DELIVERY_ORDER_ID
+        )
+      );
+    }
+    try {
+      let order = await DeliveryOrderModel.findOne({
+        _id: req.params.order_id,
+        created_by: new mongoose.Types.ObjectId(req.user._id),
+      });
+
+      if (!order) {
+        return next(
+          createHttpError.BadRequest(
+            ERROR_MESSAGES.DELIVERY_ORDER.CANNOT_CHANGE_STATUS_OF_OVERDUE_ORDER
+          )
+        );
+      }
+
+      // if order is completed and start_date is less than today , it means it is overdue, so it cannot activate again, it can only be change to completed
+      if (
+        order.status === DeliveryOrderStatusEnum.COMPLETED &&
+        order.start_date < dayjs().format('YYYY-MM-DD')
+      ) {
+        return next(
+          createHttpError.BadRequest(
+            ERROR_MESSAGES.DELIVERY_ORDER.CANNOT_CHANGE_STATUS_OF_OVERDUE_ORDER
+          )
+        );
+      }
+
+      if (order.status === DeliveryOrderStatusEnum.COMPLETED) {
+        order.status = DeliveryOrderStatusEnum.ACTIVE;
+      }
+
+      if (order.status === DeliveryOrderStatusEnum.ACTIVE) {
+        order.status = DeliveryOrderStatusEnum.COMPLETED;
+      }
+
+      const result = await order.save();
+      if (!result) {
+        return next(
+          createHttpError.BadRequest(
+            ERROR_MESSAGES.DELIVERY_ORDER.CANNOT_CHANGE_STATUS_OF_OVERDUE_ORDER
+          )
+        );
+      }
       return res.status(200).json({
         success: true,
       });

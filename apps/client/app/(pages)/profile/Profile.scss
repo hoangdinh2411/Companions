@@ -70,6 +70,7 @@
       width: 100%;
     }
     &__tabs {
+      margin-top: $spacing * 8;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       row-gap: $spacing * 8;
@@ -86,10 +87,20 @@
       position: absolute;
       right: 1rem;
       top: 1rem;
-      color: $green;
-      font-weight: 600;
-      &:hover {
-        transform: scale(1.1);
+      min-width: 10rem;
+      @include flex(space-between, center);
+      > a {
+        color: $green !important;
+        font-weight: 600;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+      > span {
+        font-weight: 600;
+        color: $red;
+        cursor: pointer;
       }
     }
     &__contents {
