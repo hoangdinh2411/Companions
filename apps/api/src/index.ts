@@ -1,3 +1,4 @@
+import env from './lib/config/env';
 import connectDatabase from './lib/database/mongo-connect';
 import { createServer } from './server';
 import dotenv from 'dotenv';

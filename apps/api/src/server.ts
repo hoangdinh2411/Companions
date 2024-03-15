@@ -9,6 +9,7 @@ import getUserIdMiddleware from './v1/middlewares/get-user-ip';
 import helmet from 'helmet';
 import env from './lib/config/env';
 
+const whitelist = [env.DOMAIN, 'http://localhost:3000'];
 export const createServer = () => {
   const app = express();
   app
@@ -20,7 +21,15 @@ export const createServer = () => {
     .use(json())
     .use(
       cors({
-        origin: ['http://localhost:3000', env.DOMAIN],
+        origin: (origin, callback) => {
+          if (!origin) return callback(null, true);
+          if (whitelist.indexOf(origin) === -1) {
+            const msg =
+              'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+          }
+          return callback(null, true);
+        },
         credentials: true,
         allowedHeaders: 'Content-Type,Authorization',
         optionsSuccessStatus: 200,

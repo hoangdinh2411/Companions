@@ -5,9 +5,18 @@ import {
 } from '../../../actions/journeyApi';
 import { notFound } from 'next/navigation';
 import './JourneyDetails.scss';
-import Details from './components/Details';
-import Creator from './components/Creator';
 import { JourneyDocument } from '@repo/shared';
+import dynamic from 'next/dynamic';
+import LoadingSpinner from '../../../components/UI/Loading';
+
+const Details = dynamic(() => import('./components/Details'), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
+const Creator = dynamic(() => import('./components/Creator'), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
 
 type Props = {
   params: { slug: string };
@@ -21,9 +30,9 @@ export default async function JourneyDetailsPage({ params: { slug } }: Props) {
   }
 
   return (
-    <div className='journey-details'>
+    <div className="journey-details">
       {res.data && res.data._id && (
-        <div className='journey-details__container'>
+        <div className="journey-details__container">
           <Details journey={res.data} />
           <Creator journey={res.data} />
         </div>

@@ -2,10 +2,14 @@ import { Metadata } from 'next';
 import './Profile.scss';
 import { getHistory, getUser } from '../../actions/userApi';
 import { generateSearchParams } from '../../lib/utils/generateSearchParams';
-import Detail from './components/Detail';
 import dynamic from 'next/dynamic';
 import LoadingSpinner from '../../components/UI/Loading';
 const History = dynamic(() => import('./components/History'), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
+
+const Detail = dynamic(() => import('./components/Detail'), {
   ssr: false,
   loading: () => <LoadingSpinner />,
 });
@@ -22,7 +26,7 @@ export default async function ProfilePage({
     historyData = await getHistory(params);
   }
   return (
-    <section className='profile'>
+    <section className="profile">
       <Detail getUserPromise={getUserPromise} />
       <History history={historyData?.data} tab={searchParams.about || ''} />
     </section>

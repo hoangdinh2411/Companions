@@ -16,8 +16,10 @@ export default function Actions({
   userData: GetUserAPIResponse | undefined;
 }) {
   const [dropdown, setDropdown] = React.useState(false);
+
   const { user, setUser } = appStore.getState();
-  if (userData && userData._id && !user._id) {
+
+  if (userData && userData._id) {
     setUser(userData);
   }
   const pathname = usePathname();
@@ -46,9 +48,9 @@ export default function Actions({
 
   if (isLogin) {
     return (
-      <div className='navbar__actions'>
+      <div className="navbar__actions">
         <Link href={APP_ROUTER.SIGN_IN}>
-          <Button variant='default' className='actions' size='small'>
+          <Button variant="default" className="actions" size="small">
             Sign in
           </Button>
         </Link>
@@ -56,9 +58,9 @@ export default function Actions({
     );
   } else {
     return (
-      <div className='navbar__actions'>
-        <div className='actions' title='Profile'>
-          <p className='actions__icon' onClick={handleToggleDropdown}>
+      <div className="navbar__actions">
+        <div className="actions" title="Profile">
+          <p className="actions__icon" onClick={handleToggleDropdown}>
             <UserIcon />
           </p>
           <nav className={`actions__dropdown ${dropdown ? 'open' : ''}`}>
