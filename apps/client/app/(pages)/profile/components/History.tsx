@@ -19,8 +19,14 @@ import APP_ROUTER from '../../../lib/config/router';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { updateStatusJourney } from '../../../actions/journeyApi';
-import { updateStatusOrder } from '../../../actions/deliveryOrderApi';
+import {
+  deleteJourney,
+  updateStatusJourney,
+} from '../../../actions/journeyApi';
+import {
+  deleteOrder,
+  updateStatusOrder,
+} from '../../../actions/deliveryOrderApi';
 import SearchField from '../../../components/shared/SearchField';
 dayjs.extend(relativeTime);
 type Props = {
@@ -84,6 +90,20 @@ export default function History({ history, tab }: Props) {
       }
       if (type_collection === 'delivery_order') {
         await updateStatusOrder(id, slug);
+      }
+    });
+  }
+  async function deleteDocument(
+    id: string,
+    slug: string,
+    type_collection: string
+  ) {
+    startTransition(async function () {
+      if (type_collection === 'journey') {
+        await deleteJourney(id, slug);
+      }
+      if (type_collection === 'delivery_order') {
+        await deleteOrder(id, slug);
       }
     });
   }
@@ -176,6 +196,22 @@ export default function History({ history, tab }: Props) {
                                 {item.status === 'completed' ? 'Open' : 'Close'}
                               </span>
                             </>
+                          )}
+
+                          {item.status !== 'completed' && (
+                            <span
+                              onClick={() =>
+                                deleteDocument(
+                                  item._id,
+                                  item.slug,
+                                  (item as DeliveryOrderDocument).weight
+                                    ? 'delivery_order'
+                                    : 'journey'
+                                )
+                              }
+                            >
+                              Delete
+                            </span>
                           )}
                         </div>
                       ) : null}
