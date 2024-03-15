@@ -69,22 +69,22 @@ export default function History({ history, tab }: Props) {
     return dayjs(date).fromNow();
   }
   return (
-    <article className='history'>
-      <div className='history__container'>
-        <h4 className='history__title'>History</h4>
+    <article className="history">
+      <div className="history__container">
+        <h4 className="history__title">History</h4>
         {activeTab === '' ? (
-          <p className='history__empty'>Select a tab to view history</p>
+          <p className="history__empty">Select a tab to view history</p>
         ) : null}
 
-        <div className='history__tabs'>
+        <div className="history__tabs">
           {tabs.map((tab) => (
             <Button
-              size='small'
+              size="small"
               variant={activeTab === tab.value ? 'green' : 'white'}
               style={{
                 pointerEvents: activeTab === tab.value ? 'none' : 'auto',
               }}
-              className='history__tab'
+              className="history__tab"
               key={tab.value}
               onClick={() => handleChangeTab(tab.value)}
             >
@@ -93,9 +93,9 @@ export default function History({ history, tab }: Props) {
           ))}
         </div>
 
-        <div className='history__contents'>
+        <div className="history__contents">
           {activeTab && history && history.items?.length === 0 ? (
-            <p className='history__empty'>No history found</p>
+            <p className="history__empty">No history found</p>
           ) : null}
           {activeTab &&
             history &&
@@ -114,7 +114,7 @@ export default function History({ history, tab }: Props) {
               (item: JourneyDocument | DeliveryOrderDocument) => {
                 return (
                   <Accordion heading={item.title} key={item._id} id={item._id}>
-                    <div className='history__item'>
+                    <div className="history__item">
                       {isOwner(item.created_by._id) && (
                         <Link
                           title={
@@ -125,7 +125,7 @@ export default function History({ history, tab }: Props) {
                               ? `${APP_ROUTER.EDIT_DELIVERY_ORDER}/${item._id}`
                               : `${APP_ROUTER.EDIT_JOURNEY}/${item._id}`
                           }
-                          className='update-btn'
+                          className="update-btn"
                           style={{
                             color:
                               item.status === 'completed' ? 'gray' : 'initial',
@@ -136,30 +136,61 @@ export default function History({ history, tab }: Props) {
                           Edit
                         </Link>
                       )}
-                      <p className='history__item__title'>
+                      <p className="history__item__title">
                         {' '}
-                        {item?.title}{' '}
+                        <Link
+                          className="history__item__title__link"
+                          href={
+                            (item as DeliveryOrderDocument).weight
+                              ? `${APP_ROUTER.DELIVERY_ORDERS}/${item.slug}`
+                              : `${APP_ROUTER.JOURNEYS}/${item.slug}`
+                          }
+                        >
+                          {item?.title}{' '}
+                        </Link>
                         <span
                           className={`history__item__status ${item.status}`}
                         >
                           {item.status.toUpperCase()}
                         </span>
                       </p>
-                      <article className='history__item__boxes'>
+                      <details className="history__item__boxes history__item__boxes--be-in-touch ">
+                        {item.be_in_touch ? (
+                          <summary className="no-action">
+                            The driver will to be in touch with you. So please
+                            be sure to check your contact details.
+                          </summary>
+                        ) : (
+                          <>
+                            <summary> Creator's detail: </summary>
+                            <p>
+                              Full name:{' '}
+                              <span>{item.created_by.full_name}</span>
+                            </p>
+                            <p>
+                              Email: <span>{item.created_by.email}</span>
+                            </p>
+                            <p>
+                              Phone: <span>{item.created_by.phone}</span>
+                            </p>
+                          </>
+                        )}
+                      </details>
+                      <article className="history__item__boxes">
                         From: <span>{item?.from}</span>
                       </article>
-                      <article className='history__item__boxes'>
+                      <article className="history__item__boxes">
                         To: <span>{item?.to}</span>
                       </article>
-                      <article className='history__item__boxes'>
+                      <article className="history__item__boxes">
                         Start: <span>{item?.start_date}</span>
                       </article>
-                      <article className='history__item__boxes'>
+                      <article className="history__item__boxes">
                         End: <span>{item?.end_date}</span>
                       </article>
 
                       {(item as DeliveryOrderDocument).weight && (
-                        <article className='history__item__boxes'>
+                        <article className="history__item__boxes">
                           Weight:{' '}
                           <span>
                             {formatWeight(
@@ -169,7 +200,7 @@ export default function History({ history, tab }: Props) {
                         </article>
                       )}
                       {(item as DeliveryOrderDocument).type_of_commodity && (
-                        <article className='history__item__boxes'>
+                        <article className="history__item__boxes">
                           Type Of Commodity:{' '}
                           <span>
                             {(
@@ -180,7 +211,7 @@ export default function History({ history, tab }: Props) {
                       )}
 
                       {(item as DeliveryOrderDocument).size && (
-                        <article className='history__item__boxes'>
+                        <article className="history__item__boxes">
                           Size:{' '}
                           <span>
                             {(item as DeliveryOrderDocument)?.size ?? ''}{' '}
@@ -189,15 +220,15 @@ export default function History({ history, tab }: Props) {
                         </article>
                       )}
                       {(item as JourneyDocument).seats && (
-                        <article className='history__item__boxes'>
+                        <article className="history__item__boxes">
                           Seats: <span>{(item as JourneyDocument).seats}</span>
                         </article>
                       )}
 
-                      <article className='history__item__boxes'>
+                      <article className="history__item__boxes">
                         Price: <span>{formatToSwedenCurrency(item.price)}</span>
                       </article>
-                      <article className='history__item__boxes history__item__boxes--message'>
+                      <article className="history__item__boxes history__item__boxes--message">
                         Message:{' '}
                         <div>
                           {!item?.message ? (
@@ -210,7 +241,7 @@ export default function History({ history, tab }: Props) {
                         </div>
                       </article>
                       {item.updated_at && item.created_at && (
-                        <article className='history__item__boxes history__item__boxes--created-at '>
+                        <article className="history__item__boxes history__item__boxes--created-at ">
                           <span>
                             {formatDate(
                               item.created_by._id === user._id

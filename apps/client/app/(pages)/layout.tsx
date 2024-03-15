@@ -1,3 +1,4 @@
+export const revalidate = 3600;
 import Footer from '../components/shared/Footer/Footer';
 import Navbar from '../components/shared/Navbar/Navbar';
 import ToastProvider from '../lib/provider/ToastProvider';
@@ -12,9 +13,9 @@ export default async function RootLayout({
   modal: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
+    <html lang="en">
       <head>
-        <link rel='icon' href='/logo_16_16.png' sizes='any' />
+        <link rel="icon" href="/logo_16_16.png" sizes="any" />
       </head>
       <body suppressHydrationWarning={true}>
         <Navbar />
@@ -24,7 +25,7 @@ export default async function RootLayout({
         </main>
         <Footer />
         <ToastProvider />
-        <div id='modal-root' />
+        <div id="modal-root" />
       </body>
     </html>
   );

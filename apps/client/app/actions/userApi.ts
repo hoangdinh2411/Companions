@@ -53,6 +53,7 @@ export const getHistory = async (query = '') => {
       method: 'GET',
       next: {
         tags: ['history'],
+        revalidate: 60 * 60 * 8,
       },
     },
     true

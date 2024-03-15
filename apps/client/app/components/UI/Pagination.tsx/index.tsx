@@ -44,6 +44,7 @@ export default function Pagination({
 
   const isVisible = useCallback(
     (value: number) => {
+      if (value === 1) return true;
       if (
         (value <= currentPage + listNumberBeVisible &&
           value >= currentPage - listNumberBeVisible &&
@@ -68,14 +69,14 @@ export default function Pagination({
       </p>
 
       {withNumber ? (
-        <div className='list_number'>
+        <div className="list_number">
           {Array.from(Array(pages + 1).keys())
             .slice(1)
             .map((value) => (
               <a
                 onClick={() => handleChangePage(value)}
                 key={value}
-                href='#'
+                href="#"
                 style={{
                   display: isVisible(value) ? '' : 'none',
                 }}
@@ -87,7 +88,7 @@ export default function Pagination({
         </div>
       ) : null}
       <p
-        className={`pagination__btn right ${disableBtn(total)}`}
+        className={`pagination__btn right ${disableBtn(pages)}`}
         onClick={() => handleChangePage(currentPage + 1)}
       >
         Next

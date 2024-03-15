@@ -1,7 +1,9 @@
 import { getToken } from './tokens';
 
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:2703/api/v1';
+  process.env.NEXT_PUBLIC_NODE_ENV === 'prod'
+    ? process.env.NEXT_PUBLIC_API_URL
+    : 'http://localhost:2703/api/v1';
 export interface IResponse<T> {
   data?: T;
   message?: string;

@@ -37,8 +37,8 @@ export default async function DeliveryOrdersPage({
   }
 
   return (
-    <div className='orders'>
-      <div className='orders__container'>
+    <div className="orders">
+      <div className="orders__container">
         {search_text ? (
           <h6>
             Searching for "{search_text}" in delivery orders. Empty search field

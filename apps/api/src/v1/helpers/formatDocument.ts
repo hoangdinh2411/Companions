@@ -9,12 +9,20 @@ function showCreatorInfo(
   user_id = ''
 ) {
   // if the user is signed in and in the list of companions
+  console.log(
+    user_id &&
+      data.companions.findIndex(
+        (c: UserDocument) => c._id.toString() === user_id.toString()
+      ) !== -1 &&
+      !data.be_in_touch
+  );
+
   if (
     user_id &&
     data.companions.findIndex(
       (c: UserDocument) => c._id.toString() === user_id.toString()
     ) !== -1 &&
-    !data.be_in_touch
+    data.be_in_touch
   ) {
     return data.created_by;
   }
