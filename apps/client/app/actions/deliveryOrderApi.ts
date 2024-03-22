@@ -119,7 +119,7 @@ export const takeOrder = async (order_id: string, slug: string) => {
   const res = await customFetch(
     `/delivery-orders/${order_id}/take`,
     {
-      method: 'PUT',
+      method: 'PATCH',
       cache: 'no-cache',
     },
     true
@@ -129,5 +129,39 @@ export const takeOrder = async (order_id: string, slug: string) => {
     revalidateTag('history');
     revalidatePath(APP_ROUTER.PROFILE);
   }
+  return res;
+};
+export const updateStatusOrder = async (order_id: string, slug: string) => {
+  const res = await customFetch(
+    `/delivery-orders/${order_id}`,
+    {
+      method: 'PATCH',
+      cache: 'no-cache',
+    },
+    true
+  );
+  if (res.success) {
+    revalidateTag(`order/${slug}`);
+    revalidateTag('history');
+    revalidatePath(APP_ROUTER.PROFILE);
+  }
+
+  return res;
+};
+export const deleteOrder = async (order_id: string, slug: string) => {
+  const res = await customFetch(
+    `/delivery-orders/${order_id}`,
+    {
+      method: 'DELETE',
+      cache: 'no-cache',
+    },
+    true
+  );
+  if (res.success) {
+    revalidateTag(`order/${slug}`);
+    revalidateTag('history');
+    revalidatePath(APP_ROUTER.PROFILE);
+  }
+
   return res;
 };

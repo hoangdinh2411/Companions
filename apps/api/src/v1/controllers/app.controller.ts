@@ -1,14 +1,20 @@
 import dayjs from 'dayjs';
 import DeliveryOrderModel from '../models/DeliveryOrder.model';
 import JourneyModel from '../models/Journey.model';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import createHttpError from 'http-errors';
+import { DeliveryOrderStatusEnum, JourneyStatusEnum } from '@repo/shared';
 
 const AppController = {
-  getStatisticForHomePage: async (req: Request, res: Response) => {
+  updateStatusOfOldDocuments: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       await DeliveryOrderModel.updateMany(
         {
-          status: 'active',
+          status: DeliveryOrderStatusEnum.ACTIVE,
           start_date: {
             $lt: dayjs().format('YYYY-MM-DD'),
           },
@@ -17,26 +23,40 @@ const AppController = {
           status: 'completed',
         }
       );
+      await JourneyModel.updateMany(
+        {
+          status: JourneyStatusEnum.ACTIVE,
+          start_date: {
+            $lt: dayjs().format('YYYY-MM-DD'),
+          },
+        },
+        {
+          status: 'completed',
+        }
+      );
+      return res.status(200).json({
+        success: true,
+        message: 'Updated successfully',
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+  getStatisticForHomePage: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
       const orders = await DeliveryOrderModel.find({
-        status: 'active',
+        status: DeliveryOrderStatusEnum.ACTIVE,
         start_date: {
           $gte: dayjs().format('YYYY-MM-DD'),
         },
       }).countDocuments();
 
-      await JourneyModel.updateMany(
-        {
-          status: 'active',
-          start_date: {
-            $lt: dayjs().format('YYYY-MM-DD'),
-          },
-        },
-        {
-          status: 'completed',
-        }
-      );
       const journeys = await JourneyModel.find({
-        status: 'active',
+        status: DeliveryOrderStatusEnum.ACTIVE,
         start_date: {
           $gte: dayjs().format('YYYY-MM-DD'),
         },
@@ -50,7 +70,7 @@ const AppController = {
         },
       });
     } catch (error) {
-      return res.status(500).json({ message: (error as Error).message });
+      return next(createHttpError.BadRequest((error as Error).message));
     }
   },
 };

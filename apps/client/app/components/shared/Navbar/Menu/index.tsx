@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NAVBAR } from '../../../../lib/config/router';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -12,7 +12,7 @@ export default function Menu() {
           key={item.path}
           className={`items ${pathname.endsWith(item.path) ? 'active' : ''} `}
         >
-          <Link href={item.path} className='items__link'>
+          <Link href={item.path} className="items__link">
             {item.name}
           </Link>
         </li>

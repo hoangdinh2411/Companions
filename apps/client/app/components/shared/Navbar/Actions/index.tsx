@@ -1,64 +1,66 @@
 'use client';
 import Link from 'next/link';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import APP_ROUTER from '../../../../lib/config/router';
 import { UserIcon } from '../../../../lib/config/svg';
-import { removeToken } from '../../../../actions/tokens';
-import { toast } from 'react-toastify';
 import { usePathname, useRouter } from 'next/navigation';
-import appStore from '../../../../lib/store/appStore';
 import { GetUserAPIResponse } from '@repo/shared';
+import { Socket } from 'socket.io-client';
+import { getUser, signOut } from '../../../../actions/userApi';
 import Button from '../../../UI/Button';
+import { useAppContext } from '../../../../lib/provider/AppContextProvider';
+import { useSocketContext } from '../../../../lib/provider/SocketContextProvider';
 
-export default function Actions({
-  userData,
-}: {
-  userData: GetUserAPIResponse | undefined;
-}) {
+export default function Actions() {
+  const { socketConnection, handleSetSocketConnection } = useSocketContext();
   const [dropdown, setDropdown] = React.useState(false);
-  const { user, setUser } = appStore.getState();
-  if (userData && userData._id && !user._id) {
-    setUser(userData);
-  }
+  const { user, handleSetUser } = useAppContext();
+
   const pathname = usePathname();
   const router = useRouter();
+
   useEffect(() => {
     if (dropdown) {
       setDropdown(false);
     }
   }, [pathname]);
+  useEffect(() => {
+    if (user?._id) return;
+    getUser().then((res) => {
+      if (res.data) {
+        handleSetUser(res.data);
+      }
+    });
+  }, []);
 
   const handleToggleDropdown = () => {
     setDropdown(!dropdown);
   };
-  const isLogin = useMemo(() => {
-    return userData && userData._id ? false : true;
-  }, [userData]);
 
   const handleLogout = async () => {
-    await removeToken();
+    await signOut();
     if (user?._id) {
-      setUser({} as GetUserAPIResponse);
+      handleSetUser({} as GetUserAPIResponse);
     }
-    toast.success('You have successfully signed out');
+    if (socketConnection) {
+      socketConnection.disconnect();
+      handleSetSocketConnection(null as any);
+    }
+
     router.push(APP_ROUTER.SIGN_IN);
   };
 
-  if (isLogin) {
-    return (
-      <div className='navbar__actions'>
+  return (
+    <div className="navbar__actions">
+      {!user?._id ? (
         <Link href={APP_ROUTER.SIGN_IN}>
-          <Button variant='default' className='actions' size='small'>
+          <Button variant="default" className="actions" size="small">
             Sign in
           </Button>
         </Link>
-      </div>
-    );
-  } else {
-    return (
-      <div className='navbar__actions'>
-        <div className='actions' title='Profile'>
-          <p className='actions__icon' onClick={handleToggleDropdown}>
+      ) : (
+        <div className="actions" title="Profile">
+          <p className="actions__icon" onClick={handleToggleDropdown}>
             <UserIcon />
           </p>
           <nav className={`actions__dropdown ${dropdown ? 'open' : ''}`}>
@@ -72,7 +74,7 @@ export default function Actions({
             </ul>
           </nav>
         </div>
-      </div>
-    );
-  }
+      )}
+    </div>
+  );
 }

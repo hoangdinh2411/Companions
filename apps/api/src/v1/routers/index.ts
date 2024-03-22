@@ -6,6 +6,7 @@ import deliveryOrderRouter from './deliveryOrder.router';
 import userRouter from './user.router';
 import appRouter from './app.router';
 import commentRouter from './comment.router';
+import messageRouter from './message.router';
 
 const Routes = (app: Express) => {
   app.use('/', appRouter);
@@ -14,6 +15,7 @@ const Routes = (app: Express) => {
   app.use('/journeys', journeyRouter);
   app.use('/delivery-orders', deliveryOrderRouter);
   app.use('/user', authMiddleware, userRouter);
+  app.use('/message', authMiddleware, messageRouter);
   app.get('/test', (req, res) => {
     res.json({
       success: true,

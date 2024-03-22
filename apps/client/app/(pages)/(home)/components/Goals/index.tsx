@@ -1,19 +1,20 @@
 import Image from 'next/image';
 import React from 'react';
+import Button from '../../../../components/UI/Button';
 
 export default function Goals() {
   return (
-    <article className='goals'>
-      <div className='goals__container'>
-        <figure className='goals__image'>
+    <article className="goals">
+      <div className="goals__container">
+        <figure className="goals__image">
           <Image
-            src='/goals.png'
-            alt='Goals'
+            src="/goals.png"
+            alt="Goals"
             fill
-            sizes='(max-width:992px) 500px 350px'
+            sizes="(max-width:992px) 500px 350px"
           />
         </figure>
-        <section className='goals__content'>
+        <section className="goals__content">
           <h3>Shared Goals</h3>
           <p>
             <br />

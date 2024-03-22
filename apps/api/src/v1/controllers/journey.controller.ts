@@ -527,6 +527,62 @@ const JourneyController = {
       return next(createHttpError.BadRequest((error as Error).message));
     }
   },
+  updateStatus: async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.params.journey_id) {
+      return next(
+        createHttpError.BadRequest(ERROR_MESSAGES.JOURNEY.MISSING_JOURNEY_ID)
+      );
+    }
+    try {
+      let journey = await JourneyModel.findOne({
+        _id: req.params.journey_id,
+        start_date: {
+          $gte: dayjs().format('YYYY-MM-DD'),
+        },
+      });
+
+      if (!journey) {
+        return next(
+          createHttpError.BadRequest(
+            ERROR_MESSAGES.JOURNEY.CANNOT_CHANGE_STATUS_OF_OVERDUE_JOURNEY
+          )
+        );
+      }
+
+      // if journey is completed and start_date is in the past then it cannot be changed to active again
+      if (
+        journey.status === JourneyStatusEnum.COMPLETED &&
+        journey.start_date < dayjs().format('YYYY-MM-DD')
+      ) {
+        return next(
+          createHttpError.BadRequest(
+            ERROR_MESSAGES.JOURNEY.CANNOT_CHANGE_STATUS_OF_OVERDUE_JOURNEY
+          )
+        );
+      }
+
+      if (journey.status === JourneyStatusEnum.ACTIVE) {
+        journey.status = JourneyStatusEnum.COMPLETED;
+      }
+      if (journey.status === JourneyStatusEnum.COMPLETED) {
+        journey.status = JourneyStatusEnum.ACTIVE;
+      }
+
+      const result = await journey.save();
+      if (!result) {
+        return next(
+          createHttpError.BadRequest(
+            ERROR_MESSAGES.DELIVERY_ORDER.CANNOT_CHANGE_STATUS_OF_OVERDUE_ORDER
+          )
+        );
+      }
+      return res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
 };
 
 export default JourneyController;

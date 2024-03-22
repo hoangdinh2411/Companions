@@ -16,5 +16,14 @@ journeyRouter.get(
   JourneyController.getOneById
 );
 journeyRouter.put('/:journey_id', authMiddleware, JourneyController.modify);
-journeyRouter.put('/:journey_id/join', authMiddleware, JourneyController.join);
+journeyRouter.patch(
+  '/:journey_id',
+  authMiddleware,
+  JourneyController.updateStatus
+);
+journeyRouter.patch(
+  '/:journey_id/join',
+  authMiddleware,
+  JourneyController.join
+);
 export default journeyRouter;

@@ -13,6 +13,7 @@
   background-color: $background-button-default;
   color: $white;
   cursor: pointer;
+  position: relative;
   @include transition(
     background-color 0.2s ease-in-out,
     color 0.2s ease-in-out,
@@ -75,5 +76,8 @@
 
   .loading {
     transform: scale(0.5);
+    position: relative;
+    left: 0;
+    top: 0;
   }
 }

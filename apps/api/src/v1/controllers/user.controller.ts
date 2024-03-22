@@ -1,6 +1,7 @@
 import {
   DeliveryOrderDocument,
   JourneyDocument,
+  UserDocument,
   UserStatusEnum,
 } from '@repo/shared';
 import { NextFunction, Request, Response } from 'express';
@@ -22,6 +23,7 @@ import {
   signInValidation,
   signUpValidation,
 } from '../../lib/validation/userValidation';
+import dayjs from 'dayjs';
 
 let page = 1;
 const UserController = {
@@ -130,9 +132,55 @@ const UserController = {
         );
       const payload = generateToken(user._id, user.status as UserStatusEnum);
 
+      user.is_online = true;
+      await user.save();
+      res.cookie('token', payload.token, {
+        expires: dayjs().add(payload.maxAge, 's').toDate(),
+        httpOnly: true,
+        secure: env.NODE_ENV === 'prod',
+        sameSite: 'lax',
+      });
+
       return res.status(200).json({
         success: true,
-        data: payload,
+        data: {
+          _id: user._id,
+          email: user.email,
+          full_name: user.full_name,
+          phone: user.phone,
+        },
+      });
+    } catch (error) {
+      return next(createHttpError.BadRequest((error as Error).message));
+    }
+  },
+  signOut: async function (req: Request, res: Response, next: NextFunction) {
+    try {
+      if (req.user._id) {
+        await UserModel.findOneAndUpdate(
+          {
+            _id: req.user._id,
+            status: UserStatusEnum.ACTIVE,
+            is_online: true,
+          },
+          {
+            is_online: false,
+          },
+          {
+            new: true,
+            upsert: false,
+          }
+        );
+        res.cookie('token', '', {
+          expires: new Date(),
+          httpOnly: true,
+          secure: env.NODE_ENV === 'prod',
+          sameSite: 'lax',
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
       });
     } catch (error) {
       return next(createHttpError.BadRequest((error as Error).message));
@@ -279,7 +327,6 @@ const UserController = {
           },
         },
       ]);
-
       if (!user)
         return next(createHttpError.NotFound(ERROR_MESSAGES.USER.NOT_FOUND));
       return res.status(200).json({
@@ -294,6 +341,7 @@ const UserController = {
   getHistory: async function (req: Request, res: Response, next: NextFunction) {
     const fieldName = req.query.about?.toString();
 
+    const search_text = req.query.search_text?.toString() || '';
     if (!fieldName) {
       return res.status(200).json({
         success: true,
@@ -312,6 +360,20 @@ const UserController = {
       if (req.query.page && Number(req.query.page) > 0) {
         page = Number(req.query.page);
       }
+      const matchStages = [];
+      if (search_text) {
+        matchStages.push({
+          $match: {
+            $or: [
+              { from: { $regex: search_text, $options: 'i' } },
+              { to: { $regex: search_text, $options: 'i' } },
+              {
+                title: { $regex: search_text, $options: 'i' },
+              },
+            ],
+          },
+        });
+      }
       const collection = fieldName.includes('journeys')
         ? 'journeys'
         : 'deliveryorders';
@@ -326,6 +388,7 @@ const UserController = {
         {
           $project: {
             _id: 0,
+            // only get all documents on  the field that we need
             [fieldName]: 1,
           },
         },
@@ -336,22 +399,11 @@ const UserController = {
             foreignField: '_id',
             as: fieldName,
             pipeline: [
+              ...matchStages,
               {
-                $lookup: {
-                  from: 'users',
-                  localField: 'companions',
-                  foreignField: '_id',
-                  as: 'companions',
-                  pipeline: [
-                    {
-                      $project: {
-                        _id: 1,
-                        email: 1,
-                        full_name: 1,
-                        phone: 1,
-                      },
-                    },
-                  ],
+                $sort: {
+                  status: 1,
+                  updated_at: 1,
                 },
               },
               {
@@ -379,14 +431,26 @@ const UserController = {
                 },
               },
               {
-                $facet: {
-                  items: [
+                $lookup: {
+                  from: 'users',
+                  localField: 'companions',
+                  foreignField: '_id',
+                  as: 'companions',
+                  pipeline: [
                     {
-                      $sort: {
-                        created_at: -1,
-                        updated_at: -1,
+                      $project: {
+                        _id: 1,
+                        email: 1,
+                        full_name: 1,
+                        phone: 1,
                       },
                     },
+                  ],
+                },
+              },
+              {
+                $facet: {
+                  items: [
                     {
                       $skip: (page - 1) * limitDocumentPerPage,
                     },
@@ -435,6 +499,7 @@ const UserController = {
           },
         },
       ]);
+
       let result = defaultResponseIfNoData(data);
       if (result.items.length > 0) {
         result = {

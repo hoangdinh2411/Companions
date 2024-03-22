@@ -70,6 +70,7 @@
       width: 100%;
     }
     &__tabs {
+      margin-top: $spacing * 8;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       row-gap: $spacing * 8;
@@ -86,10 +87,20 @@
       position: absolute;
       right: 1rem;
       top: 1rem;
-      color: $green;
-      font-weight: 600;
-      &:hover {
-        transform: scale(1.1);
+      min-width: 10rem;
+      @include flex(space-between, center);
+      > a {
+        color: $green !important;
+        font-weight: 600;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+      > span {
+        font-weight: 600;
+        color: $red;
+        cursor: pointer;
       }
     }
     &__contents {
@@ -126,6 +137,14 @@
           @include breakpoint(md) {
             @include text($text-primary, 600, 1.8rem);
           }
+          &__link {
+            color: $text-primary !important;
+            font-weight: 600 !important;
+            &:hover {
+              text-decoration: underline;
+              color: $green !important;
+            }
+          }
         }
         &__boxes {
           display: grid;
@@ -150,6 +169,27 @@
               color: $text-secondary;
             }
             grid-template-columns: 1fr;
+          }
+
+          &--be-in-touch {
+            grid-template-columns: 1fr;
+            border-bottom: 0.5px solid $border;
+            > summary {
+              &.no-action {
+                pointer-events: none;
+              }
+              font-weight: 600;
+              color: $red;
+              margin-bottom: $spacing * 4;
+            }
+            > p {
+              margin-bottom: $spacing * 4;
+              color: $text-secondary;
+              font-weight: 600;
+              > span {
+                color: $text-secondary;
+              }
+            }
           }
         }
       }

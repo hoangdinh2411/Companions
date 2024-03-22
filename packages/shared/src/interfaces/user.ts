@@ -19,6 +19,8 @@ export interface UserDocument extends SignInFormData {
   orders_taken: string[];
   journeys_shared: string[];
   journeys_joined: string[];
+  is_online: boolean;
+  session_id: string;
 }
 
 export interface SignUpFormData extends SignInFormData {

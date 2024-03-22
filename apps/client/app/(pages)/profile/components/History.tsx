@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useTransition, useEffect, useState } from 'react';
 import Button from '../../../components/UI/Button';
 import {
   DeliveryOrderDocument,
@@ -14,12 +14,23 @@ import {
   formatWeight,
 } from '../../../lib/utils/format';
 import Pagination from '../../../components/UI/Pagination.tsx';
-import appStore from '../../../lib/store/appStore';
 import APP_ROUTER from '../../../lib/config/router';
-import dayjs from 'dayjs';
+
 import Link from 'next/link';
-import relativeTime from 'dayjs/plugin/relativeTime';
-dayjs.extend(relativeTime);
+
+import {
+  deleteJourney,
+  updateStatusJourney,
+} from '../../../actions/journeyApi';
+import {
+  deleteOrder,
+  updateStatusOrder,
+} from '../../../actions/deliveryOrderApi';
+import SearchField from '../../../components/shared/SearchField';
+import { useAppContext } from '../../../lib/provider/AppContextProvider';
+import useSocket from '../../../hooks/useSocket';
+import dayjsConfig from '../../../lib/config/dayjsConfig';
+
 type Props = {
   history: HistoryAPIResponse | undefined;
   tab: string;
@@ -44,8 +55,10 @@ const tabs = [
 ];
 export default function History({ history, tab }: Props) {
   const [activeTab, setActiveTab] = useState(tab);
+  const { createRoom } = useSocket();
   const router = useRouter();
-  const { user } = appStore.getState();
+  const { user } = useAppContext();
+  const [isPending, startTransition] = useTransition();
   const pathname = usePathname();
   const handleChangeTab = (tab: string) => {
     const params = generateSearchParams(['page', 'about'], {
@@ -66,25 +79,54 @@ export default function History({ history, tab }: Props) {
   }
 
   function formatDate(date: Date) {
-    return dayjs(date).fromNow();
+    return dayjsConfig(date).fromNow();
   }
-  return (
-    <article className='history'>
-      <div className='history__container'>
-        <h4 className='history__title'>History</h4>
-        {activeTab === '' ? (
-          <p className='history__empty'>Select a tab to view history</p>
-        ) : null}
 
-        <div className='history__tabs'>
+  async function updateStatusForDocument(
+    id: string,
+    slug: string,
+    type_collection: string
+  ) {
+    startTransition(async function () {
+      if (type_collection === 'journey') {
+        await updateStatusJourney(id, slug);
+      }
+      if (type_collection === 'delivery_order') {
+        await updateStatusOrder(id, slug);
+      }
+    });
+  }
+  async function deleteDocument(
+    id: string,
+    slug: string,
+    type_collection: string
+  ) {
+    startTransition(async function () {
+      if (type_collection === 'journey') {
+        await deleteJourney(id, slug);
+      }
+      if (type_collection === 'delivery_order') {
+        await deleteOrder(id, slug);
+      }
+    });
+  }
+
+  return (
+    <article className="history">
+      <div className="history__container">
+        <h4 className="history__title">History</h4>
+        {activeTab === '' ? (
+          <p className="history__empty">Select a tab to view history</p>
+        ) : (
+          <SearchField combinable />
+        )}
+
+        <div className="history__tabs">
           {tabs.map((tab) => (
             <Button
-              size='small'
+              size="small"
               variant={activeTab === tab.value ? 'green' : 'white'}
-              style={{
-                pointerEvents: activeTab === tab.value ? 'none' : 'auto',
-              }}
-              className='history__tab'
+              className="history__tab"
               key={tab.value}
               onClick={() => handleChangeTab(tab.value)}
             >
@@ -93,9 +135,9 @@ export default function History({ history, tab }: Props) {
           ))}
         </div>
 
-        <div className='history__contents'>
+        <div className="history__contents">
           {activeTab && history && history.items?.length === 0 ? (
-            <p className='history__empty'>No history found</p>
+            <p className="history__empty">No history found</p>
           ) : null}
           {activeTab &&
             history &&
@@ -114,52 +156,165 @@ export default function History({ history, tab }: Props) {
               (item: JourneyDocument | DeliveryOrderDocument) => {
                 return (
                   <Accordion heading={item.title} key={item._id} id={item._id}>
-                    <div className='history__item'>
-                      {isOwner(item.created_by._id) && (
+                    <div className="history__item">
+                      {isOwner(item.created_by._id) ? (
+                        <div className="update-btn">
+                          <Link
+                            title={
+                              item.status === 'completed'
+                                ? 'Cannot edit'
+                                : 'Edit'
+                            }
+                            href={
+                              (item as DeliveryOrderDocument).weight
+                                ? `${APP_ROUTER.EDIT_DELIVERY_ORDER}/${item._id}`
+                                : `${APP_ROUTER.EDIT_JOURNEY}/${item._id}`
+                            }
+                            style={{
+                              color:
+                                item.status === 'completed'
+                                  ? 'gray'
+                                  : 'initial',
+                              pointerEvents:
+                                item.status === 'completed' ? 'none' : 'auto',
+                            }}
+                          >
+                            Edit
+                          </Link>
+                          {isPending ? (
+                            <span>Updating...</span>
+                          ) : (
+                            <>
+                              <span
+                                onClick={() =>
+                                  updateStatusForDocument(
+                                    item._id,
+                                    item.slug,
+                                    (item as DeliveryOrderDocument).weight
+                                      ? 'delivery_order'
+                                      : 'journey'
+                                  )
+                                }
+                              >
+                                {item.status === 'completed' ? 'Open' : 'Close'}
+                              </span>
+                            </>
+                          )}
+
+                          {item.status !== 'completed' && (
+                            <span
+                              onClick={() =>
+                                deleteDocument(
+                                  item._id,
+                                  item.slug,
+                                  (item as DeliveryOrderDocument).weight
+                                    ? 'delivery_order'
+                                    : 'journey'
+                                )
+                              }
+                            >
+                              Delete
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="update-btn">
+                          <Button
+                            size="small"
+                            variant="white"
+                            onClick={() => {
+                              createRoom(item.created_by._id);
+                            }}
+                          >
+                            Send message
+                          </Button>
+                        </div>
+                      )}
+                      <p className="history__item__title">
+                        {' '}
                         <Link
-                          title={
-                            item.status === 'completed' ? 'Cannot edit' : 'Edit'
-                          }
+                          className="history__item__title__link"
                           href={
                             (item as DeliveryOrderDocument).weight
-                              ? `${APP_ROUTER.EDIT_DELIVERY_ORDER}/${item._id}`
-                              : `${APP_ROUTER.EDIT_JOURNEY}/${item._id}`
+                              ? `${APP_ROUTER.DELIVERY_ORDERS}/${item.slug}`
+                              : `${APP_ROUTER.JOURNEYS}/${item.slug}`
                           }
-                          className='update-btn'
-                          style={{
-                            color:
-                              item.status === 'completed' ? 'gray' : 'initial',
-                            pointerEvents:
-                              item.status === 'completed' ? 'none' : 'auto',
-                          }}
                         >
-                          Edit
+                          {item?.title}{' '}
                         </Link>
-                      )}
-                      <p className='history__item__title'>
-                        {' '}
-                        {item?.title}{' '}
                         <span
                           className={`history__item__status ${item.status}`}
                         >
                           {item.status.toUpperCase()}
                         </span>
                       </p>
-                      <article className='history__item__boxes'>
+
+                      {/* Creator detial */}
+                      <details
+                        className="history__item__boxes history__item__boxes--be-in-touch"
+                        style={{
+                          display:
+                            item.status === 'completed' ? 'none' : 'block',
+                        }}
+                      >
+                        {item.be_in_touch ? (
+                          <summary className="no-action">
+                            The driver will to be in touch with you. So please
+                            be sure to check your contact details.
+                          </summary>
+                        ) : (
+                          <>
+                            <summary> Creator's detail: </summary>
+                            <p>
+                              Full name:{' '}
+                              <span>{item.created_by.full_name}</span>
+                            </p>
+                            <p>
+                              Email: <span>{item.created_by.email}</span>
+                            </p>
+                            <p>
+                              Phone: <span>{item.created_by.phone}</span>
+                            </p>
+                          </>
+                        )}
+                      </details>
+                      <details
+                        className="history__item__boxes "
+                        style={{
+                          display:
+                            item.status === 'completed' ? 'none' : 'block',
+                        }}
+                      >
+                        <summary className="no-action">
+                          Companions {item.companions.length}
+                        </summary>
+                        {item.companions &&
+                          item.created_by._id === user._id && (
+                            <>
+                              {item.companions.map((companion) => (
+                                <p key={companion._id}>
+                                  {companion.full_name} - {companion.email} -{' '}
+                                  {companion.phone}
+                                </p>
+                              ))}
+                            </>
+                          )}
+                      </details>
+                      <article className="history__item__boxes">
                         From: <span>{item?.from}</span>
                       </article>
-                      <article className='history__item__boxes'>
+                      <article className="history__item__boxes">
                         To: <span>{item?.to}</span>
                       </article>
-                      <article className='history__item__boxes'>
+                      <article className="history__item__boxes">
                         Start: <span>{item?.start_date}</span>
                       </article>
-                      <article className='history__item__boxes'>
+                      <article className="history__item__boxes">
                         End: <span>{item?.end_date}</span>
                       </article>
 
                       {(item as DeliveryOrderDocument).weight && (
-                        <article className='history__item__boxes'>
+                        <article className="history__item__boxes">
                           Weight:{' '}
                           <span>
                             {formatWeight(
@@ -169,7 +324,7 @@ export default function History({ history, tab }: Props) {
                         </article>
                       )}
                       {(item as DeliveryOrderDocument).type_of_commodity && (
-                        <article className='history__item__boxes'>
+                        <article className="history__item__boxes">
                           Type Of Commodity:{' '}
                           <span>
                             {(
@@ -180,7 +335,7 @@ export default function History({ history, tab }: Props) {
                       )}
 
                       {(item as DeliveryOrderDocument).size && (
-                        <article className='history__item__boxes'>
+                        <article className="history__item__boxes">
                           Size:{' '}
                           <span>
                             {(item as DeliveryOrderDocument)?.size ?? ''}{' '}
@@ -189,15 +344,15 @@ export default function History({ history, tab }: Props) {
                         </article>
                       )}
                       {(item as JourneyDocument).seats && (
-                        <article className='history__item__boxes'>
+                        <article className="history__item__boxes">
                           Seats: <span>{(item as JourneyDocument).seats}</span>
                         </article>
                       )}
 
-                      <article className='history__item__boxes'>
+                      <article className="history__item__boxes">
                         Price: <span>{formatToSwedenCurrency(item.price)}</span>
                       </article>
-                      <article className='history__item__boxes history__item__boxes--message'>
+                      <article className="history__item__boxes history__item__boxes--message">
                         Message:{' '}
                         <div>
                           {!item?.message ? (
@@ -210,7 +365,7 @@ export default function History({ history, tab }: Props) {
                         </div>
                       </article>
                       {item.updated_at && item.created_at && (
-                        <article className='history__item__boxes history__item__boxes--created-at '>
+                        <article className="history__item__boxes history__item__boxes--created-at ">
                           <span>
                             {formatDate(
                               item.created_by._id === user._id

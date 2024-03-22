@@ -1,16 +1,20 @@
+import { pingServer, updateStatus } from './lib/config/cron';
 import connectDatabase from './lib/database/mongo-connect';
 import { createServer } from './server';
 import dotenv from 'dotenv';
-import cron from 'node-cron';
+import http, { Server } from 'http';
+import SocketModule from './lib/config/socket';
 
 dotenv.config();
 const port = process.env.PORT || 2703;
-const server = createServer();
+const app = createServer();
+const httpServer = http.createServer(app);
+const socketModule = SocketModule.getInstance(httpServer);
+global.io = socketModule.io;
 
-server.listen(port, async () => {
+httpServer.listen(port, async () => {
   await connectDatabase();
-  cron.schedule('0 6 * * *', () => {
-    console.log('running at 6:00 AM every day');
-  });
   console.log(`Server is running on http://localhost:${port}`);
+  updateStatus.start();
+  pingServer.start();
 });
