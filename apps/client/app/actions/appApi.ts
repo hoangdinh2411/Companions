@@ -5,7 +5,7 @@ export const fetchStatisticsAndUpdateStatusOldDocuments = async () => {
   return await customFetch<StatisticResponse>('/statistic', {
     method: 'GET',
     next: {
-      revalidate: 60 * 60 * 24,
+      revalidate: 60 * 60 * 8,
     },
   });
 };

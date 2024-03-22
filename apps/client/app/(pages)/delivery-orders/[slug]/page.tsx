@@ -2,13 +2,15 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import './OrderDetails.scss';
-import Details from './components/Details';
-import Creator from './components/Creator';
 import {
   getAllDeliveryOrder,
   getOneDeliveryOrderBySlug,
+  takeOrder,
 } from '../../../actions/deliveryOrderApi';
 import { DeliveryOrderDocument } from '@repo/shared';
+import { Suspense } from 'react';
+import LoadingSpinner from '../../../components/UI/Loading';
+import Details from '../../../components/shared/RideInfo/Details';
 type Props = {
   params: { slug: string };
 };
@@ -19,13 +21,19 @@ export default async function OrderDetailsPage({ params: { slug } }: Props) {
     notFound();
   }
 
+  const handleBecomeCompanion = async (ride_id: string, ride_slug: string) => {
+    'use server';
+    return await takeOrder(ride_id, ride_slug);
+  };
   return (
     <div className="delivery-order__details">
       {res.data && res.data._id && (
-        <div className="delivery-order__details__container">
-          <Details order={res.data} />
-          <Creator order={res.data} />
-        </div>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Details<DeliveryOrderDocument>
+            ride={res.data}
+            handleBecomeCompanion={handleBecomeCompanion}
+          />
+        </Suspense>
       )}
     </div>
   );

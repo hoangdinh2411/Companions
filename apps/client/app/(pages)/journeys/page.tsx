@@ -34,12 +34,13 @@ export default async function JourneysPage({
     res = await searchJourneys(params.toString());
   } else {
     params = generateSearchParams(['page'], searchParams);
+
     res = await getAllJourneys(params.toString());
   }
 
   return (
-    <div className='journeys'>
-      <div className='journeys__container'>
+    <div className="journeys">
+      <div className="journeys__container">
         {search_text ? (
           <h6>
             Searching for "{search_text}" in journeys. Empty search field for

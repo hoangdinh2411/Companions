@@ -2,21 +2,14 @@ import { Metadata } from 'next';
 import {
   getAllJourneys,
   getOneJourneyBySlug,
+  joinJourney,
 } from '../../../actions/journeyApi';
 import { notFound } from 'next/navigation';
 import './JourneyDetails.scss';
 import { JourneyDocument } from '@repo/shared';
-import dynamic from 'next/dynamic';
 import LoadingSpinner from '../../../components/UI/Loading';
-
-const Details = dynamic(() => import('./components/Details'), {
-  ssr: false,
-  loading: () => <LoadingSpinner />,
-});
-const Creator = dynamic(() => import('./components/Creator'), {
-  ssr: false,
-  loading: () => <LoadingSpinner />,
-});
+import Details from '../../../components/shared/RideInfo/Details';
+import { Suspense } from 'react';
 
 type Props = {
   params: { slug: string };
@@ -29,13 +22,19 @@ export default async function JourneyDetailsPage({ params: { slug } }: Props) {
     notFound();
   }
 
+  async function handleBecomeCompanion(ride_id: string, ride_slug: string) {
+    'use server';
+    return await joinJourney(ride_id, ride_slug);
+  }
   return (
     <div className="journey-details">
       {res.data && res.data._id && (
-        <div className="journey-details__container">
-          <Details journey={res.data} />
-          <Creator journey={res.data} />
-        </div>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Details<JourneyDocument>
+            ride={res.data}
+            handleBecomeCompanion={handleBecomeCompanion}
+          />
+        </Suspense>
       )}
     </div>
   );

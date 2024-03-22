@@ -14,6 +14,7 @@ const APP_ROUTER = {
   PRIVACY_POLICY: '/privacy-policy',
   TERMS: '/terms-and-conditions',
   IDENTIFY: '/identify',
+  SIGN_UP_SUCCESS: '/sign-up-success',
 };
 
 export const NAVBAR = [

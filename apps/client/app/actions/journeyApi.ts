@@ -80,7 +80,7 @@ export const getAllJourneys = async (query = '') => {
   const res = await customFetch<ResponseWithPagination<JourneyDocument>>(url, {
     method: 'GET',
     next: {
-      revalidate: true,
+      revalidate: 60 * 60 * 8,
       path: APP_ROUTER.JOURNEYS,
     },
   });
