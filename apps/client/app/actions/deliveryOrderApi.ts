@@ -83,7 +83,7 @@ export const getAllDeliveryOrder = async (query = '') => {
     {
       method: 'GET',
       next: {
-        revalidate: true,
+        revalidate: 60 * 60 * 8,
         path: APP_ROUTER.DELIVERY_ORDERS,
       },
     }

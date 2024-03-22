@@ -9,6 +9,7 @@ const privateRoutes = [
   APP_ROUTER.PROFILE,
   APP_ROUTER.EDIT_JOURNEY,
   APP_ROUTER.EDIT_DELIVERY_ORDER,
+  APP_ROUTER.SIGN_UP_SUCCESS,
 ];
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

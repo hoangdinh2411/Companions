@@ -37,6 +37,7 @@ export const getUser = () => {
     {
       method: 'GET',
       next: {
+        revalidate: 60 * 60 * 8,
         path: APP_ROUTER.PROFILE,
       },
     },

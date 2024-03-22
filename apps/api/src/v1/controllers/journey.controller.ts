@@ -423,6 +423,7 @@ const JourneyController = {
           },
         },
       ]);
+      console.log(data);
 
       if (data.length === 0) {
         return next(createHttpError.NotFound(ERROR_MESSAGES.JOURNEY.NOT_FOUND));
