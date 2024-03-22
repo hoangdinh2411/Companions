@@ -184,7 +184,7 @@
           }
           .message__time {
             text-wrap: nowrap;
-            width: 3rem;
+            width: fit-content;
             font-size: 1rem;
             color: $text-secondary;
             text-align: right;
@@ -280,7 +280,7 @@
           line-height: 1.6;
         }
         .message__time {
-          width: 4rem;
+          width: fit-content;
           font-size: 1.2rem;
           color: $text-secondary;
           position: absolute;

@@ -1,5 +1,5 @@
 import { UserDocument } from '@repo/shared';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import SocketModule from '../lib/config/socket';
 
 declare global {
@@ -12,6 +12,12 @@ declare global {
         '_id' | 'phone' | 'id_number' | 'full_name' | 'email'
       >;
       is_identified: boolean;
+    }
+  }
+
+  namespace SocketIO {
+    export interface Socket {
+      user: UserDocument;
     }
   }
 }

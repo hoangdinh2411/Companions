@@ -33,7 +33,7 @@ export default function SocketContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = useAppContext();
+  const { user, handleSetUser } = useAppContext();
   const [selectedRoom, setSelectedRoom] = React.useState<IRoom | null>(
     null as any
   );
@@ -55,20 +55,24 @@ export default function SocketContextProvider({
     setSelectedRoom(room);
   };
   useEffect(() => {
+    if (!user) return;
     if (socketConnection) {
       socketConnection.emit('get-start', {
-        user_id: user._id,
-        session_id: socketConnection.id,
+        user_id: user?._id,
+        session_id: socketConnection?.id,
       });
       socketConnection.on('room-list', (data) => {
         if (data.length === 0) return;
         setRoomList(data);
       });
-      socketConnection.on('connect_error', (error) => {
-        console.log(error);
-
-        toast.error('Connection error');
+      socketConnection.on('error', async (error) => {
+        toast.error(error.message);
+        if (error.message.includes('authorization')) {
+          await signOut();
+          handleSetUser(null as any);
+        }
       });
+
       socketConnection.on('invitation', (room) => {
         handleSelectRoom(room);
         socketConnection.emit('invitation-accepted', room._id);
@@ -90,16 +94,28 @@ export default function SocketContextProvider({
     async function connectSocket() {
       const token = await getToken();
       socket = socketClient(API_URL, {
+        reconnectionDelayMax: 10000,
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 1000,
+        rejectUnauthorized: false,
+
+        secure: process.env.NEXT_PUBLIC_NODE_ENV === 'prod',
         extraHeaders: {
-          token: 'aaa',
+          token: token,
         },
       });
-
-      socket?.on('connect', () => {
-        console.log('connected');
-
-        handleSetSocketConnection(socket);
+      socket.on('connect_error', async (error) => {
+        toast.error(error.message);
+        await signOut();
+        handleSetUser(null as any);
       });
+      if (socket.disconnected) {
+        socket?.on('connect', () => {
+          console.log('connected');
+          handleSetSocketConnection(socket);
+        });
+      }
     }
 
     if (!socketConnection || socketConnection?.disconnected) {

@@ -35,9 +35,25 @@ class SocketModule {
       },
     });
     // there is issue with this middleware , cannot receive error message on client
-    this.io.use(socketMiddleware);
+
+    this.io.use(async (socket, next) => {
+      const token = socket.handshake.headers.token;
+      const payload = await socketMiddleware(token as string);
+      if (!payload) {
+        return next(new Error('Authentication error'));
+      }
+      socket.user = payload;
+      next();
+    });
     this.io.on('connection', async (socket: Socket) => {
-      console.log('a user connected');
+      socket.onAny(async (event, ...args) => {
+        const token = socket.client.request.headers.token;
+        const payload = await socketMiddleware(token as string);
+        if (!payload) {
+          socket.emit('error', 'Authentication error');
+          return socket.disconnect();
+        }
+      });
       this.getStart(socket);
       this.createRoom(socket);
       this.joinRoom(socket);
@@ -267,8 +283,6 @@ class SocketModule {
             },
           ]);
           const result = defaultResponseIfNoData(list);
-
-          console.log(result.pagination);
 
           socket.emit('receive-messages-list', result);
         } catch (error) {
