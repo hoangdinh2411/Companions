@@ -8,8 +8,9 @@ import timeout from 'connect-timeout';
 import getUserIdMiddleware from './v1/middlewares/get-user-ip';
 import helmet from 'helmet';
 import env from './lib/config/env';
+import cookieParser from 'cookie-parser';
 
-const whitelist = [env.DOMAIN, 'http://localhost:3000'];
+export const whitelist = [env.DOMAIN, 'http://localhost:3000'];
 export const createServer = () => {
   const app = express();
   app
@@ -19,6 +20,7 @@ export const createServer = () => {
     .use(timeout('30s'))
     .use(urlencoded({ extended: true }))
     .use(json())
+    .use(cookieParser())
     .use(
       cors({
         origin: (origin, callback) => {

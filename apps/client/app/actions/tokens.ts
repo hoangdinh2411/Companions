@@ -2,25 +2,10 @@
 
 import { cookies } from 'next/headers';
 
-export async function saveToken(token: string, maxAge: number) {
-  cookies().set({
-    name: 'sign-in',
-    value: token,
-    httpOnly: true,
-    maxAge: maxAge,
-    // secure: true,
-    path: '/',
-    expires: new Date(Date.now() + maxAge),
-  });
-}
 export async function getToken() {
-  const token = cookies().get('sign-in');
+  const token = cookies().get('token');
   if (!token || !token.value) return '';
   return token.value;
-}
-
-export async function removeToken() {
-  cookies().delete('sign-in');
 }
 
 export async function saveIdentifyNumber(idNumber: string) {

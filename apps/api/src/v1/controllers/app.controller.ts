@@ -3,6 +3,7 @@ import DeliveryOrderModel from '../models/DeliveryOrder.model';
 import JourneyModel from '../models/Journey.model';
 import { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
+import { DeliveryOrderStatusEnum, JourneyStatusEnum } from '@repo/shared';
 
 const AppController = {
   updateStatusOfOldDocuments: async (
@@ -13,7 +14,7 @@ const AppController = {
     try {
       await DeliveryOrderModel.updateMany(
         {
-          status: 'active',
+          status: DeliveryOrderStatusEnum.ACTIVE,
           start_date: {
             $lt: dayjs().format('YYYY-MM-DD'),
           },
@@ -24,7 +25,7 @@ const AppController = {
       );
       await JourneyModel.updateMany(
         {
-          status: 'active',
+          status: JourneyStatusEnum.ACTIVE,
           start_date: {
             $lt: dayjs().format('YYYY-MM-DD'),
           },
@@ -48,14 +49,14 @@ const AppController = {
   ) => {
     try {
       const orders = await DeliveryOrderModel.find({
-        status: 'active',
+        status: DeliveryOrderStatusEnum.ACTIVE,
         start_date: {
           $gte: dayjs().format('YYYY-MM-DD'),
         },
       }).countDocuments();
 
       const journeys = await JourneyModel.find({
-        status: 'active',
+        status: DeliveryOrderStatusEnum.ACTIVE,
         start_date: {
           $gte: dayjs().format('YYYY-MM-DD'),
         },

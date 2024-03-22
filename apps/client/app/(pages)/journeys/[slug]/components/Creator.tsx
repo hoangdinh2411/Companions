@@ -1,18 +1,17 @@
 'use client';
 import { JourneyDocument, UserDocument } from '@repo/shared';
-import appStore from '../../../../lib/store/appStore';
+import { useAppContext } from '../../../../lib/provider/AppContextProvider';
 
 type Props = {
   journey: JourneyDocument;
 };
 
 export default function Creator({ journey }: Props) {
-  const { user } = appStore.getState();
+  const { user } = useAppContext();
 
   if (!user._id) {
     return (
       <section className="creator cards">
-        <article>You haven't joined this journey yet.</article>
         <article>Please join to see the creator's details.</article>
       </section>
     );

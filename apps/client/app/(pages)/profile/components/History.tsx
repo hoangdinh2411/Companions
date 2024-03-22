@@ -14,11 +14,10 @@ import {
   formatWeight,
 } from '../../../lib/utils/format';
 import Pagination from '../../../components/UI/Pagination.tsx';
-import appStore from '../../../lib/store/appStore';
 import APP_ROUTER from '../../../lib/config/router';
-import dayjs from 'dayjs';
+
 import Link from 'next/link';
-import relativeTime from 'dayjs/plugin/relativeTime';
+
 import {
   deleteJourney,
   updateStatusJourney,
@@ -28,7 +27,10 @@ import {
   updateStatusOrder,
 } from '../../../actions/deliveryOrderApi';
 import SearchField from '../../../components/shared/SearchField';
-dayjs.extend(relativeTime);
+import { useAppContext } from '../../../lib/provider/AppContextProvider';
+import useSocket from '../../../hooks/useSocket';
+import dayjsConfig from '../../../lib/config/dayjsConfig';
+
 type Props = {
   history: HistoryAPIResponse | undefined;
   tab: string;
@@ -53,8 +55,9 @@ const tabs = [
 ];
 export default function History({ history, tab }: Props) {
   const [activeTab, setActiveTab] = useState(tab);
+  const { createRoom } = useSocket();
   const router = useRouter();
-  const { user } = appStore.getState();
+  const { user } = useAppContext();
   const [isPending, startTransition] = useTransition();
   const pathname = usePathname();
   const handleChangeTab = (tab: string) => {
@@ -76,7 +79,7 @@ export default function History({ history, tab }: Props) {
   }
 
   function formatDate(date: Date) {
-    return dayjs(date).fromNow();
+    return dayjsConfig(date).fromNow();
   }
 
   async function updateStatusForDocument(
@@ -214,7 +217,19 @@ export default function History({ history, tab }: Props) {
                             </span>
                           )}
                         </div>
-                      ) : null}
+                      ) : (
+                        <div className="update-btn">
+                          <Button
+                            size="small"
+                            variant="white"
+                            onClick={() => {
+                              createRoom(item.created_by._id);
+                            }}
+                          >
+                            Send message
+                          </Button>
+                        </div>
+                      )}
                       <p className="history__item__title">
                         {' '}
                         <Link

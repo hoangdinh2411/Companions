@@ -1,6 +1,6 @@
 'use client';
 import React, { useMemo, useTransition } from 'react';
-import appStore from '../../../../lib/store/appStore';
+
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Button from '../../../../components/UI/Button';
@@ -8,13 +8,14 @@ import APP_ROUTER from '../../../../lib/config/router';
 import { joinJourney } from '../../../../actions/journeyApi';
 import { JourneyDocument } from '@repo/shared';
 import { getIdentifyNumber } from '../../../../actions/tokens';
+import { useAppContext } from '../../../../lib/provider/AppContextProvider';
 
 type Props = {
   journey: JourneyDocument;
 };
 
 export default function Action({ journey }: Props) {
-  const { user } = appStore.getState();
+  const { user } = useAppContext();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -58,8 +59,8 @@ export default function Action({ journey }: Props) {
     <>
       {!isYourJourney ? (
         <Button
-          variant='green'
-          size='small'
+          variant="green"
+          size="small"
           loading={isPending}
           onClick={handleJoinInJourney}
           disabled={hasJoined}
@@ -67,7 +68,7 @@ export default function Action({ journey }: Props) {
           {hasJoined ? 'Has Joined' : 'Join'}
         </Button>
       ) : (
-        <h6 className='details__mark'>Your Journey</h6>
+        <h6 className="details__mark">Your Journey</h6>
       )}
     </>
   );

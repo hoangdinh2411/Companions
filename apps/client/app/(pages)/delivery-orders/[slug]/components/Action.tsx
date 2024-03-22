@@ -1,6 +1,6 @@
 'use client';
 import React, { useMemo, useTransition } from 'react';
-import appStore from '../../../../lib/store/appStore';
+
 import { useRouter } from 'next/navigation';
 import { DeliveryOrderDocument } from '@repo/shared';
 import { takeOrder } from '../../../../actions/deliveryOrderApi';
@@ -8,13 +8,14 @@ import { toast } from 'react-toastify';
 import Button from '../../../../components/UI/Button';
 import APP_ROUTER from '../../../../lib/config/router';
 import { getIdentifyNumber } from '../../../../actions/tokens';
+import { useAppContext } from '../../../../lib/provider/AppContextProvider';
 
 type Props = {
   order: DeliveryOrderDocument;
 };
 
 export default function Action({ order }: Props) {
-  const { user } = appStore.getState();
+  const { user } = useAppContext();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -58,8 +59,8 @@ export default function Action({ order }: Props) {
     <>
       {!isYourOrder ? (
         <Button
-          variant='green'
-          size='small'
+          variant="green"
+          size="small"
           loading={isPending}
           onClick={handleTakeOrder}
           disabled={hasTaken}
@@ -67,7 +68,7 @@ export default function Action({ order }: Props) {
           {hasTaken ? 'Has Taken' : 'Take Order'}
         </Button>
       ) : (
-        <h6 className='details__mark'>Your Order</h6>
+        <h6 className="details__mark">Your Order</h6>
       )}
     </>
   );

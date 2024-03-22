@@ -32,4 +32,8 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: 'Comment not found',
     MISSING_COMMENT_ID: 'Missing comment id',
   },
+
+  ROOM: {
+    NOT_FOUND: 'Room not found',
+  },
 };

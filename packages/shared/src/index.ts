@@ -9,11 +9,15 @@ import {
   HistoryAPIResponse,
 } from './interfaces/user';
 
+import { MessageDocument } from './interfaces/message';
 import { StatisticResponse } from './interfaces/app';
 
 import { JourneyDocument, JourneyFormData } from './interfaces/journey';
 import { JourneyStatusEnum } from './enums/journey';
 
+import { RoomDocument, IRoom } from './interfaces/room';
+import { RoomStatusEnum } from './enums/room';
+import { MessageStatusEnum } from './enums/message';
 import {
   TypeOfCommodityEnum,
   DeliveryOrderStatusEnum,
@@ -32,6 +36,8 @@ export {
   JourneyStatusEnum,
   TypeOfCommodityEnum,
   DeliveryOrderStatusEnum,
+  MessageStatusEnum,
+  RoomStatusEnum,
 };
 
 //User
@@ -56,3 +62,8 @@ export type { StatisticResponse };
 
 //Comment
 export type { CommentDocument, CommentFormData };
+
+//Room
+export type { RoomDocument, IRoom };
+//Conversation
+export type { MessageDocument };

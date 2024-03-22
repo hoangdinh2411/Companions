@@ -1,15 +1,15 @@
 import {
   GetUserAPIResponse,
   HistoryAPIResponse,
-  SignInAPIResponse,
   SignInFormData,
   SignUpFormData,
+  UserDocument,
 } from '@repo/shared';
 import customFetch from './customFetch';
 import APP_ROUTER from '../lib/config/router';
 
-export const signIn = (formData: SignInFormData) => {
-  return customFetch<SignInAPIResponse>('/auth/sign-in', {
+export const signIn = async (formData: SignInFormData) => {
+  return await customFetch<UserDocument>('/auth/sign-in', {
     method: 'POST',
     body: JSON.stringify(formData),
     cache: 'no-cache',
@@ -20,6 +20,13 @@ export const signUp = (formData: SignUpFormData) => {
   return customFetch('/auth/sign-up', {
     method: 'POST',
     body: JSON.stringify(formData),
+    cache: 'no-cache',
+  });
+};
+
+export const signOut = async () => {
+  return await customFetch('/user/sign-out', {
+    method: 'PATCH',
     cache: 'no-cache',
   });
 };

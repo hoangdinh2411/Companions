@@ -65,6 +65,13 @@ const UserSchema = new mongoose.Schema<IUserSchema>(
         ref: 'journey',
       },
     ],
+    session_id: {
+      type: String,
+    },
+    is_online: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: {
