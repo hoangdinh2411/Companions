@@ -47,10 +47,7 @@ export default function Details<
           <Action ride={ride} handleBecomeCompanion={handleBecomeCompanion} />
         </article>
         {rideDetailFields.map((field, index) => {
-          if (
-            ride.hasOwnProperty(field.toString()) &&
-            ride[field as keyof typeof ride]
-          ) {
+          if (ride[field as keyof typeof ride]) {
             let value = ride[field as keyof typeof ride]?.toString();
             if (field === 'price' && value) {
               value = formatToSwedenCurrency(Number(value));
