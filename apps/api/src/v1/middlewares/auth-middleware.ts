@@ -3,42 +3,31 @@ import { ERROR_MESSAGES } from '../../lib/utils/error-messages';
 import createHttpError from 'http-errors';
 import UserModel from '../models/User.model';
 import { verifyToken } from '../../lib/utils/token';
-import { UserDocument } from '@repo/shared';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
-// extend the express request object to include the user object
-declare global {
-  namespace Express {
-    export interface Request {
-      user: Pick<
-        UserDocument,
-        '_id' | 'phone' | 'id_number' | 'full_name' | 'email'
-      >;
-      is_identified: boolean;
-    }
-  }
-}
-const getTokenFromHeaders = (req: Request) => {
-  const {
-    headers: { authorization },
-  } = req;
-  if (authorization && authorization.split(' ')[0] === 'Bearer') {
-    let token = authorization.split(' ')[1];
-    return token;
-  }
-  return '';
-};
+// export const getTokenFromHeaders = (req: Request) => {
+//   const {
+//     headers: { authorization },
+//   } = req;
+//   if (authorization && authorization.split(' ')[0] === 'Bearer') {
+//     let token = authorization.split(' ')[1];
+//     return token;
+//   }
+//   return '';
+// };
 
 export async function authMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
+  let { token } = req.cookies;
+
+  if (!token)
+    return next(
+      createHttpError.Unauthorized(ERROR_MESSAGES.USER.MISSING_TOKEN)
+    );
   try {
-    let token = getTokenFromHeaders(req);
-    if (!token)
-      return next(
-        createHttpError.Unauthorized(ERROR_MESSAGES.USER.MISSING_TOKEN)
-      );
     let decoded = verifyToken(token);
     const user = await UserModel.findOne({
       _id: (decoded as any)._id,
@@ -47,10 +36,14 @@ export async function authMiddleware(
       },
     }).select('-password -id_number');
 
-    if (!user)
+    if (!user) {
+      res.cookie('token', '', {
+        expires: new Date(0),
+      });
       return next(
         createHttpError.Unauthorized(ERROR_MESSAGES.USER.INVALID_TOKEN)
       );
+    }
     req.user = {
       _id: user._id,
       email: user.email,
@@ -62,7 +55,20 @@ export async function authMiddleware(
 
     next();
   } catch (error) {
-    console.log('error');
+    if (
+      error instanceof JsonWebTokenError &&
+      error.name === 'TokenExpiredError'
+    ) {
+      let decoded = verifyToken(token);
+      await UserModel.findOneAndUpdate(
+        { _id: (decoded as any).id },
+        { is_online: false }
+      );
+      res.cookie('token', '', {
+        expires: new Date(0),
+      });
+    }
+
     return next(
       createHttpError.Unauthorized(
         (error as Error).message || ERROR_MESSAGES.USER.INVALID_TOKEN

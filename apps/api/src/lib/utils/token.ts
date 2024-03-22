@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import env from '../config/env';
 
 import { UserStatusEnum } from '@repo/shared';
-const fifteenMinutes = 60 * 15;
-const oneHour = 60 * 60;
+const fifteenMinutes = 900;
+const oneHour = 60 * 60 * 24;
 export const generateToken = (
   user_id: string,
   status: UserStatusEnum,

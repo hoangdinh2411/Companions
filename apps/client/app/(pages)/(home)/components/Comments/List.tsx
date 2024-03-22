@@ -4,10 +4,10 @@ import React, { useState, useTransition } from 'react';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import dayjs from 'dayjs';
 import { CommentDocument, ResponseWithPagination } from '@repo/shared';
-import appStore from '../../../../lib/store/appStore';
 import EmojiPicker from 'emoji-picker-react';
 import { deleteComment, updateComment } from '../../../../actions/commentApi';
 import { toast } from 'react-toastify';
+import { useAppContext } from '../../../../lib/provider/AppContextProvider';
 dayjs.extend(relativeTime);
 
 export default function List({
@@ -16,7 +16,7 @@ export default function List({
   data: ResponseWithPagination<CommentDocument>;
 }) {
   const [editComment, setEditComment] = useState<CommentDocument | null>(null);
-  const { user } = appStore.getState();
+  const { user } = useAppContext();
   const [showEmoji, setShowEmoji] = useState(false);
   const [isPending, startTransition] = useTransition();
   const handleEmojiClick = (emojiObject: { emoji: string }) => {
@@ -38,7 +38,7 @@ export default function List({
       setEditComment(comment);
       return;
     }
-    if (!user._id) return;
+    if (!user?._id) return;
     if (!editComment) return;
     if (editComment.content === '') {
       toast.error('Cannot update empty comment');
@@ -64,7 +64,7 @@ export default function List({
       handleCancelEdit();
       return;
     }
-    if (!user._id) return;
+    if (!user?._id) return;
     if (!id) return;
     if (!id) {
       toast.error('Cannot edit this comment');
@@ -80,12 +80,12 @@ export default function List({
 
   const renderActions = (comment: CommentDocument) => {
     if (!comment._id) return null;
-    if (user._id !== comment.created_by._id) return null;
+    if (user?._id !== comment.created_by._id) return null;
     if (isPending && editComment && editComment._id === comment._id) {
       return <p>Updating...</p>;
     }
     return (
-      <p className='actions'>
+      <p className="actions">
         <span onClick={() => handleEditComment(comment)}>
           {editComment && editComment._id === comment._id ? 'Save' : 'Edit'}
         </span>
@@ -100,25 +100,25 @@ export default function List({
     if (!editComment) return null;
     if (comment._id !== editComment._id) return null;
     return (
-      <div className='text-area-box'>
+      <div className="text-area-box">
         <textarea
           value={editComment.content}
-          className='comments__input'
+          className="comments__input"
           onChange={(e) =>
             setEditComment({
               ...editComment,
               content: e.target.value,
             })
           }
-          placeholder='Let us know what you think or what we can improve the app...!'
+          placeholder="Let us know what you think or what we can improve the app...!"
         />
         <Image
-          src='/emoji.png'
-          alt='choose emoji'
-          className='emoji'
+          src="/emoji.png"
+          alt="choose emoji"
+          className="emoji"
           width={24}
           height={24}
-          title='Choose emoji'
+          title="Choose emoji"
           onClick={() => setShowEmoji(!showEmoji)}
         />
         <span
@@ -126,7 +126,7 @@ export default function List({
           onClick={() => setShowEmoji(false)}
         ></span>
         <EmojiPicker
-          width='100%'
+          width="100%"
           onEmojiClick={handleEmojiClick}
           lazyLoadEmojis
           open={showEmoji}
@@ -140,38 +140,28 @@ export default function List({
   };
 
   return (
-    <article className='comments__list'>
-      <p className='comments__total'>
+    <article className="comments__list">
+      <p className="comments__total">
         {data?.pagination?.total.toLocaleString()} comments{' '}
       </p>
       <br />
       <ul>
         {data?.items.map((comment: CommentDocument) => (
-          <li className='comments__item' key={comment._id}>
-            {comment.created_by._id ? (
-              <span className='comments__item__avatar'>
-                {comment.created_by.full_name.charAt(0).toUpperCase()}
-              </span>
-            ) : (
-              <Image
-                src='/anonymous.jpg'
-                alt='anonymous'
-                width={40}
-                height={40}
-                className='comments__item__avatar'
-              />
-            )}
+          <li className="comments__item" key={comment._id}>
+            <span className="comments__item__avatar">
+              {comment.created_by.full_name.charAt(0).toUpperCase()}
+            </span>
 
-            <article className='comments__item__content'>
-              <div className='contents__full-name'>
+            <article className="comments__item__content">
+              <div className="contents__full-name">
                 {comment.created_by.full_name}
                 {renderActions(comment)}
               </div>
               {renderUpdateForm(comment)}
               {!editComment && (
-                <p className='contents__content'>{comment.content}</p>
+                <p className="contents__content">{comment.content}</p>
               )}
-              <p className='contents__date'>
+              <p className="contents__date">
                 {dayjs(comment.created_at).fromNow()}{' '}
                 {dayjs(comment.created_at) < dayjs(comment.updated_at) &&
                   ' (edited)'}

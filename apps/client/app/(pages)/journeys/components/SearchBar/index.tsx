@@ -14,16 +14,16 @@ export default function SearchBar() {
     if (token) {
       router.push(APP_ROUTER.ADD_NEW_JOURNEY);
     } else {
-      router.push(APP_ROUTER.SIGN_IN);
+      router.replace(APP_ROUTER.SIGN_IN);
       toast.warning('Please sign in to continue');
     }
   };
 
   return (
-    <section className='journeys__search-bar'>
-      <div className='search-bar__search'>
+    <section className="journeys__search-bar">
+      <div className="search-bar__search">
         <SearchField />
-        <div className='journeys__add-new'>
+        <div className="journeys__add-new">
           <Button onClick={handleRedirectToAddNew}>New Journey</Button>
         </div>
       </div>

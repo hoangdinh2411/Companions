@@ -20,9 +20,9 @@ export default async function OrderDetailsPage({ params: { slug } }: Props) {
   }
 
   return (
-    <div className='delivery-order__details'>
+    <div className="delivery-order__details">
       {res.data && res.data._id && (
-        <div className='delivery-order__details__container'>
+        <div className="delivery-order__details__container">
           <Details order={res.data} />
           <Creator order={res.data} />
         </div>

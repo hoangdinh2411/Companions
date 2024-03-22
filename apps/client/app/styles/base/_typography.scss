@@ -5,8 +5,12 @@
  */
 
 ::-webkit-scrollbar {
-  width: 2px;
+  width: 6px;
   background-color: $background-paper;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $gray-600;
 }
 html {
   font-size: 10px;

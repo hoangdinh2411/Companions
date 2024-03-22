@@ -11,6 +11,9 @@ import DocumentIcon from '../../../public/icons/document.svg';
 import SearchIcon from '../../../public/icons/search.svg';
 import ArrowLeftIcon from '../../../public/icons/arrow-left.svg';
 import ArrowRightIcon from '../../../public/icons/arrow-right.svg';
+import MessageBoxIcon from '../../../public/icons/message-box.svg';
+import MessageBoxNoticeIcon from '../../../public/icons/message-box-notice.svg';
+import SendIcon from '../../../public/icons/send.svg';
 
 export {
   ErrorIcon,
@@ -26,4 +29,7 @@ export {
   ArrowRightIcon,
   FoodIcon,
   DocumentIcon,
+  MessageBoxIcon,
+  MessageBoxNoticeIcon,
+  SendIcon,
 };

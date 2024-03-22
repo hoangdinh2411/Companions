@@ -5,14 +5,14 @@ import Image from 'next/image';
 
 export default function SignInPage(): JSX.Element {
   return (
-    <article className='sign-in-page'>
-      <div className='form__container'>
-        <figure className='form__image'>
+    <article className="sign-in-page">
+      <div className="form__container">
+        <figure className="form__image">
           <Image
-            src='/goals.png'
-            alt='sign in image'
+            src="/goals.png"
+            alt="sign in image"
             fill
-            sizes='(max-width:992px) 500px 350px'
+            sizes="(max-width:992px) 500px 350px"
           />
         </figure>
         <Form />

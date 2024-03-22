@@ -1,24 +1,16 @@
 import './Navbar.scss';
 import Menu from './Menu';
 import Logo from '../Logo/Logo';
-import Actions from './Actions';
 import MenuBar from './MenuBar';
-import { getToken } from '../../../actions/tokens';
-import { getUser } from '../../../actions/userApi';
+import Actions from './Actions';
 
-export default async function Navbar() {
-  const token = await getToken();
-  let res;
-
-  if (token) {
-    res = await getUser();
-  }
+export default function Navbar() {
   return (
-    <header className='navbar'>
+    <header className="navbar">
       <MenuBar />
       <Logo />
       <Menu />
-      <Actions userData={res?.data && res.data._id ? res?.data : undefined} />
+      <Actions />
     </header>
   );
 }

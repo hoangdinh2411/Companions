@@ -4,15 +4,12 @@ import { getHistory, getUser } from '../../actions/userApi';
 import { generateSearchParams } from '../../lib/utils/generateSearchParams';
 import dynamic from 'next/dynamic';
 import LoadingSpinner from '../../components/UI/Loading';
+import Detail from './components/Detail';
 const History = dynamic(() => import('./components/History'), {
   ssr: false,
   loading: () => <LoadingSpinner />,
 });
 
-const Detail = dynamic(() => import('./components/Detail'), {
-  ssr: false,
-  loading: () => <LoadingSpinner />,
-});
 export default async function ProfilePage({
   searchParams,
 }: {

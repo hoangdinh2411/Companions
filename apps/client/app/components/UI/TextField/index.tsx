@@ -37,16 +37,16 @@ const TextField = React.forwardRef(
     return (
       <fieldset className={textfieldClassName}>
         {label && (
-          <label htmlFor={id} className='textfield__label'>
+          <label htmlFor={id} className="textfield__label">
             <p>
               {required && '*'}
               {label}:
             </p>
           </label>
         )}
-        <input id={id} type='text' ref={ref} {...rest} />
+        <input id={id} type="text" ref={ref} {...rest} />
         {error && (
-          <small className='textfield__error'>
+          <small className="textfield__error">
             <ErrorIcon />
             {message}
           </small>
