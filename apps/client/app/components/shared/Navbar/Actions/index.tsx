@@ -5,7 +5,6 @@ import APP_ROUTER from '../../../../lib/config/router';
 import { UserIcon } from '../../../../lib/config/svg';
 import { usePathname, useRouter } from 'next/navigation';
 import { GetUserAPIResponse } from '@repo/shared';
-import { Socket } from 'socket.io-client';
 import { getUser, signOut } from '../../../../actions/userApi';
 import Button from '../../../UI/Button';
 import { useAppContext } from '../../../../lib/provider/AppContextProvider';

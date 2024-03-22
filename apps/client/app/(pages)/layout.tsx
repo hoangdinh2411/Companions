@@ -1,4 +1,4 @@
-export const revalidate = 3600;
+export const revalidate = 60 * 60 * 8; // 8 hours
 import dynamic from 'next/dynamic';
 import Footer from '../components/shared/Footer/Footer';
 import ToastProvider from '../lib/provider/ToastProvider';
@@ -7,7 +7,6 @@ import type { Metadata } from 'next';
 import Navbar from '../components/shared/Navbar/Navbar';
 import AppContextProvider from '../lib/provider/AppContextProvider';
 import SocketContextProvider from '../lib/provider/SocketContextProvider';
-import { getToken } from '../actions/tokens';
 const MessagesBox = dynamic(() => import('../components/shared/MessagesBox'), {
   ssr: false,
 });

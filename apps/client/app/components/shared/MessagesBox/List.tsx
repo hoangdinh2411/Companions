@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { useSocketContext } from '../../../lib/provider/SocketContextProvider';
-import { IRoom, MessageDocument, MessageStatusEnum } from '@repo/shared';
+import { IRoom, MessageStatusEnum } from '@repo/shared';
 import { useAppContext } from '../../../lib/provider/AppContextProvider';
 import dayjsConfig from '../../../lib/config/dayjsConfig';
 import { useEffect } from 'react';
@@ -41,19 +41,6 @@ export default function List({ show }: Props) {
         return '';
     }
   };
-  function updateLastMessageForRoom(message: MessageDocument) {
-    const newRoomList = roomList.map((room) => {
-      if (room._id === message?.room?._id) {
-        return {
-          ...room,
-          messages: [message],
-        };
-      }
-      return room;
-    });
-
-    updateRoomList(newRoomList);
-  }
 
   useEffect(() => {
     if (!user) return;
@@ -76,7 +63,6 @@ export default function List({ show }: Props) {
       }
     };
   }, [socketConnection]);
-  console.log(roomList);
 
   return (
     <div className={`chat-list ${show ? 'show' : 'hide'} `}>

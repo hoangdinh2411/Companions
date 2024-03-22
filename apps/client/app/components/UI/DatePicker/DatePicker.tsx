@@ -36,7 +36,7 @@ export default function DatePicker({
   };
 
   const footer = (
-    <p className='date-picker__footer' onClick={() => handleSelect(new Date())}>
+    <p className="date-picker__footer" onClick={() => handleSelect(new Date())}>
       Today
     </p>
   );
@@ -47,16 +47,16 @@ export default function DatePicker({
         required={required}
         label={label}
         id={id}
-        type='button'
+        type="button"
         error={error}
         message={message}
         value={selected ? dayjs(selected).format('dddd YYYY/MM/DD') : ''}
-        placeholder='Departure time...'
+        placeholder="Departure time..."
         onMouseDown={() => setShowDatePicker(!showDatePicket)}
       />
       {showDatePicket && (
         <DayPicker
-          mode='single'
+          mode="single"
           selected={selected}
           onSelect={onSelect}
           footer={footer}

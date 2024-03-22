@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeftIcon, MessageBoxIcon } from '../../../lib/config/svg';
 import './MessagesBox.scss';
 import Conversation from './Conversation';

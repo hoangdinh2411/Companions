@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import React from 'react';
-import Button from '../../../../components/UI/Button';
 
 export default function Goals() {
   return (

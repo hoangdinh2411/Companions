@@ -1,5 +1,5 @@
 'use client';
-import { JourneyDocument, UserDocument } from '@repo/shared';
+import { JourneyDocument } from '@repo/shared';
 import { useAppContext } from '../../../../lib/provider/AppContextProvider';
 
 type Props = {
