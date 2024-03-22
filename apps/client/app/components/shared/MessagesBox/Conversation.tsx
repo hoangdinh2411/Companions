@@ -2,11 +2,7 @@
 import React, { useEffect } from 'react';
 import { SendIcon } from '../../../lib/config/svg';
 import { useSocketContext } from '../../../lib/provider/SocketContextProvider';
-import {
-  MessageDocument,
-  MessageStatusEnum,
-  ResponseWithPagination,
-} from '@repo/shared';
+import { MessageDocument, ResponseWithPagination } from '@repo/shared';
 import { useAppContext } from '../../../lib/provider/AppContextProvider';
 import dayjsConfig from '../../../lib/config/dayjsConfig';
 
@@ -111,7 +107,7 @@ export default function Conversation({ onConversation = false }: Props) {
     <div className={`conversation ${onConversation ? 'show' : 'hide'}`}>
       <div className="conversation__wrapper" ref={contentWrapperRef}>
         {messages &&
-          messages.map((message, index) => (
+          messages.map((message) => (
             <div
               key={message._id}
               className={`conversation__content ${message.sender?._id === user?._id ? 'sender' : ''} `}

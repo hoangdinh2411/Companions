@@ -2,7 +2,7 @@ import { pingServer, updateStatus } from './lib/config/cron';
 import connectDatabase from './lib/database/mongo-connect';
 import { createServer } from './server';
 import dotenv from 'dotenv';
-import http, { Server } from 'http';
+import http from 'http';
 import SocketModule from './lib/config/socket';
 
 dotenv.config();

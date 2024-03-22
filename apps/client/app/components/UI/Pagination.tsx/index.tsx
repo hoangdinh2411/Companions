@@ -6,7 +6,6 @@ import { ArrowLeftIcon, ArrowRightIcon } from '../../../lib/config/svg';
 const listNumberBeVisible = 2;
 
 export default function Pagination({
-  total,
   withNumber = false,
   pages = 0,
 }: {

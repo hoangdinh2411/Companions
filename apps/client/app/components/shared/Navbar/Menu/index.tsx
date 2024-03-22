@@ -1,5 +1,4 @@
 'use client';
-import React, { useEffect } from 'react';
 import { NAVBAR } from '../../../../lib/config/router';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
