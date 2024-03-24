@@ -37,6 +37,8 @@ class SocketModule {
     // there is issue with this middleware , cannot receive error message on client
 
     this.io.use(async (socket, next) => {
+      console.log('check');
+
       const token = socket.handshake.headers.token;
       const payload = await socketMiddleware(token as string);
       if (!payload) {
@@ -46,7 +48,14 @@ class SocketModule {
       next();
     });
     this.io.on('connection', async (socket: Socket) => {
+      if (!socket.user) {
+        return socket.disconnect();
+      }
+
       socket.onAny(async (event, ...args) => {
+        console.log(event);
+
+        console.log('check 2');
         const token = socket.client.request.headers.token;
         const payload = await socketMiddleware(token as string);
         if (!payload) {
@@ -88,72 +97,70 @@ class SocketModule {
     });
   }
   private async getStart(socket: Socket) {
-    socket.on(
-      'get-start',
-      async (data: { user_id: string; session_id: string }) => {
-        console.log('get-start', data);
+    socket.on('get-start', async () => {
+      if (!socket.user) return;
+      const user = socket.user;
+      try {
+        await UserModel.findByIdAndUpdate(socket.user._id, {
+          session_id: socket.id,
+          is_online: true,
+        });
+        const rooms = await RoomModel.find({
+          users: {
+            $in: [user._id],
+          },
+        })
+          .populate('users', '_id  full_name')
+          .lean();
+        // if there is no rooms or there aren't new created rooms , stop the function
+        if (rooms.length) {
+          for (let index = 0; index < rooms.length; index++) {
+            const last_massages = await MessageModel.findOne({
+              room: rooms[index]._id,
+            })
+              .sort({ updated_at: -1 })
+              .limit(1)
+              .populate('sender', '_id  full_name')
+              .lean();
 
-        try {
-          await UserModel.findByIdAndUpdate(data.user_id, {
-            session_id: data.session_id,
-          });
-          const rooms = await RoomModel.find({
-            users: {
-              $in: [data.user_id],
-            },
-          })
-            .populate('users', '_id  full_name')
-            .lean();
-          // if there is no rooms or there aren't new created rooms , stop the function
-          if (rooms.length) {
-            for (let index = 0; index < rooms.length; index++) {
-              const last_massages = await MessageModel.findOne({
-                room: rooms[index]._id,
-              })
-                .sort({ updated_at: -1 })
-                .limit(1)
+            // if there is no messages in the room, remove the room from the list
+            if (!last_massages) {
+              await RoomModel.findByIdAndDelete(rooms[index]._id);
+              rooms.splice(index, 1);
+              continue;
+            }
+            // if the last message is sending, update the status to received
+            if (last_massages.status === MessageStatusEnum.SENDING) {
+              const new_last_massages = await MessageModel.findOneAndUpdate(
+                {
+                  _id: last_massages._id,
+                },
+                {
+                  status: MessageStatusEnum.RECEIVED,
+                },
+                {
+                  new: true,
+                }
+              )
                 .populate('sender', '_id  full_name')
                 .lean();
-
-              // if there is no messages in the room, remove the room from the list
-              if (!last_massages) {
-                await RoomModel.findByIdAndDelete(rooms[index]._id);
-                rooms.splice(index, 1);
-                continue;
-              }
-              // if the last message is sending, update the status to received
-              if (last_massages.status === MessageStatusEnum.SENDING) {
-                const new_last_massages = await MessageModel.findOneAndUpdate(
-                  {
-                    _id: last_massages._id,
-                  },
-                  {
-                    status: MessageStatusEnum.RECEIVED,
-                  },
-                  {
-                    new: true,
-                  }
-                )
-                  .populate('sender', '_id  full_name')
-                  .lean();
-                Object.assign(rooms[index], {
-                  messages: [new_last_massages],
-                });
-              } else {
-                // if the last message is received, add the message to the room
-                Object.assign(rooms[index], {
-                  messages: [last_massages],
-                });
-              }
+              Object.assign(rooms[index], {
+                messages: [new_last_massages],
+              });
+            } else {
+              // if the last message is received, add the message to the room
+              Object.assign(rooms[index], {
+                messages: [last_massages],
+              });
             }
           }
-
-          socket.emit('room-list', rooms);
-        } catch (error) {
-          this.sendError(socket, (error as Error).message);
         }
+
+        socket.emit('room-list', rooms);
+      } catch (error) {
+        this.sendError(socket, (error as Error).message);
       }
-    );
+    });
   }
 
   public async createRoom(socket: Socket) {
@@ -233,7 +240,8 @@ class SocketModule {
               },
             },
             {
-              $sort: { updated_at: 1 },
+              // get newest messages first
+              $sort: { updated_at: -1 },
             },
             {
               $facet: {
@@ -258,6 +266,11 @@ class SocketModule {
                           },
                         },
                       ],
+                    },
+                  },
+                  {
+                    $sort: {
+                      updated_at: 1,
                     },
                   },
                   {
@@ -321,7 +334,18 @@ class SocketModule {
     socket.emit('server-error', error);
   }
   private disconnect(socket: Socket) {
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
+      if (socket.user) {
+        await UserModel.findOneAndUpdate(
+          {
+            _id: socket.user._id,
+          },
+          {
+            session_id: null,
+            is_online: false,
+          }
+        );
+      }
       socket.rooms.forEach((room) => {
         socket.leave(room);
       });
@@ -339,7 +363,7 @@ class SocketModule {
       }) => {
         try {
           const room = await RoomModel.findById(data.room)
-            .populate('users', '_id full_name')
+            .populate('users', '_id full_name session_id is_online')
             .lean();
           if (!room) {
             throw new Error(ERROR_MESSAGES.ROOM.NOT_FOUND);
@@ -361,22 +385,22 @@ class SocketModule {
           });
           await new_message.save();
           let message = await (
-            await new_message.populate('sender', '_id full_name email')
+            await new_message.populate('sender', '_id full_name ')
           ).populate('room', '_id');
           // ISSUE HERE
           // how to use one emit to send message to all users in the room? Now have to use 2 emits
           // socket.to().emit() will send only for  receiver
           // socket.emit() will send only for sender
-          const receiver = await UserModel.findById(data.receiver_id).populate(
-            'session_id'
+          const receiver = room.users.find(
+            (user) => user._id.toString() === data.receiver_id
           );
-          socket.to(data.room).emit('receive-message', message);
-          socket.emit('receive-message', message);
 
-          if (receiver) {
-            socket.emit('update-room-on-list', true);
+          if (receiver?.is_online) {
+            socket.to(receiver.session_id).emit('receive-message', message);
             socket.to(receiver?.session_id).emit('update-room-on-list', true);
           }
+          socket.emit('receive-message', message);
+          socket.emit('update-room-on-list', true);
 
           //ISSUE HERE
           // the same issus with the below emit

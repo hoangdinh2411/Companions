@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function Conversation({ onConversation = false }: Props) {
-  const { socketConnection, selectedRoom } = useSocketContext();
+  const { socketClient, selectedRoom } = useSocketContext();
   const { user } = useAppContext();
   const [messages, setMessages] = React.useState<MessageDocument[]>([]);
   const contentRef = React.useRef<HTMLTextAreaElement>(null);
@@ -22,10 +22,10 @@ export default function Conversation({ onConversation = false }: Props) {
       | React.KeyboardEvent<HTMLTextAreaElement>
   ) => {
     e.preventDefault();
-    if (contentRef.current && socketConnection && selectedRoom) {
+    if (contentRef.current && socketClient && selectedRoom) {
       if (contentRef.current.value.trim() === '') return;
       const receiver = selectedRoom.users.find((u) => u._id !== user?._id);
-      socketConnection?.emit('send-message', {
+      socketClient?.emit('send-message', {
         content: contentRef.current.value.trim(),
         room: selectedRoom._id,
         sender_id: user?._id,
@@ -36,18 +36,18 @@ export default function Conversation({ onConversation = false }: Props) {
   };
 
   useEffect(() => {
-    if (!socketConnection) return;
+    if (!socketClient) return;
 
-    socketConnection.on(
+    socketClient.on(
       'receive-messages-list',
       (data: ResponseWithPagination<MessageDocument>) => {
         setMessages(data.items);
       }
     );
-    socketConnection.on('receive-message', (newMessage: MessageDocument) => {
+    socketClient.on('receive-message', (newMessage: MessageDocument) => {
       //if the receiver is not the sender and is on the conversation, will update the message status to read and add the message to the conversation on the event (status-updated-on-conversation)
       if (newMessage.sender._id !== user?._id) {
-        socketConnection.emit('message-read', {
+        socketClient.emit('message-read', {
           message: newMessage,
           user_id: user?._id,
         });
@@ -56,7 +56,7 @@ export default function Conversation({ onConversation = false }: Props) {
       }
     });
 
-    socketConnection.on('status-updated-on-conversation', (updatedMessage) => {
+    socketClient.on('status-updated-on-conversation', (updatedMessage) => {
       if (updatedMessage.sender._id === user?._id) {
         setMessages((prev) => {
           return prev.map((m) => {
@@ -72,17 +72,17 @@ export default function Conversation({ onConversation = false }: Props) {
     });
 
     return () => {
-      if (socketConnection) {
-        socketConnection.off('status-updated-on-conversation');
-        socketConnection.off('receive-messages-list');
+      if (socketClient) {
+        socketClient.off('status-updated-on-conversation');
+        socketClient.off('receive-messages-list');
       }
     };
-  }, [socketConnection]);
+  }, [socketClient]);
 
   useEffect(() => {
     if (!selectedRoom) return;
-    if (socketConnection) {
-      socketConnection.emit('get-messages', {
+    if (socketClient) {
+      socketClient.emit('get-messages', {
         room_id: selectedRoom?._id,
         user_id: user?._id,
         page: 1,
@@ -98,8 +98,8 @@ export default function Conversation({ onConversation = false }: Props) {
   }, [messages]);
 
   useEffect(() => {
-    if (selectedRoom && socketConnection) {
-      socketConnection?.emit('join-room', selectedRoom._id);
+    if (selectedRoom && socketClient) {
+      socketClient?.emit('join-room', selectedRoom._id);
     }
   }, []);
 

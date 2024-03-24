@@ -10,14 +10,14 @@ type Props = {
 };
 
 export default function List({ show }: Props) {
-  const { socketConnection, handleSelectRoom, roomList, updateRoomList } =
+  const { socketClient, handleSelectRoom, roomList, updateRoomList } =
     useSocketContext();
   const { user } = useAppContext();
 
   const handleJoinRoom = (room: IRoom) => {
-    if (socketConnection) {
+    if (socketClient) {
       handleSelectRoom(room);
-      socketConnection.emit('join-room', room._id);
+      socketClient.emit('join-room', room._id);
     }
   };
 
@@ -45,59 +45,63 @@ export default function List({ show }: Props) {
   useEffect(() => {
     if (!user) return;
 
-    if (socketConnection) {
-      socketConnection.on('update-room-on-list', (hasNew: boolean) => {
-        console.log('update-room-on-list', hasNew, user.full_name);
-
-        socketConnection.emit('get-start', {
+    if (socketClient) {
+      socketClient.on('update-room-on-list', (hasNew: boolean) => {
+        socketClient.emit('get-start', {
           user_id: user._id,
-          session_id: socketConnection.id,
+          session_id: socketClient.id,
         });
       });
     }
 
     return () => {
-      if (socketConnection) {
-        socketConnection.off('room-list');
-        socketConnection.off('update-room-on-list');
+      if (socketClient) {
+        socketClient.off('room-list');
+        socketClient.off('update-room-on-list');
       }
     };
-  }, [socketConnection]);
+  }, [socketClient]);
 
   return (
     <div className={`chat-list ${show ? 'show' : 'hide'} `}>
       <ul className="chat-list__container">
-        {roomList.map((room, index) => (
-          <li
-            className={`chat-list__item ${statusMessage(room)}`}
-            key={index}
-            onClick={() => handleJoinRoom(room)}
-          >
-            <div className="chat-list__item__avatar">
-              <Image src="/anonymous.jpg" alt="avatar" width={28} height={28} />
-            </div>
-            <div className="chat-list__item__content">
-              <div className="chat-list__item__content__name">
-                {room?.users?.find((u) => u._id !== user?._id)?.full_name}
+        {Array.isArray(roomList) &&
+          roomList?.map((room, index) => (
+            <li
+              className={`chat-list__item ${statusMessage(room)}`}
+              key={index}
+              onClick={() => handleJoinRoom(room)}
+            >
+              <div className="chat-list__item__avatar">
+                <Image
+                  src="/anonymous.jpg"
+                  alt="avatar"
+                  width={28}
+                  height={28}
+                />
               </div>
-              <div className="chat-list__item__content__message">
-                {room?.messages?.length > 0 && (
-                  <>
-                    <span
-                      className="message__text"
-                      title={showWhoseMessage(room)}
-                    >
-                      {showWhoseMessage(room)}
-                    </span>
-                    <span className="message__time">
-                      {dayjsConfig(room?.messages[0].updated_at).fromNow()}
-                    </span>
-                  </>
-                )}
+              <div className="chat-list__item__content">
+                <div className="chat-list__item__content__name">
+                  {room?.users?.find((u) => u._id !== user?._id)?.full_name}
+                </div>
+                <div className="chat-list__item__content__message">
+                  {room?.messages?.length > 0 && (
+                    <>
+                      <span
+                        className="message__text"
+                        title={showWhoseMessage(room)}
+                      >
+                        {showWhoseMessage(room)}
+                      </span>
+                      <span className="message__time">
+                        {dayjsConfig(room?.messages[0].updated_at).fromNow()}
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          ))}
       </ul>
     </div>
   );
