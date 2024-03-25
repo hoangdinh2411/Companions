@@ -9,7 +9,6 @@ export default function useSocket() {
     if (!user?._id || !invitee_id) return;
     if (socketClient) {
       socketClient.emit('create-room', {
-        inviter_id: user?._id,
         invitee_id: invitee_id,
       });
     }

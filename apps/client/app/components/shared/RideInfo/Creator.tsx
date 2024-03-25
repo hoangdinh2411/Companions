@@ -17,7 +17,6 @@ export default function Creator<
   const handleBeginAChatting = () => {
     if (socketClient) {
       socketClient.emit('create-room', {
-        inviter: user?._id,
         invitee: ride?.created_by?._id,
       });
     }

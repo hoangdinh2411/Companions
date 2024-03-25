@@ -1,17 +1,23 @@
 import Image from 'next/image';
 import { useSocketContext } from '../../../lib/provider/SocketContextProvider';
-import { IRoom, MessageStatusEnum } from '@repo/shared';
+import { IRoom, MessageDocument, MessageStatusEnum } from '@repo/shared';
 import { useAppContext } from '../../../lib/provider/AppContextProvider';
 import dayjsConfig from '../../../lib/config/dayjsConfig';
 import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 type Props = {
   show: boolean;
 };
 
 export default function List({ show }: Props) {
-  const { socketClient, handleSelectRoom, roomList, updateRoomList } =
-    useSocketContext();
+  const {
+    socketClient,
+    handleSelectRoom,
+    roomList,
+    selectedRoom,
+    updateRoomList,
+  } = useSocketContext();
   const { user } = useAppContext();
 
   const handleJoinRoom = (room: IRoom) => {
@@ -46,18 +52,61 @@ export default function List({ show }: Props) {
     if (!user) return;
 
     if (socketClient) {
-      socketClient.on('update-room-on-list', (hasNew: boolean) => {
-        socketClient.emit('get-start', {
-          user_id: user._id,
-          session_id: socketClient.id,
-        });
+      socketClient.on('update-room-on-list', (newMessage: MessageDocument) => {
+        if (user._id !== newMessage.sender._id) {
+          toast.info(`${newMessage.sender.full_name} sent a message`, {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+          socketClient.emit('receive-message', newMessage);
+        } else {
+          const newRoomList = roomList.map((room: IRoom) => {
+            if (room._id === newMessage.room._id) {
+              return { ...room, messages: [newMessage] };
+            }
+            return room;
+          });
+
+          updateRoomList(newRoomList);
+        }
       });
+      socketClient.on(
+        'update-message-to-received',
+        (newMessage: MessageDocument) => {
+          if (user._id !== newMessage.sender._id) {
+            const newRoomList = roomList.map((room: IRoom) => {
+              if (room._id === newMessage.room._id) {
+                return { ...room, messages: [newMessage] };
+              }
+              return room;
+            });
+
+            updateRoomList(newRoomList);
+          }
+        }
+      );
+      socketClient.on(
+        'update-message-to-seen',
+        (newMessage: MessageDocument) => {
+          if (user._id === newMessage.sender._id) {
+            const newRoomList = roomList.map((room: IRoom) => {
+              if (room._id === newMessage.room._id) {
+                return { ...room, messages: [newMessage] };
+              }
+              return room;
+            });
+
+            updateRoomList(newRoomList);
+          }
+        }
+      );
     }
 
     return () => {
       if (socketClient) {
         socketClient.off('room-list');
         socketClient.off('update-room-on-list');
+        socketClient.off('update-message-to-received');
       }
     };
   }, [socketClient]);

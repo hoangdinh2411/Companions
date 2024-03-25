@@ -62,8 +62,11 @@ export default function MessagesBox() {
           <p>{getRoomTitle()}</p>
           <span onClick={handleCloseChatList}>X</span>
         </div>
-        <List show={selectedRoom === null} />
-        <Conversation onConversation={selectedRoom !== null} />
+        {!selectedRoom ? (
+          <List show={selectedRoom === null} />
+        ) : (
+          <Conversation onConversation={selectedRoom !== null} />
+        )}
       </div>
     </div>
   );

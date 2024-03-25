@@ -57,8 +57,6 @@ export default function SocketContextProvider({
   useEffect(() => {
     if (!user) return;
     if (socketClient) {
-      console.log(socketClient.id);
-
       socketClient.emit('get-start');
       socketClient.on('room-list', (data) => {
         if (data.length === 0) return;

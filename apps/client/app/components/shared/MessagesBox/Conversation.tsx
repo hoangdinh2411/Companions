@@ -28,7 +28,6 @@ export default function Conversation({ onConversation = false }: Props) {
       socketClient?.emit('send-message', {
         content: contentRef.current.value.trim(),
         room: selectedRoom._id,
-        sender_id: user?._id,
         receiver_id: receiver?._id,
       });
       contentRef.current.value = '';
@@ -44,37 +43,39 @@ export default function Conversation({ onConversation = false }: Props) {
         setMessages(data.items);
       }
     );
+
     socketClient.on('receive-message', (newMessage: MessageDocument) => {
-      //if the receiver is not the sender and is on the conversation, will update the message status to read and add the message to the conversation on the event (status-updated-on-conversation)
-      if (newMessage.sender._id !== user?._id) {
+      // //if the receiver is not the sender and is on the conversation, will update the message status to read and add the message to the conversation on the event (status-updated-on-conversation)
+      if (newMessage.sender._id.toString() !== user?._id.toString()) {
         socketClient.emit('message-read', {
           message: newMessage,
-          user_id: user?._id,
         });
       } else {
         setMessages((prev) => [...prev, newMessage]);
       }
     });
 
-    socketClient.on('status-updated-on-conversation', (updatedMessage) => {
-      if (updatedMessage.sender._id === user?._id) {
-        setMessages((prev) => {
-          return prev.map((m) => {
-            if (m._id === updatedMessage._id) {
-              return updatedMessage;
-            }
-            return m;
-          });
-        });
-      } else {
-        setMessages((prev) => [...prev, updatedMessage]);
-      }
+    socketClient.on('update-messages-to-received', (updatedMessage) => {
+      setMessages((prev) =>
+        prev.map((message) =>
+          message._id === updatedMessage._id ? updatedMessage : message
+        )
+      );
+    });
+    socketClient.on('update-messages-to-seen', (updatedMessage) => {
+      setMessages((prev) =>
+        prev.map((message) =>
+          message._id === updatedMessage._id ? updatedMessage : message
+        )
+      );
     });
 
     return () => {
       if (socketClient) {
-        socketClient.off('status-updated-on-conversation');
+        socketClient.off('receive-message');
         socketClient.off('receive-messages-list');
+        socketClient.off('update-messages-to-received');
+        socketClient.off('update-messages-to-seen');
       }
     };
   }, [socketClient]);
@@ -84,9 +85,9 @@ export default function Conversation({ onConversation = false }: Props) {
     if (socketClient) {
       socketClient.emit('get-messages', {
         room_id: selectedRoom?._id,
-        user_id: user?._id,
         page: 1,
       });
+      socketClient.emit('join-room', selectedRoom._id);
     }
   }, [selectedRoom]);
 
