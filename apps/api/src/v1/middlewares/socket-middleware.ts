@@ -4,8 +4,6 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import { UserDocument } from '@repo/shared';
 
 export async function socketMiddleware(token: string) {
-  console.log('check');
-
   if (token === '' || token === undefined) {
     return null;
   }

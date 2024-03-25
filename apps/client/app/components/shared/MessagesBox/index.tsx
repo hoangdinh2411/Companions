@@ -10,15 +10,14 @@ import { useSocketContext } from '../../../lib/provider/SocketContextProvider';
 export default function MessagesBox() {
   const [isChatListOpen, setIsChatListOpen] = useState(false);
   const { user } = useAppContext();
-  const { socketConnection, selectedRoom, handleSelectRoom } =
-    useSocketContext();
+  const { socketClient, selectedRoom, handleSelectRoom } = useSocketContext();
   // Room list will include 1-2 last messages from each room
 
   const handleLeaveRoom = () => {
     if (selectedRoom?._id) {
       handleSelectRoom(null as any);
-      if (socketConnection) {
-        socketConnection.emit('leave-room', selectedRoom._id);
+      if (socketClient) {
+        socketClient.emit('leave-room', selectedRoom._id);
       }
     }
   };
@@ -63,8 +62,11 @@ export default function MessagesBox() {
           <p>{getRoomTitle()}</p>
           <span onClick={handleCloseChatList}>X</span>
         </div>
-        <List show={selectedRoom === null} />
-        <Conversation onConversation={selectedRoom !== null} />
+        {!selectedRoom ? (
+          <List show={selectedRoom === null} />
+        ) : (
+          <Conversation onConversation={selectedRoom !== null} />
+        )}
       </div>
     </div>
   );

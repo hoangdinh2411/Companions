@@ -46,7 +46,13 @@ class SocketModule {
       next();
     });
     this.io.on('connection', async (socket: Socket) => {
+      if (!socket.user) {
+        return socket.disconnect();
+      }
+
       socket.onAny(async (event, ...args) => {
+        console.log(event);
+        console.log('check 2');
         const token = socket.client.request.headers.token;
         const payload = await socketMiddleware(token as string);
         if (!payload) {
@@ -88,118 +94,111 @@ class SocketModule {
     });
   }
   private async getStart(socket: Socket) {
-    socket.on(
-      'get-start',
-      async (data: { user_id: string; session_id: string }) => {
-        console.log('get-start', data);
+    socket.on('get-start', async () => {
+      if (!socket.user) return;
+      const user = socket.user;
+      try {
+        await UserModel.findByIdAndUpdate(socket.user._id, {
+          session_id: socket.id,
+          is_online: true,
+        });
+        const rooms = await RoomModel.find({
+          users: {
+            $in: [user._id],
+          },
+        })
+          .populate('users', '_id  full_name')
+          .lean();
+        // if there is no rooms or there aren't new created rooms , stop the function
+        if (rooms.length) {
+          for (let index = 0; index < rooms.length; index++) {
+            const last_massages = await MessageModel.findOne({
+              room: rooms[index]._id,
+            })
+              .sort({ updated_at: -1 })
+              .limit(1)
+              .populate('sender', '_id  full_name')
+              .lean();
 
-        try {
-          await UserModel.findByIdAndUpdate(data.user_id, {
-            session_id: data.session_id,
-          });
-          const rooms = await RoomModel.find({
-            users: {
-              $in: [data.user_id],
-            },
-          })
-            .populate('users', '_id  full_name')
-            .lean();
-          // if there is no rooms or there aren't new created rooms , stop the function
-          if (rooms.length) {
-            for (let index = 0; index < rooms.length; index++) {
-              const last_massages = await MessageModel.findOne({
-                room: rooms[index]._id,
-              })
-                .sort({ updated_at: -1 })
-                .limit(1)
+            // if there is no messages in the room, remove the room from the list
+            if (!last_massages) {
+              await RoomModel.findByIdAndDelete(rooms[index]._id);
+              rooms.splice(index, 1);
+              continue;
+            }
+            // if the last message is sending, update the status to received
+            if (last_massages.status === MessageStatusEnum.SENDING) {
+              const new_last_massages = await MessageModel.findOneAndUpdate(
+                {
+                  _id: last_massages._id,
+                },
+                {
+                  status: MessageStatusEnum.RECEIVED,
+                },
+                {
+                  new: true,
+                }
+              )
                 .populate('sender', '_id  full_name')
                 .lean();
-
-              // if there is no messages in the room, remove the room from the list
-              if (!last_massages) {
-                await RoomModel.findByIdAndDelete(rooms[index]._id);
-                rooms.splice(index, 1);
-                continue;
-              }
-              // if the last message is sending, update the status to received
-              if (last_massages.status === MessageStatusEnum.SENDING) {
-                const new_last_massages = await MessageModel.findOneAndUpdate(
-                  {
-                    _id: last_massages._id,
-                  },
-                  {
-                    status: MessageStatusEnum.RECEIVED,
-                  },
-                  {
-                    new: true,
-                  }
-                )
-                  .populate('sender', '_id  full_name')
-                  .lean();
-                Object.assign(rooms[index], {
-                  messages: [new_last_massages],
-                });
-              } else {
-                // if the last message is received, add the message to the room
-                Object.assign(rooms[index], {
-                  messages: [last_massages],
-                });
-              }
+              Object.assign(rooms[index], {
+                messages: [new_last_massages],
+              });
+            } else {
+              // if the last message is received, add the message to the room
+              Object.assign(rooms[index], {
+                messages: [last_massages],
+              });
             }
           }
-
-          socket.emit('room-list', rooms);
-        } catch (error) {
-          this.sendError(socket, (error as Error).message);
         }
+
+        socket.emit('room-list', rooms);
+      } catch (error) {
+        this.sendError(socket, (error as Error).message);
       }
-    );
+    });
   }
 
   public async createRoom(socket: Socket) {
-    socket.on(
-      'create-room',
-      async (data: { inviter_id: string; invitee_id: string }) => {
-        try {
-          const existing_room = await RoomModel.findOne({
-            users: { $all: [data.inviter_id, data.invitee_id] },
-            status: RoomStatusEnum.ACTIVE,
-          })
-            .populate('users', '_id full_name')
-            .lean();
-          if (existing_room) {
-            socket.join(existing_room._id);
-            socket.emit('room-created', existing_room);
-            return;
-          }
-
-          const inviter = await UserModel.findById(data.inviter_id).lean();
-          const invitee = await UserModel.findById(data.invitee_id).lean();
-          if (!inviter || !invitee) {
-            throw new Error(ERROR_MESSAGES.USER.NOT_FOUND);
-          }
-          const new_room = await RoomModel.create({
-            users: [inviter._id, invitee._id],
-            status: RoomStatusEnum.ACTIVE,
-          });
-          const room = await new_room.populate('users', '_id  full_name ');
-          socket.join(room._id);
-          socket.emit('room-created', room);
-        } catch (error) {
-          this.sendError(socket, (error as Error).message);
+    socket.on('create-room', async (data: { invitee_id: string }) => {
+      if (!socket.user) return;
+      try {
+        const existing_room = await RoomModel.findOne({
+          users: { $all: [socket.user._id, data.invitee_id] },
+          status: RoomStatusEnum.ACTIVE,
+        })
+          .populate('users', '_id full_name')
+          .lean();
+        if (existing_room) {
+          socket.join(existing_room._id);
+          socket.emit('room-created', existing_room);
+          return;
         }
+
+        const inviter = await UserModel.findById(socket.user._id).lean();
+        const invitee = await UserModel.findById(data.invitee_id).lean();
+        if (!inviter || !invitee) {
+          throw new Error(ERROR_MESSAGES.USER.NOT_FOUND);
+        }
+        const new_room = await RoomModel.create({
+          users: [inviter._id, invitee._id],
+          status: RoomStatusEnum.ACTIVE,
+        });
+        const room = await new_room.populate('users', '_id  full_name ');
+        socket.join(room._id);
+        socket.emit('room-created', room);
+      } catch (error) {
+        this.sendError(socket, (error as Error).message);
       }
-    );
+    });
   }
   private async getMessages(socket: Socket) {
     socket.on(
       'get-messages',
-      async (data: {
-        room_id: string;
-        user_id: string;
-        current_page: number;
-      }) => {
-        const { room_id, user_id, current_page } = data;
+      async (data: { room_id: string; current_page: number }) => {
+        if (!socket.user) return;
+        const { room_id, current_page } = data;
         let page = 1;
         if (current_page) {
           page = Number(current_page);
@@ -209,18 +208,21 @@ class SocketModule {
             room: room_id,
           });
           if (last_message) {
-            if (last_message.sender._id !== user_id && !last_message.seen_by) {
+            if (
+              last_message.sender._id !== socket.user._id &&
+              !last_message.seen_by
+            ) {
               await MessageModel.updateMany(
                 {
                   room: room_id,
                   sender: {
-                    $ne: new mongoose.Types.ObjectId(data.user_id),
+                    $ne: new mongoose.Types.ObjectId(socket.user._id),
                   },
                 },
                 {
                   $set: {
                     status: MessageStatusEnum.RECEIVED,
-                    seen_by: data.user_id,
+                    seen_by: socket.user._id,
                   },
                 }
               );
@@ -233,7 +235,8 @@ class SocketModule {
               },
             },
             {
-              $sort: { updated_at: 1 },
+              // get newest messages first
+              $sort: { updated_at: -1 },
             },
             {
               $facet: {
@@ -258,6 +261,11 @@ class SocketModule {
                           },
                         },
                       ],
+                    },
+                  },
+                  {
+                    $sort: {
+                      updated_at: 1,
                     },
                   },
                   {
@@ -321,7 +329,18 @@ class SocketModule {
     socket.emit('server-error', error);
   }
   private disconnect(socket: Socket) {
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
+      if (socket.user) {
+        await UserModel.findOneAndUpdate(
+          {
+            _id: socket.user._id,
+          },
+          {
+            session_id: null,
+            is_online: false,
+          }
+        );
+      }
       socket.rooms.forEach((room) => {
         socket.leave(room);
       });
@@ -331,25 +350,27 @@ class SocketModule {
   private handleMessageAndSendToClient(socket: Socket) {
     socket.on(
       'send-message',
-      async (data: {
-        content: string;
-        room: string;
-        sender_id: string;
-        receiver_id: string;
-      }) => {
+      async (data: { content: string; room: string; receiver_id: string }) => {
+        if (!socket.user) return;
+
         try {
           const room = await RoomModel.findById(data.room)
-            .populate('users', '_id full_name')
+            .populate('users', '_id full_name session_id is_online')
             .lean();
           if (!room) {
             throw new Error(ERROR_MESSAGES.ROOM.NOT_FOUND);
           }
+          const receiver = room.users.find(
+            (user) => user._id.toString() === data.receiver_id
+          );
 
+          if (!receiver) {
+            throw new Error(ERROR_MESSAGES.USER.NOT_FOUND);
+          }
           // get total messages in the room
           const total_messages = await MessageModel.findOne({
             room: data.room,
           }).countDocuments();
-
           // send invitation to the receiver if this message is the first one
           if (total_messages === 0) {
             this.sendInvitation(socket, data.receiver_id, room);
@@ -357,29 +378,21 @@ class SocketModule {
           const new_message = new MessageModel({
             content: data.content,
             room: data.room,
-            sender: data.sender_id,
+            sender: socket.user._id,
           });
           await new_message.save();
           let message = await (
-            await new_message.populate('sender', '_id full_name email')
+            await new_message.populate('sender', '_id full_name ')
           ).populate('room', '_id');
-          // ISSUE HERE
-          // how to use one emit to send message to all users in the room? Now have to use 2 emits
-          // socket.to().emit() will send only for  receiver
-          // socket.emit() will send only for sender
-          const receiver = await UserModel.findById(data.receiver_id).populate(
-            'session_id'
-          );
-          socket.to(data.room).emit('receive-message', message);
-          socket.emit('receive-message', message);
 
-          if (receiver) {
-            socket.emit('update-room-on-list', true);
-            socket.to(receiver?.session_id).emit('update-room-on-list', true);
+          if (receiver?.is_online) {
+            this.io.to(data.room).emit('receive-message', message);
+            room.users.forEach((user) => {
+              socket
+                .to(user.session_id)
+                .emit('update-room-on-list', new_message);
+            });
           }
-
-          //ISSUE HERE
-          // the same issus with the below emit
         } catch (error) {
           this.sendError(socket, (error as Error).message);
         }
@@ -405,10 +418,10 @@ class SocketModule {
             }
           ).populate('sender', '_id full_name');
           if (updated_message) {
-            socket.emit('status-updated-on-conversation', updated_message);
+            socket.emit('update-message-to-received', updated_message);
             socket
               .to(data.room_id)
-              .emit('status-updated-on-conversation', updated_message);
+              .emit('update-message-to-received', updated_message);
           }
         } catch (error) {
           this.sendError(socket, (error as Error).message);
@@ -418,41 +431,46 @@ class SocketModule {
   }
 
   private updateReadMessage(socket: Socket) {
-    socket.on(
-      'message-read',
-      async (data: { message: MessageDocument; user_id: string }) => {
-        try {
-          const message = await MessageModel.findOneAndUpdate(
-            {
-              _id: data.message._id,
-              room: data.message.room._id,
-              sender: {
-                $ne: new mongoose.Types.ObjectId(data.user_id),
-              },
+    socket.on('message-read', async (data: { message: MessageDocument }) => {
+      if (!socket.user) return;
+      try {
+        const message = await MessageModel.findOneAndUpdate(
+          {
+            _id: data.message._id,
+            room: data.message.room._id,
+            sender: {
+              $ne: new mongoose.Types.ObjectId(socket.user._id),
             },
-            {
-              $set: {
-                status: MessageStatusEnum.RECEIVED,
-                seen_by: data.user_id,
-              },
+          },
+          {
+            $set: {
+              status: MessageStatusEnum.RECEIVED,
+              seen_by: socket.user._id,
             },
-            {
-              new: true,
-            }
-          )
-            .populate('sender', '_id full_name')
-            .populate('room', '_id');
-          console.log('updated status');
-
-          socket
-            .to(data.message?.room?._id)
-            .emit('status-updated-on-conversation', message);
-          socket.emit('status-updated-on-conversation', message);
-        } catch (error) {
-          this.sendError(socket, (error as Error).message);
-        }
+          },
+          {
+            new: true,
+          }
+        )
+          .populate('sender', '_id full_name')
+          .populate({
+            path: 'room',
+            select: '_id users',
+            populate: {
+              path: 'users',
+              select: '_id full_name is_online session_id',
+            },
+          });
+        console.log('updated status to seen');
+        message?.room?.users.forEach((user) => {
+          if (user.is_online) {
+            socket.to(user.session_id).emit('update-message-to-seen', message);
+          }
+        });
+      } catch (error) {
+        this.sendError(socket, (error as Error).message);
       }
-    );
+    });
   }
 }
 

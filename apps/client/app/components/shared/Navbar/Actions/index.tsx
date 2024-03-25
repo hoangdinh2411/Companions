@@ -11,7 +11,7 @@ import { useAppContext } from '../../../../lib/provider/AppContextProvider';
 import { useSocketContext } from '../../../../lib/provider/SocketContextProvider';
 
 export default function Actions() {
-  const { socketConnection, handleSetSocketConnection } = useSocketContext();
+  const { socketClient, handleSetSocketClient } = useSocketContext();
   const [dropdown, setDropdown] = React.useState(false);
   const { user, handleSetUser } = useAppContext();
 
@@ -41,9 +41,9 @@ export default function Actions() {
     if (user?._id) {
       handleSetUser({} as GetUserAPIResponse);
     }
-    if (socketConnection) {
-      socketConnection.disconnect();
-      handleSetSocketConnection(null as any);
+    if (socketClient) {
+      socketClient.disconnect();
+      handleSetSocketClient(null as any);
     }
 
     router.push(APP_ROUTER.SIGN_IN);
@@ -52,7 +52,7 @@ export default function Actions() {
   return (
     <div className="navbar__actions">
       {!user?._id ? (
-        <Link href={APP_ROUTER.SIGN_IN}>
+        <Link href={APP_ROUTER.SIGN_IN} prefetch={false}>
           <Button variant="default" className="actions" size="small">
             Sign in
           </Button>

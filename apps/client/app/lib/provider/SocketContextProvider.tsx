@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import { useAppContext } from './AppContextProvider';
-import socketClient from 'socket.io-client';
+import io from 'socket.io-client';
 import { API_URL } from '../../actions/customFetch';
 import { getToken } from '../../actions/tokens';
 import { IRoom } from '@repo/shared';
@@ -10,8 +10,8 @@ import { signOut } from '../../actions/userApi';
 import { toast } from 'react-toastify';
 
 type SocketContextType = {
-  socketConnection: Socket | null;
-  handleSetSocketConnection: (socket: Socket) => void;
+  socketClient: Socket | null;
+  handleSetSocketClient: (socket: Socket) => void;
   selectedRoom: IRoom | null;
   handleSelectRoom: (room: IRoom) => void;
   roomList: IRoom[];
@@ -19,8 +19,8 @@ type SocketContextType = {
 };
 
 const SocketContext = React.createContext<SocketContextType>({
-  socketConnection: null,
-  handleSetSocketConnection: () => {},
+  socketClient: null,
+  handleSetSocketClient: () => {},
   selectedRoom: null,
   handleSelectRoom: () => {},
   roomList: [],
@@ -37,13 +37,13 @@ export default function SocketContextProvider({
   const [selectedRoom, setSelectedRoom] = React.useState<IRoom | null>(
     null as any
   );
-  const [socketConnection, setSocketConnection] = React.useState<Socket>(
+  const [socketClient, setSocketConnection] = React.useState<Socket>(
     null as any
   );
 
   const [roomList, setRoomList] = React.useState<IRoom[]>([]);
 
-  const handleSetSocketConnection = (socket: Socket) => {
+  const handleSetSocketClient = (socket: Socket) => {
     setSocketConnection(socket);
   };
 
@@ -56,16 +56,13 @@ export default function SocketContextProvider({
   };
   useEffect(() => {
     if (!user) return;
-    if (socketConnection) {
-      socketConnection.emit('get-start', {
-        user_id: user?._id,
-        session_id: socketConnection?.id,
-      });
-      socketConnection.on('room-list', (data) => {
+    if (socketClient) {
+      socketClient.emit('get-start');
+      socketClient.on('room-list', (data) => {
         if (data.length === 0) return;
         setRoomList(data);
       });
-      socketConnection.on('error', async (error) => {
+      socketClient.on('error', async (error) => {
         toast.error(error.message);
         if (error.message.includes('authorization')) {
           await signOut();
@@ -73,27 +70,27 @@ export default function SocketContextProvider({
         }
       });
 
-      socketConnection.on('invitation', (room) => {
+      socketClient.on('invitation', (room) => {
         handleSelectRoom(room);
-        socketConnection.emit('invitation-accepted', room._id);
+        socketClient.emit('invitation-accepted', room._id);
       });
     }
 
     return () => {
-      if (socketConnection) {
-        socketConnection.off('connect_error');
-        socketConnection.off('room-list');
-        socketConnection.off('invitation');
+      if (socketClient) {
+        socketClient.off('connect_error');
+        socketClient.off('room-list');
+        socketClient.off('invitation');
       }
     };
-  }, [socketConnection]);
+  }, [socketClient]);
 
   useEffect(() => {
     if (!user?._id) return;
     let socket: Socket;
     async function connectSocket() {
       const token = await getToken();
-      socket = socketClient(API_URL, {
+      socket = io(API_URL, {
         reconnectionDelayMax: 10000,
         reconnection: true,
         reconnectionAttempts: 10,
@@ -113,18 +110,18 @@ export default function SocketContextProvider({
       if (socket.disconnected) {
         socket?.on('connect', () => {
           console.log('connected');
-          handleSetSocketConnection(socket);
+          handleSetSocketClient(socket);
         });
       }
     }
 
-    if (!socketConnection || socketConnection?.disconnected) {
+    if (!socketClient || socketClient?.disconnected) {
       connectSocket();
     }
 
     return () => {
       socket?.on('disconnect', () => {
-        handleSetSocketConnection(null as any);
+        handleSetSocketClient(null as any);
         console.log('user disconnected');
       });
     };
@@ -137,8 +134,8 @@ export default function SocketContextProvider({
         updateRoomList,
         selectedRoom,
         handleSelectRoom,
-        socketConnection,
-        handleSetSocketConnection,
+        socketClient,
+        handleSetSocketClient,
       }}
     >
       {children}

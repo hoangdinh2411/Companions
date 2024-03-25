@@ -12,12 +12,11 @@ type Props<T> = {
 export default function Creator<
   T extends DeliveryOrderDocument | JourneyDocument,
 >({ ride }: Props<T>) {
-  const { socketConnection } = useSocketContext();
+  const { socketClient } = useSocketContext();
   const { user } = useAppContext();
   const handleBeginAChatting = () => {
-    if (socketConnection) {
-      socketConnection.emit('create-room', {
-        inviter: user?._id,
+    if (socketClient) {
+      socketClient.emit('create-room', {
         invitee: ride?.created_by?._id,
       });
     }

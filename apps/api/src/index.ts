@@ -10,7 +10,7 @@ const port = process.env.PORT || 2703;
 const app = createServer();
 const httpServer = http.createServer(app);
 const socketModule = SocketModule.getInstance(httpServer);
-global.io = socketModule.io;
+// global.io = socketModule.io;
 
 httpServer.listen(port, async () => {
   await connectDatabase();
