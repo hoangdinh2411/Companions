@@ -30,6 +30,7 @@ export const getNewestComments = async () => {
     {
       method: 'GET',
       next: {
+        revalidate: 60 * 60,
         tags: ['comments'],
       },
     }

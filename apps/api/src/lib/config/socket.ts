@@ -16,10 +16,12 @@ import MessageModel from '../../v1/models/Message.model';
 import { limitDocumentPerPage } from '../utils/variables';
 import mongoose from 'mongoose';
 import { defaultResponseIfNoData } from '../../v1/helpers/response';
+import MemoryCache from './node-cache';
 
 class SocketModule {
   private static instance: SocketModule;
   io: socketIo.Server;
+  cache: MemoryCache<any> | undefined;
   private constructor(server: http.Server) {
     this.io = new socketIo.Server(server, {
       cors: {
@@ -49,10 +51,11 @@ class SocketModule {
       if (!socket.user) {
         return socket.disconnect();
       }
-
+      this.cache = new MemoryCache({
+        stdTTL: 60,
+        checkperiod: 120,
+      });
       socket.onAny(async (event, ...args) => {
-        console.log(event);
-        console.log('check 2');
         const token = socket.client.request.headers.token;
         const payload = await socketMiddleware(token as string);
         if (!payload) {
@@ -68,6 +71,8 @@ class SocketModule {
       this.updateReceivedMessage(socket);
       this.updateReadMessage(socket);
       this.leaveEmptyRoom(socket);
+      this.typingOnConversation(socket);
+      this.stopTypingOnConversation(socket);
       this.disconnect(socket);
     });
   }
@@ -96,7 +101,18 @@ class SocketModule {
   private async getStart(socket: Socket) {
     socket.on('get-start', async () => {
       if (!socket.user) return;
+      if (!this.cache) return;
+      const cached_data = this.cache.get('room-list') as RoomDocument[];
+
+      if (cached_data) {
+        console.log('get-start', cached_data[0]);
+        socket.emit('room-list', cached_data);
+        return;
+      }
+      console.log('fetching data from database');
+
       const user = socket.user;
+
       try {
         await UserModel.findByIdAndUpdate(socket.user._id, {
           session_id: socket.id,
@@ -152,7 +168,7 @@ class SocketModule {
             }
           }
         }
-
+        this.cache.set('room-list', rooms, 60);
         socket.emit('room-list', rooms);
       } catch (error) {
         this.sendError(socket, (error as Error).message);
@@ -264,12 +280,31 @@ class SocketModule {
                     },
                   },
                   {
+                    $lookup: {
+                      from: 'users',
+                      localField: 'seen_by',
+                      foreignField: '_id',
+                      as: 'seen_by',
+                      pipeline: [
+                        {
+                          $project: {
+                            _id: 1,
+                            full_name: 1,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
                     $sort: {
                       updated_at: 1,
                     },
                   },
                   {
                     $unwind: '$sender',
+                  },
+                  {
+                    $unwind: '$seen_by',
                   },
                 ],
                 pagination: [
@@ -385,12 +420,21 @@ class SocketModule {
             await new_message.populate('sender', '_id full_name ')
           ).populate('room', '_id');
 
+          this.cache?.update('room-list', (value: RoomDocument[]) => {
+            return value.map((r) => {
+              if (r._id.toString() === room._id.toString()) {
+                return {
+                  ...r,
+                  messages: [message],
+                };
+              }
+              return r;
+            });
+          });
           if (receiver?.is_online) {
             this.io.to(data.room).emit('receive-message', message);
             room.users.forEach((user) => {
-              socket
-                .to(user.session_id)
-                .emit('update-room-on-list', new_message);
+              socket.to(user.session_id).emit('update-room-on-list', message);
             });
           }
         } catch (error) {
@@ -416,12 +460,28 @@ class SocketModule {
             {
               new: true,
             }
-          ).populate('sender', '_id full_name');
+          )
+            .populate('sender', '_id full_name')
+            .populate('seen_by', '_id full_name')
+            .populate('room', '_id users');
           if (updated_message) {
-            socket.emit('update-message-to-received', updated_message);
-            socket
-              .to(data.room_id)
-              .emit('update-message-to-received', updated_message);
+            this.cache?.update('room-list', (value: RoomDocument[]) => {
+              return value.map((r) => {
+                if (r._id.toString() === updated_message.room._id.toString()) {
+                  return {
+                    ...r,
+                    messages: [updated_message],
+                  };
+                }
+                return r;
+              });
+            });
+            if (updated_message) {
+              socket.emit('update-message-to-received', updated_message);
+              socket
+                .to(data.room_id)
+                .emit('update-message-to-received', updated_message);
+            }
           }
         } catch (error) {
           this.sendError(socket, (error as Error).message);
@@ -434,7 +494,7 @@ class SocketModule {
     socket.on('message-read', async (data: { message: MessageDocument }) => {
       if (!socket.user) return;
       try {
-        const message = await MessageModel.findOneAndUpdate(
+        const updated_message = await MessageModel.findOneAndUpdate(
           {
             _id: data.message._id,
             room: data.message.room._id,
@@ -453,6 +513,7 @@ class SocketModule {
           }
         )
           .populate('sender', '_id full_name')
+          .populate('seen_by', '_id full_name')
           .populate({
             path: 'room',
             select: '_id users',
@@ -461,15 +522,41 @@ class SocketModule {
               select: '_id full_name is_online session_id',
             },
           });
-        console.log('updated status to seen');
-        message?.room?.users.forEach((user) => {
-          if (user.is_online) {
-            socket.to(user.session_id).emit('update-message-to-seen', message);
-          }
-        });
+        if (updated_message) {
+          this.cache?.update('room-list', (value: RoomDocument[]) => {
+            return value.map((room) => {
+              if (room._id.toString() === data.message.room._id) {
+                return {
+                  ...room,
+                  messages: [updated_message],
+                };
+              }
+              return room;
+            });
+          });
+          updated_message?.room?.users.forEach((user) => {
+            if (user.is_online) {
+              socket
+                .to(user.session_id)
+                .emit('update-message-to-seen', updated_message);
+            }
+          });
+        }
       } catch (error) {
         this.sendError(socket, (error as Error).message);
       }
+    });
+  }
+  private typingOnConversation(socket: Socket) {
+    socket.on('typing', (data: { room_id: string }) => {
+      if (!socket.user) return;
+      this.io.to(data.room_id).emit('sender-typing', socket.user._id);
+    });
+  }
+  private stopTypingOnConversation(socket: Socket) {
+    socket.on('stop-typing', (data: { room_id: string }) => {
+      if (!socket.user) return;
+      this.io.to(data.room_id).emit('sender-stop-typing', socket.user._id);
     });
   }
 }
