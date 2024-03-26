@@ -2,14 +2,12 @@ import { json, urlencoded } from 'body-parser';
 import express, { NextFunction } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
-import { logEvent } from './v1/helpers/log-helper';
-import v1Router from './v1';
 import timeout from 'connect-timeout';
 import helmet from 'helmet';
-import env from './lib/config/env';
 import cookieParser from 'cookie-parser';
+import { logEvent } from './config/log-helper';
 
-export const whitelist = [env.DOMAIN, 'http://localhost:3000'];
+export const whitelist = [process.env.DOMAIN, 'http://localhost:3000'];
 
 export const createServer = () => {
   const app = express();
@@ -49,8 +47,6 @@ export const createServer = () => {
       next();
     })
     .use(morgan('dev'))
-
-    .use('/api/v1', v1Router)
     .use('*', (req, res, next: NextFunction) => {
       return res.status(404).json({
         success: false,

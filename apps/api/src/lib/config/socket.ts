@@ -463,7 +463,14 @@ class SocketModule {
           )
             .populate('sender', '_id full_name')
             .populate('seen_by', '_id full_name')
-            .populate('room', '_id users');
+            .populate({
+              path: 'room',
+              select: '_id users',
+              populate: {
+                path: 'users',
+                select: '_id full_name is_online session_id',
+              },
+            });
           if (updated_message) {
             this.cache?.update('room-list', (value: RoomDocument[]) => {
               return value.map((r) => {
@@ -476,12 +483,17 @@ class SocketModule {
                 return r;
               });
             });
-            if (updated_message) {
-              socket.emit('update-message-to-received', updated_message);
-              socket
-                .to(data.room_id)
-                .emit('update-message-to-received', updated_message);
-            }
+
+            this.io.sockets
+              .to(data.room_id)
+              .emit('update-message-to-received', updated_message);
+            updated_message.room?.users.forEach((user) => {
+              if (user.is_online) {
+                socket
+                  .to(user.session_id)
+                  .emit('update-message-to-received', updated_message);
+              }
+            });
           }
         } catch (error) {
           this.sendError(socket, (error as Error).message);
@@ -534,6 +546,9 @@ class SocketModule {
               return room;
             });
           });
+          this.io.sockets
+            .to(data.message.room._id)
+            .emit('update-message-to-seen', updated_message);
           updated_message?.room?.users.forEach((user) => {
             if (user.is_online) {
               socket

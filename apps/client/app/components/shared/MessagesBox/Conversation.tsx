@@ -37,7 +37,7 @@ export default function Conversation({ onConversation = false }: Props) {
 
   useEffect(() => {
     if (!socketClient) return;
-
+    if (!user) return;
     socketClient.on(
       'receive-messages-list',
       (data: ResponseWithPagination<MessageDocument>) => {
@@ -140,7 +140,6 @@ export default function Conversation({ onConversation = false }: Props) {
       socketClient?.emit('join-room', selectedRoom._id);
     }
   }, []);
-  console.log(typing);
 
   return (
     <div className={`conversation ${onConversation ? 'show' : 'hide'}`}>
@@ -157,8 +156,7 @@ export default function Conversation({ onConversation = false }: Props) {
               <div className="conversation__content__message">
                 <span className="message__text">{message.content}</span>
                 <span className="message__time ">
-                  {/* {dayjsConfig(message.updated_at).fromNow()} */}
-                  {message.status + ' ' + message?.seen_by?.full_name}
+                  {dayjsConfig(message.updated_at).fromNow()}
                 </span>
               </div>
             </div>
@@ -166,7 +164,7 @@ export default function Conversation({ onConversation = false }: Props) {
       </div>
       <div className="message-input">
         <textarea
-          placeholder="Typing..."
+          placeholder="Write a message..."
           ref={contentRef}
           onFocus={handleTypingInTextField}
           onBlur={handleStopTypingInTextField}

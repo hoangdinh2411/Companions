@@ -65,7 +65,9 @@ export default function Actions() {
           <nav className={`actions__dropdown ${dropdown ? 'open' : ''}`}>
             <ul>
               <li>
-                <Link href={APP_ROUTER.PROFILE}>Profile</Link>
+                <Link href={APP_ROUTER.PROFILE} prefetch={false}>
+                  Profile
+                </Link>
               </li>
               <li>
                 <p onClick={handleLogout}>Sign out</p>

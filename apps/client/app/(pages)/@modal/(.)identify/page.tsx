@@ -51,13 +51,13 @@ export default function IdentifyModalPage() {
         await saveIdentifyNumber(idNumber);
         clearTimeout(timeout);
         closeModal();
-      }, 2000);
+      }, 10000);
       // startTransition(async () => {
       //   await saveIdentifyNumber(idNumber);
       //   // toast.success('Your ID number has been saved');
       //   // closeModal();
       // });
-    }, 2000);
+    }, 10000);
 
     return () => {
       clearTimeout(timeout);
@@ -68,7 +68,7 @@ export default function IdentifyModalPage() {
 
   if (loading) {
     return (
-      <div className='identify-bank-id__container'>
+      <div className="identify-bank-id__container">
         <h1>Successfully identify with bankId</h1>
         <LoadingSpinner />
       </div>
@@ -76,28 +76,28 @@ export default function IdentifyModalPage() {
   }
   return (
     <Modal disableClose open>
-      <div className='identify-bank-id__container'>
+      <div className="identify-bank-id__container">
         {idNumber !== '' ? (
-          <div className='qr-code'>
+          <div className="qr-code">
             <Image
-              src='/BankID_logo.png'
-              alt='Bank ID Logo'
+              src="/BankID_logo.png"
+              alt="Bank ID Logo"
               width={120}
               height={120}
             />
             <QRCode
-              bgColor='#ffffff'
-              fgColor='#000000'
+              bgColor="#ffffff"
+              fgColor="#000000"
               value={`bankid.${randomToken}].0.`}
-              className='qr-code__content'
+              className="qr-code__content"
             />
-            <ol className='qr-code__steps'>
+            <ol className="qr-code__steps">
               <li>Open the BankID app on your smart phone.</li>
               <li>Tap the QR icon in the app.</li>
               <li>Point the camera at the QR code.</li>
               <li>Follow the instructions in the app.</li>
             </ol>
-            <Button type='button' onClick={closeModal}>
+            <Button type="button" onClick={closeModal}>
               Cancel
             </Button>
           </div>
@@ -118,21 +118,21 @@ export default function IdentifyModalPage() {
                 </small>
               </p>
             </article>
-            <form className='bankid-form'>
+            <form className="bankid-form">
               <TextField
-                label='ID Number'
-                placeholder='YYYYMMDD-NNNN'
-                name='id_number'
+                label="ID Number"
+                placeholder="YYYYMMDD-NNNN"
+                name="id_number"
                 ref={inputRef}
-                type='tel'
-                pattern='[0-9]{8}-[0-9]{4}'
+                type="tel"
+                pattern="[0-9]{8}-[0-9]{4}"
                 required
               />
-              <div className='bankid-form__btns'>
-                <Button type='button' variant='white' onClick={closeModal}>
+              <div className="bankid-form__btns">
+                <Button type="button" variant="white" onClick={closeModal}>
                   Cancel
                 </Button>
-                <Button type='button' onClick={handelVerify}>
+                <Button type="button" onClick={handelVerify}>
                   Identify with BankID
                 </Button>
               </div>

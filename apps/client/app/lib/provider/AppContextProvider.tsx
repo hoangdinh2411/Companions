@@ -3,12 +3,12 @@ import { GetUserAPIResponse } from '@repo/shared';
 import React from 'react';
 
 type AppContextType = {
-  user: GetUserAPIResponse;
+  user: GetUserAPIResponse | null;
   handleSetUser: (user: GetUserAPIResponse) => void;
 };
 
 const AppContext = React.createContext<AppContextType>({
-  user: {} as GetUserAPIResponse,
+  user: null,
   handleSetUser: () => {},
 });
 
@@ -18,9 +18,7 @@ export default function AppContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = React.useState<GetUserAPIResponse>(
-    {} as GetUserAPIResponse
-  );
+  const [user, setUser] = React.useState<GetUserAPIResponse | null>(null);
 
   const handleSetUser = (user: GetUserAPIResponse) => {
     setUser(user);

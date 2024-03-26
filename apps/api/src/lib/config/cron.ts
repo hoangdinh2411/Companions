@@ -17,7 +17,7 @@ export const updateStatus = nodeCron.schedule(
 );
 
 export const pingServer = nodeCron.schedule(
-  '*/15 * * * * ',
+  '* */13 * * * ',
   async () => {
     await fetch(env.SERVER + '/api/v1/test');
   },

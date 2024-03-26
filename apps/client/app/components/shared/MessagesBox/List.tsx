@@ -28,6 +28,7 @@ export default function List({ show }: Props) {
   };
 
   const showWhoseMessage = (room: IRoom) => {
+    if (!user || !room) return '';
     const sender = room?.users?.find((u) => u._id !== user?._id);
     if (!sender) return '';
     const sender_name =
@@ -48,6 +49,17 @@ export default function List({ show }: Props) {
     }
   };
 
+  function changeLastMessageForRoom(newMessage: MessageDocument) {
+    const newRoomList = roomList.map((room: IRoom) => {
+      if (room._id === newMessage.room._id) {
+        return { ...room, messages: [newMessage] };
+      }
+      return room;
+    });
+
+    updateRoomList(newRoomList);
+  }
+
   useEffect(() => {
     if (!user) return;
 
@@ -58,31 +70,15 @@ export default function List({ show }: Props) {
             position: 'top-right',
             autoClose: 3000,
           });
-          socketClient.emit('receive-message', newMessage);
+          socketClient.emit('message-received', newMessage);
         } else {
-          const newRoomList = roomList.map((room: IRoom) => {
-            if (room._id === newMessage.room._id) {
-              return { ...room, messages: [newMessage] };
-            }
-            return room;
-          });
-
-          updateRoomList(newRoomList);
+          changeLastMessageForRoom(newMessage);
         }
       });
       socketClient.on(
         'update-message-to-received',
         (newMessage: MessageDocument) => {
-          if (user._id !== newMessage.sender._id) {
-            const newRoomList = roomList.map((room: IRoom) => {
-              if (room._id === newMessage.room._id) {
-                return { ...room, messages: [newMessage] };
-              }
-              return room;
-            });
-
-            updateRoomList(newRoomList);
-          }
+          changeLastMessageForRoom(newMessage);
         }
       );
       socketClient.on(

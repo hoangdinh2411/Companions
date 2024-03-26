@@ -57,6 +57,9 @@ export default function SocketContextProvider({
   useEffect(() => {
     if (!user) return;
     if (socketClient) {
+      socketClient.onAny((event, ...args) => {
+        console.log(event, args);
+      });
       socketClient.emit('get-start');
       socketClient.on('room-list', (data) => {
         if (data.length === 0) return;
@@ -87,32 +90,44 @@ export default function SocketContextProvider({
 
   useEffect(() => {
     if (!user?._id) return;
+
     let socket: Socket;
     async function connectSocket() {
       const token = await getToken();
-      socket = io(API_URL, {
+      const URL =
+        process.env.NEXT_PUBLIC_NODE_ENV === 'prod' &&
+        process.env.NEXT_PUBLIC_WEB_SOCKET
+          ? process.env.NEXT_PUBLIC_WEB_SOCKET
+          : 'http://localhost:4000';
+      socket = io(URL + '/chat', {
         reconnectionDelayMax: 10000,
         reconnection: true,
         reconnectionAttempts: 10,
         reconnectionDelay: 1000,
-        rejectUnauthorized: false,
-
         secure: process.env.NEXT_PUBLIC_NODE_ENV === 'prod',
-        extraHeaders: {
+
+        auth: {
           token: token,
         },
       });
-      socket.on('connect_error', async (error) => {
-        toast.error(error.message);
-        await signOut();
-        handleSetUser(null as any);
-      });
+
       if (socket.disconnected) {
+        socket.on('connect_error', async (error) => {
+          toast.error(error.message);
+          if (error.message.includes('authorization')) {
+            await signOut();
+            handleSetUser(null as any);
+          }
+        });
         socket?.on('connect', () => {
-          console.log('connected');
+          socket.on('ping', () => {});
+
           handleSetSocketClient(socket);
         });
       }
+      socket.on('disconnect', () => {
+        console.log('user disconnected');
+      });
     }
 
     if (!socketClient || socketClient?.disconnected) {
@@ -120,6 +135,9 @@ export default function SocketContextProvider({
     }
 
     return () => {
+      socket?.off('connect_error');
+      socket?.off('connection');
+      socket?.off('ping');
       socket?.on('disconnect', () => {
         handleSetSocketClient(null as any);
         console.log('user disconnected');
