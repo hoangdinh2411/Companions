@@ -45,9 +45,8 @@ export const createServer = () => {
       res.header('Access-Control-Allow-Credentials', 'true');
       res.header(
         'Access-Control-Allow-Headers',
-        'X-Requested-With,content-type'
+        'Origin, X-Requested-With, Content-Type, Accept'
       );
-      res.header('Access-Control-Allow-Origin', env.DOMAIN);
       next();
     })
     .use(morgan('dev'))
