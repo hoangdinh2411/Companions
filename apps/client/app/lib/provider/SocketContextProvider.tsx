@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import { useAppContext } from './AppContextProvider';
 import io from 'socket.io-client';
@@ -127,6 +127,12 @@ export default function SocketContextProvider({
     };
   }, [user]);
 
+  useEffect(() => {
+    if (selectedRoom) return;
+    if (socketClient) {
+      socketClient.emit('get-start');
+    }
+  }, [selectedRoom]);
   return (
     <SocketContext.Provider
       value={{

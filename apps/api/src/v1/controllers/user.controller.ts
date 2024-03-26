@@ -131,9 +131,6 @@ const UserController = {
           createHttpError.BadRequest(ERROR_MESSAGES.USER.PASSWORD_WRONG)
         );
       const payload = generateToken(user._id, user.status as UserStatusEnum);
-
-      user.is_online = true;
-      await user.save();
       res.cookie('token', payload.token, {
         expires: dayjs().add(payload.maxAge, 's').toDate(),
         httpOnly: true,

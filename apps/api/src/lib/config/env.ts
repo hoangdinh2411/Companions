@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 const env = {
+  PORT: process.env.PORT || 2703,
   DOMAIN:
     process.env.NODE_ENV === 'prod'
       ? process.env.DOMAIN

@@ -1,6 +1,8 @@
 import { UserDocument } from '@repo/shared';
 import { Server, Socket } from 'socket.io';
 import SocketModule from '../lib/config/socket';
+import NodeCache from 'node-cache';
+import MemoryCache from '../lib/config/node-cache';
 
 declare global {
   var io: Server;
@@ -18,6 +20,12 @@ declare global {
   namespace SocketIO {
     export interface Socket {
       user: UserDocument;
+    }
+  }
+
+  namespace NodeJS {
+    interface Global {
+      io: Server;
     }
   }
 }

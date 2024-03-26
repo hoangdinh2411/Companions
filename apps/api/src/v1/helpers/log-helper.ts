@@ -1,7 +1,6 @@
-import fs from "fs";
-import moment from "moment";
-import path from "path";
-
+import fs from 'fs';
+import path from 'path';
+import dayjs from 'dayjs';
 export const logEvent = function (message: string) {
   try {
     let folderName = `${path.resolve(process.cwd())}/logs`;
@@ -9,11 +8,11 @@ export const logEvent = function (message: string) {
       fs.mkdirSync(folderName, { recursive: true });
     }
 
-    let fileName = `${folderName}/${moment().format("DD/MM/YYYY").replaceAll("/", "-")}.log`;
-    let timeLog = moment().format("hh:mm:ss A");
+    let fileName = `${folderName}/${dayjs().format('DD/MM/YYYY').replaceAll('/', '-')}.log`;
+    let timeLog = dayjs().format('hh:mm:ss A');
     let content = `${timeLog} --> ${message}\n`;
     fs.appendFileSync(fileName, content);
   } catch (error) {
-    console.log("logEvent error:::", error);
+    console.log('logEvent error:::', error);
   }
 };

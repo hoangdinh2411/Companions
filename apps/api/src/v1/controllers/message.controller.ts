@@ -4,7 +4,6 @@ import MessageModel from '../models/Message.model';
 import { Request, Response, NextFunction } from 'express';
 import { defaultResponseIfNoData } from '../helpers/response';
 import mongoose from 'mongoose';
-import { MessageStatusEnum } from '@repo/shared';
 
 let page = 1;
 const MessageController = {

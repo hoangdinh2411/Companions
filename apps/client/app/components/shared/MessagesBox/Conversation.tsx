@@ -16,6 +16,7 @@ export default function Conversation({ onConversation = false }: Props) {
   const [messages, setMessages] = React.useState<MessageDocument[]>([]);
   const contentRef = React.useRef<HTMLTextAreaElement>(null);
   const contentWrapperRef = React.useRef<HTMLDivElement>(null);
+  const [typing, setTyping] = React.useState<boolean>(false);
   const handleSendMessage = (
     e:
       | React.MouseEvent<HTMLSpanElement, MouseEvent>
@@ -47,39 +48,75 @@ export default function Conversation({ onConversation = false }: Props) {
     socketClient.on('receive-message', (newMessage: MessageDocument) => {
       // //if the receiver is not the sender and is on the conversation, will update the message status to read and add the message to the conversation on the event (status-updated-on-conversation)
       if (newMessage.sender._id.toString() !== user?._id.toString()) {
+        console.log('receive-message', newMessage);
+
         socketClient.emit('message-read', {
           message: newMessage,
         });
+        setMessages((prev) => [...prev, newMessage]);
       } else {
         setMessages((prev) => [...prev, newMessage]);
       }
     });
 
-    socketClient.on('update-messages-to-received', (updatedMessage) => {
+    socketClient.on('update-message-to-received', (updatedMessage) => {
       setMessages((prev) =>
         prev.map((message) =>
           message._id === updatedMessage._id ? updatedMessage : message
         )
       );
     });
-    socketClient.on('update-messages-to-seen', (updatedMessage) => {
+    socketClient.on('update-message-to-seen', (updatedMessage) => {
       setMessages((prev) =>
         prev.map((message) =>
           message._id === updatedMessage._id ? updatedMessage : message
         )
       );
+    });
+
+    socketClient.on('sender-typing', (data) => {
+      if (user._id !== data) {
+        setTyping(true);
+      }
+    });
+    socketClient.on('sender-stop-typing', (data) => {
+      if (user._id !== data) {
+        setTyping(false);
+      }
     });
 
     return () => {
       if (socketClient) {
         socketClient.off('receive-message');
         socketClient.off('receive-messages-list');
-        socketClient.off('update-messages-to-received');
-        socketClient.off('update-messages-to-seen');
+        socketClient.off('update-message-to-received');
+        socketClient.off('update-message-to-seen');
+        socketClient.off('sender-typing');
+        socketClient.off('sender-stop-typing');
       }
     };
   }, [socketClient]);
 
+  const handleTypingInTextField = () => {
+    if (socketClient && selectedRoom) {
+      socketClient.emit('typing', {
+        room_id: selectedRoom._id,
+      });
+    }
+  };
+  const handleStopTypingInTextField = () => {
+    if (socketClient && selectedRoom) {
+      if (contentRef.current && contentRef.current.value.trim() === '') {
+        socketClient.emit('stop-typing', {
+          room_id: selectedRoom._id,
+        });
+        return;
+      }
+      socketClient.emit('stop-typing', {
+        room_id: selectedRoom._id,
+      });
+    }
+  };
   useEffect(() => {
     if (!selectedRoom) return;
     if (socketClient) {
@@ -103,6 +140,7 @@ export default function Conversation({ onConversation = false }: Props) {
       socketClient?.emit('join-room', selectedRoom._id);
     }
   }, []);
+  console.log(typing);
 
   return (
     <div className={`conversation ${onConversation ? 'show' : 'hide'}`}>
@@ -119,7 +157,8 @@ export default function Conversation({ onConversation = false }: Props) {
               <div className="conversation__content__message">
                 <span className="message__text">{message.content}</span>
                 <span className="message__time ">
-                  {dayjsConfig(message.updated_at).fromNow()}
+                  {/* {dayjsConfig(message.updated_at).fromNow()} */}
+                  {message.status + ' ' + message?.seen_by?.full_name}
                 </span>
               </div>
             </div>
@@ -129,6 +168,8 @@ export default function Conversation({ onConversation = false }: Props) {
         <textarea
           placeholder="Typing..."
           ref={contentRef}
+          onFocus={handleTypingInTextField}
+          onBlur={handleStopTypingInTextField}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
@@ -139,6 +180,7 @@ export default function Conversation({ onConversation = false }: Props) {
         <span className="enter-icon" onClick={handleSendMessage}>
           <SendIcon />
         </span>
+        {typing && <span className="typing">...Typing</span>}
       </div>
     </div>
   );
